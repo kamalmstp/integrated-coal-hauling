@@ -2,12 +2,20 @@ import React from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import {
     LayoutDashboard,
+    Building2,
     Users,
-    BarChart3,
+    Truck,
+    UserCheck,
+    MapPin,
+    Clock,
+    Briefcase,
+    Shield,
+    FileText,
     Settings,
     ChevronLeft,
     Sparkles,
-    Shield,
+    ShieldCheck,
+    Layers,
     X,
 } from 'lucide-react';
 import { useSidebarStore } from '../../stores/useSidebarStore';
@@ -16,52 +24,146 @@ export default function Sidebar() {
     const { url } = usePage();
     const { isCollapsed, toggleCollapse, isMobileOpen, closeMobile } = useSidebarStore();
 
-    const navigation = [
+    const menuGroups = [
         {
-            name: 'Dashboard',
-            href: '/dashboard',
-            icon: LayoutDashboard,
-            active: url.startsWith('/dashboard') || url === '/',
+            title: 'Menu Utama',
+            items: [
+                {
+                    name: 'Dashboard Operasional',
+                    href: '/dashboard',
+                    icon: LayoutDashboard,
+                    active: url.startsWith('/dashboard') || url === '/',
+                },
+            ],
         },
         {
-            name: 'Data Pengguna (SSR)',
-            href: '/users',
-            icon: Users,
-            badge: 'SSR',
-            badgeColor: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300',
-            active: url.startsWith('/users'),
+            title: 'Organisasi & Struktur',
+            items: [
+                {
+                    name: 'Organisasi & Site',
+                    href: '/organization',
+                    icon: Building2,
+                    badge: 'Site/Dept',
+                    badgeColor: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300',
+                    active: url.startsWith('/organization'),
+                },
+            ],
         },
         {
-            name: 'Analytics',
-            href: '/analytics',
-            icon: BarChart3,
-            active: url.startsWith('/analytics'),
+            title: 'Master Operasional Hauling',
+            items: [
+                {
+                    name: 'Armada & Unit Hauling',
+                    href: '/master/units',
+                    icon: Truck,
+                    badge: 'Fleets',
+                    badgeColor: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
+                    active: url.startsWith('/master/units'),
+                },
+                {
+                    name: 'Driver & SIMPER',
+                    href: '/master/drivers',
+                    icon: UserCheck,
+                    badge: 'K3LH',
+                    badgeColor: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
+                    active: url.startsWith('/master/drivers'),
+                },
+                {
+                    name: 'Lokasi & Rute Hauling',
+                    href: '/master/locations',
+                    icon: MapPin,
+                    active: url.startsWith('/master/locations'),
+                },
+                {
+                    name: 'Shift Kerja',
+                    href: '/master/shifts',
+                    icon: Clock,
+                    active: url.startsWith('/master/shifts'),
+                },
+                {
+                    name: 'Material Tambang',
+                    href: '/master/materials',
+                    icon: Layers,
+                    active: url.startsWith('/master/materials'),
+                },
+            ],
         },
         {
-            name: 'Pengaturan',
-            href: '/settings',
-            icon: Settings,
-            active: url.startsWith('/settings'),
+            title: 'Mitra & Klien',
+            items: [
+                {
+                    name: 'Vendor & Rental',
+                    href: '/master/vendors',
+                    icon: Briefcase,
+                    active: url.startsWith('/master/vendors'),
+                },
+                {
+                    name: 'Klien / Pemilik IUP',
+                    href: '/master/customers',
+                    icon: Building2,
+                    active: url.startsWith('/master/customers'),
+                },
+            ],
+        },
+        {
+            title: 'Kepegawaian & Akses',
+            items: [
+                {
+                    name: 'Data Karyawan',
+                    href: '/master/employees',
+                    icon: Users,
+                    active: url.startsWith('/master/employees'),
+                },
+                {
+                    name: 'Pengguna Sistem',
+                    href: '/users',
+                    icon: Users,
+                    active: url.startsWith('/users'),
+                },
+                {
+                    name: 'Role & Permission',
+                    href: '/security/roles',
+                    icon: ShieldCheck,
+                    active: url.startsWith('/security/roles'),
+                },
+                {
+                    name: 'Log Aktivitas',
+                    href: '/security/activity-logs',
+                    icon: FileText,
+                    active: url.startsWith('/security/activity-logs'),
+                },
+            ],
+        },
+        {
+            title: 'Pengaturan',
+            items: [
+                {
+                    name: 'Konfigurasi Sistem',
+                    href: '/settings/configuration',
+                    icon: Settings,
+                    active: url.startsWith('/settings/configuration'),
+                },
+            ],
         },
     ];
 
     const sidebarContent = (
         <div className="flex flex-col h-full justify-between">
             {/* Top Brand & Links */}
-            <div>
+            <div className="overflow-y-auto flex-1 custom-scrollbar">
                 {/* Brand Header */}
-                <div className="flex items-center justify-between h-16 px-4 border-b border-slate-200/80 dark:border-slate-800">
+                <div className="sticky top-0 z-10 bg-white dark:bg-slate-900 flex items-center justify-between h-16 px-4 border-b border-slate-200/80 dark:border-slate-800">
                     <Link href="/dashboard" className="flex items-center gap-3 overflow-hidden">
-                        <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 shrink-0">
-                            <Sparkles className="w-5 h-5" />
+                        <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 via-amber-600 to-indigo-700 flex items-center justify-center text-white shadow-md shadow-amber-500/20 shrink-0">
+                            <Truck className="w-5 h-5" />
                         </div>
                         {!isCollapsed && (
                             <div className="flex flex-col">
-                                <span className="font-bold text-sm text-slate-900 dark:text-white tracking-tight">
-                                    Laravel 12
+                                <span className="font-extrabold text-sm text-slate-900 dark:text-white tracking-tight leading-none">
+                                    PT TEKNINDO ADHYA PANE
                                 </span>
-                                <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-semibold tracking-wider uppercase">
-                                    Atomic Dashboard
+                                <span className="text-[10px] text-amber-600 dark:text-amber-400 font-bold tracking-wider uppercase mt-0.5">
+                                    Coal Hauling System
                                 </span>
                             </div>
                         )}
@@ -77,54 +179,59 @@ export default function Sidebar() {
                     </button>
                 </div>
 
-                {/* Navigation Links */}
-                <nav className="p-3 space-y-1">
-                    <div className={`px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 ${isCollapsed ? 'hidden' : 'block'}`}>
-                        Menu Utama
-                    </div>
+                {/* Navigation Menu Groups */}
+                <nav className="p-3 space-y-4">
+                    {menuGroups.map((group, groupIdx) => (
+                        <div key={groupIdx} className="space-y-1">
+                            {!isCollapsed && (
+                                <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                                    {group.title}
+                                </div>
+                            )}
 
-                    {navigation.map((item) => {
-                        const Icon = item.icon;
-                        return (
-                            <Link
-                                key={item.name}
-                                href={item.href}
-                                onClick={closeMobile}
-                                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium transition-all group relative ${
-                                    item.active
-                                        ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200 dark:shadow-none'
-                                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'
-                                }`}
-                                title={isCollapsed ? item.name : undefined}
-                            >
-                                <Icon className={`w-4 h-4 shrink-0 ${item.active ? 'text-white' : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300'}`} />
-                                {!isCollapsed && <span className="flex-1 truncate">{item.name}</span>}
-                                {!isCollapsed && item.badge && (
-                                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-md ${item.badgeColor || 'bg-slate-100 text-slate-700'}`}>
-                                        {item.badge}
-                                    </span>
-                                )}
-                            </Link>
-                        );
-                    })}
+                            {group.items.map((item) => {
+                                const Icon = item.icon;
+                                return (
+                                    <Link
+                                        key={item.name}
+                                        href={item.href}
+                                        onClick={closeMobile}
+                                        className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-medium transition-all group relative ${
+                                            item.active
+                                                ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-200 dark:shadow-none'
+                                                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100'
+                                        }`}
+                                        title={isCollapsed ? item.name : undefined}
+                                    >
+                                        <Icon className={`w-4 h-4 shrink-0 ${item.active ? 'text-white' : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300'}`} />
+                                        {!isCollapsed && <span className="flex-1 truncate">{item.name}</span>}
+                                        {!isCollapsed && item.badge && (
+                                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md ${item.badgeColor || 'bg-slate-100 text-slate-700'}`}>
+                                                {item.badge}
+                                            </span>
+                                        )}
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    ))}
                 </nav>
             </div>
 
-            {/* Bottom Section */}
-            <div className="p-3 border-t border-slate-200/80 dark:border-slate-800 space-y-2">
+            {/* Bottom Collapse Button */}
+            <div className="p-3 border-t border-slate-200/80 dark:border-slate-800 space-y-2 shrink-0 bg-white dark:bg-slate-900">
                 {!isCollapsed && (
-                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/40 flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
-                            <Shield className="w-4 h-4" />
+                    <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/40 flex items-center gap-2.5">
+                        <div className="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400">
+                            <Shield className="w-3.5 h-3.5" />
                         </div>
                         <div className="text-[11px] leading-tight">
-                            <p className="font-semibold text-slate-800 dark:text-slate-200">Zustand + SSR</p>
-                            <p className="text-slate-400 text-[10px]">React Atomic Design</p>
+                            <p className="font-semibold text-slate-800 dark:text-slate-200">Phase 1 Foundation</p>
+                            <p className="text-slate-400 text-[9px]">Master Data & RBAC</p>
                         </div>
                     </div>
                 )}
 
-                {/* Desktop Collapse Toggle Button */}
                 <button
                     type="button"
                     onClick={toggleCollapse}
