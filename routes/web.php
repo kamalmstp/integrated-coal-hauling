@@ -1,15 +1,23 @@
 <?php
 
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\DailyDispatchController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DriverController;
+use App\Http\Controllers\DumpingTicketController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\HaulingActivityController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\OrganizationController;
+use App\Http\Controllers\ProductionDashboardController;
+use App\Http\Controllers\ProductionRecapController;
+use App\Http\Controllers\ProductionTargetController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\SystemSettingController;
+use App\Http\Controllers\TicketImportController;
+use App\Http\Controllers\TicketReconciliationController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendorController;
@@ -124,3 +132,51 @@ Route::post('/settings/configuration', [SystemSettingController::class, 'update'
 Route::get('/analytics', function () {
     return Inertia::render('Analytics/Index');
 })->name('analytics');
+
+// 8. Phase 2: Coal Hauling Production Management
+Route::prefix('production')->name('production.')->group(function () {
+    // Production Dashboard
+    Route::get('/dashboard', [ProductionDashboardController::class, 'index'])->name('dashboard');
+
+    // Daily Dispatch
+    Route::get('/dispatch', [DailyDispatchController::class, 'index'])->name('dispatch.index');
+    Route::post('/dispatch', [DailyDispatchController::class, 'store'])->name('dispatch.store');
+    Route::post('/dispatch/{dispatch}/assignments', [DailyDispatchController::class, 'addAssignment'])->name('dispatch.assignments.store');
+    Route::put('/assignments/{assignment}/status', [DailyDispatchController::class, 'updateAssignmentStatus'])->name('dispatch.assignments.status');
+    Route::put('/assignments/{assignment}/swap', [DailyDispatchController::class, 'swapUnitOrDriver'])->name('dispatch.assignments.swap');
+
+    // Loading & Hauling Activity Log
+    Route::get('/hauling', [HaulingActivityController::class, 'index'])->name('hauling.index');
+    Route::post('/hauling', [HaulingActivityController::class, 'store'])->name('hauling.store');
+    Route::put('/hauling/{activity}/status', [HaulingActivityController::class, 'updateStatus'])->name('hauling.status');
+
+    // Dumping Ticket Management & Workflow
+    Route::get('/tickets', [DumpingTicketController::class, 'index'])->name('tickets.index');
+    Route::post('/tickets', [DumpingTicketController::class, 'store'])->name('tickets.store');
+    Route::get('/tickets/verification-queue', [DumpingTicketController::class, 'verificationQueue'])->name('tickets.verification-queue');
+    Route::get('/tickets/{ticket}', [DumpingTicketController::class, 'show'])->name('tickets.show');
+    Route::post('/tickets/{ticket}/verify', [DumpingTicketController::class, 'verify'])->name('tickets.verify');
+    Route::post('/tickets/batch-verify', [DumpingTicketController::class, 'batchVerify'])->name('tickets.batch-verify');
+    Route::post('/tickets/{ticket}/reject', [DumpingTicketController::class, 'reject'])->name('tickets.reject');
+    Route::post('/tickets/{ticket}/correct', [DumpingTicketController::class, 'correct'])->name('tickets.correct');
+
+    // Bulk Import (Excel/CSV)
+    Route::get('/import', [TicketImportController::class, 'index'])->name('import.index');
+    Route::post('/import/preview', [TicketImportController::class, 'preview'])->name('import.preview');
+    Route::post('/import/execute', [TicketImportController::class, 'execute'])->name('import.execute');
+    Route::get('/import/template', [TicketImportController::class, 'downloadTemplate'])->name('import.template');
+
+    // Production Recap
+    Route::get('/recap', [ProductionRecapController::class, 'index'])->name('recap.index');
+
+    // Production Targets
+    Route::get('/targets', [ProductionTargetController::class, 'index'])->name('targets.index');
+    Route::post('/targets', [ProductionTargetController::class, 'store'])->name('targets.store');
+
+    // JSI Reconciliation
+    Route::get('/reconciliation', [TicketReconciliationController::class, 'index'])->name('reconciliation.index');
+    Route::post('/reconciliation', [TicketReconciliationController::class, 'store'])->name('reconciliation.store');
+    Route::get('/reconciliation/{reconciliation}', [TicketReconciliationController::class, 'show'])->name('reconciliation.show');
+    Route::put('/reconciliation/items/{item}', [TicketReconciliationController::class, 'resolveItem'])->name('reconciliation.items.resolve');
+    Route::post('/reconciliation/{reconciliation}/settle', [TicketReconciliationController::class, 'settle'])->name('reconciliation.settle');
+});
