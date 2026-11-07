@@ -58,6 +58,59 @@ class Unit extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    public function p2hInspections()
+    {
+        return $this->hasMany(P2hInspection::class)->orderBy('inspection_date', 'desc')->orderBy('inspection_time', 'desc');
+    }
+
+    public function latestP2h()
+    {
+        return $this->hasOne(P2hInspection::class)->latestOfMany();
+    }
+
+    public function workOrders()
+    {
+        return $this->hasMany(WorkOrder::class)->orderBy('breakdown_time', 'desc');
+    }
+
+    public function activeWorkOrder()
+    {
+        return $this->hasOne(WorkOrder::class)->whereIn('status', ['open', 'in_progress', 'waiting_parts'])->latestOfMany();
+    }
+
+    public function hmKmLogs()
+    {
+        return $this->hasMany(UnitHmKmLog::class)->orderBy('log_date', 'desc');
+    }
+
+    public function serviceIntervals()
+    {
+        return $this->hasMany(MaintenanceServiceInterval::class);
+    }
+
+    public function dailyKpis()
+    {
+        return $this->hasMany(FleetDailyKpi::class)->orderBy('date', 'desc');
+    }
+
+    public function isRfu(): bool
+    {
+        if (in_array($this->status, ['breakdown', 'maintenance'])) {
+            return false;
+        }
+
+        if ($this->activeWorkOrder()->exists()) {
+            return false;
+        }
+
+        $latestP2h = $this->latestP2h;
+        if ($latestP2h && $latestP2h->overall_condition === 'not_rfu') {
+            return false;
+        }
+
+        return true;
+    }
+
     public function updater(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');

@@ -26,6 +26,10 @@ import {
     Target,
     Scale,
     TrendingUp,
+    Wrench,
+    ClipboardCheck,
+    Gauge,
+    Activity,
 } from 'lucide-react';
 import { useSidebarStore } from '../../stores/useSidebarStore';
 
@@ -113,6 +117,51 @@ export default function Sidebar() {
                     badge: 'TAP vs JSI',
                     badgeColor: 'bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300',
                     active: url.startsWith('/production/reconciliation'),
+                },
+            ],
+        },
+        {
+            title: 'Manajemen Fleet & Alat Berat',
+            items: [
+                {
+                    name: 'Unit Registry & Status',
+                    href: '/fleet/registry',
+                    icon: Truck,
+                    badge: 'Phase 3',
+                    badgeColor: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300',
+                    active: url.startsWith('/fleet/registry'),
+                },
+                {
+                    name: 'Digital P2H',
+                    href: '/fleet/p2h',
+                    icon: ClipboardCheck,
+                    badge: 'K3LH',
+                    badgeColor: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300',
+                    active: url.startsWith('/fleet/p2h'),
+                },
+                {
+                    name: 'Monitoring HM/KM',
+                    href: '/fleet/hm-km',
+                    icon: Gauge,
+                    badge: 'PM Service',
+                    badgeColor: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-950 dark:text-cyan-300',
+                    active: url.startsWith('/fleet/hm-km'),
+                },
+                {
+                    name: 'Work Order Perbaikan',
+                    href: '/fleet/work-orders',
+                    icon: Wrench,
+                    badge: 'Maintenance',
+                    badgeColor: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
+                    active: url.startsWith('/fleet/work-orders'),
+                },
+                {
+                    name: 'Fleet KPI (PA/MA/UA)',
+                    href: '/fleet/kpi',
+                    icon: Activity,
+                    badge: 'Availability',
+                    badgeColor: 'bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300',
+                    active: url.startsWith('/fleet/kpi'),
                 },
             ],
         },
@@ -240,7 +289,7 @@ export default function Sidebar() {
                         {!isCollapsed && (
                             <div className="flex flex-col">
                                 <span className="font-extrabold text-sm text-slate-900 dark:text-white tracking-tight leading-none">
-                                    PT TEKNINDO ADHYA PANE
+                                    TEKNINDO ADHYA PANE
                                 </span>
                                 <span className="text-[10px] text-amber-600 dark:text-amber-400 font-bold tracking-wider uppercase mt-0.5">
                                     Coal Hauling System

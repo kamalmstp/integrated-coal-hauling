@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useRef, useState } from "react";
 import * as Icons from "lucide-react";
-import { AlertCircle, AlertTriangle, ArrowDownRight, ArrowLeft, ArrowUpRight, BarChart3, Bell, BellRing, Briefcase, Building2, Calendar, CalendarCheck, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, Clock, Database, Download, Edit3, Eye, FileSpreadsheet, FileText, Filter, Gauge, Hash, HelpCircle, History, Info, Layers, LayoutDashboard, LogOut, MapPin, Menu, Minus, Moon, Network, Plus, RefreshCw, Route, Save, Scale, Search, Settings, Shield, ShieldCheck, Sparkles, Sun, Target, Ticket, Trash2, TrendingUp, Truck, UploadCloud, UserCheck, UserPlus, Users, X, XCircle } from "lucide-react";
+import { Activity, AlertCircle, AlertOctagon, AlertTriangle, ArrowDownRight, ArrowLeft, ArrowUpRight, BarChart3, Bell, BellRing, Briefcase, Building2, Calendar, CalendarCheck, CheckCircle, CheckCircle2, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ClipboardCheck, Clock, Database, Download, Edit, Edit3, Eye, FileSpreadsheet, FileText, Filter, Gauge, Hash, HelpCircle, History, Info, Layers, LayoutDashboard, LogOut, MapPin, Menu, Minus, Moon, Network, Plus, RefreshCw, Route, Save, Scale, Search, Settings, Shield, ShieldAlert, ShieldCheck, Sparkles, Sun, Target, Ticket, Trash2, TrendingUp, Truck, UploadCloud, User, UserCheck, UserPlus, Users, Wrench, X, XCircle } from "lucide-react";
 import { Head, Link, createInertiaApp, router, useForm, usePage } from "@inertiajs/react";
 import { create } from "zustand";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
@@ -108,6 +108,51 @@ function Sidebar() {
 					badge: "TAP vs JSI",
 					badgeColor: "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300",
 					active: url.startsWith("/production/reconciliation")
+				}
+			]
+		},
+		{
+			title: "Manajemen Fleet & Alat Berat",
+			items: [
+				{
+					name: "Unit Registry & Status",
+					href: "/fleet/registry",
+					icon: Truck,
+					badge: "Phase 3",
+					badgeColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
+					active: url.startsWith("/fleet/registry")
+				},
+				{
+					name: "Digital P2H",
+					href: "/fleet/p2h",
+					icon: ClipboardCheck,
+					badge: "K3LH",
+					badgeColor: "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300",
+					active: url.startsWith("/fleet/p2h")
+				},
+				{
+					name: "Monitoring HM/KM",
+					href: "/fleet/hm-km",
+					icon: Gauge,
+					badge: "PM Service",
+					badgeColor: "bg-cyan-100 text-cyan-700 dark:bg-cyan-950 dark:text-cyan-300",
+					active: url.startsWith("/fleet/hm-km")
+				},
+				{
+					name: "Work Order Perbaikan",
+					href: "/fleet/work-orders",
+					icon: Wrench,
+					badge: "Maintenance",
+					badgeColor: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
+					active: url.startsWith("/fleet/work-orders")
+				},
+				{
+					name: "Fleet KPI (PA/MA/UA)",
+					href: "/fleet/kpi",
+					icon: Activity,
+					badge: "Availability",
+					badgeColor: "bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300",
+					active: url.startsWith("/fleet/kpi")
 				}
 			]
 		},
@@ -892,7 +937,7 @@ function DashboardLayout({ children, title = "Dashboard", breadcrumbs = [] }) {
 	});
 }
 // resources/js/Pages/Analytics/Index.jsx
-var Index_exports$19 = /* @__PURE__ */ __exportAll({ default: () => AnalyticsIndex });
+var Index_exports$24 = /* @__PURE__ */ __exportAll({ default: () => AnalyticsIndex });
 function AnalyticsIndex() {
 	return /* @__PURE__ */ jsx(DashboardLayout, {
 		title: "Arsitektur & Analytics",
@@ -1202,7 +1247,7 @@ function PaginationControls({ links = [], from = 0, to = 0, total = 0, className
 	});
 }
 // resources/js/Pages/Customers/Index.jsx
-var Index_exports$18 = /* @__PURE__ */ __exportAll({ default: () => CustomersIndex });
+var Index_exports$23 = /* @__PURE__ */ __exportAll({ default: () => CustomersIndex });
 function CustomersIndex({ customers, filters = {}, sites = [] }) {
 	const { confirm } = useAlertStore();
 	const [search, setSearch] = useState(filters.search || "");
@@ -1779,7 +1824,7 @@ function QuickActionPanel() {
 	});
 }
 // resources/js/Pages/Dashboard/Index.jsx
-var Index_exports$17 = /* @__PURE__ */ __exportAll({ default: () => DashboardIndex });
+var Index_exports$22 = /* @__PURE__ */ __exportAll({ default: () => DashboardIndex });
 function DashboardIndex({ metrics = [], recentUnits = [], recentDrivers = [], chartData = [], unitStatusCounts = {}, driverStatusCounts = {} }) {
 	const getUnitStatusBadge = (status) => {
 		switch (status) {
@@ -2169,7 +2214,7 @@ function DashboardIndex({ metrics = [], recentUnits = [], recentDrivers = [], ch
 	});
 }
 // resources/js/Pages/Drivers/Index.jsx
-var Index_exports$16 = /* @__PURE__ */ __exportAll({ default: () => DriversIndex });
+var Index_exports$21 = /* @__PURE__ */ __exportAll({ default: () => DriversIndex });
 function DriversIndex({ drivers, filters = {}, availableEmployees = [], statistics = {} }) {
 	const { confirm } = useAlertStore();
 	const [search, setSearch] = useState(filters.search || "");
@@ -2730,7 +2775,7 @@ function DriversIndex({ drivers, filters = {}, availableEmployees = [], statisti
 	});
 }
 // resources/js/Pages/Employees/Index.jsx
-var Index_exports$15 = /* @__PURE__ */ __exportAll({ default: () => EmployeesIndex });
+var Index_exports$20 = /* @__PURE__ */ __exportAll({ default: () => EmployeesIndex });
 function EmployeesIndex({ employees, filters = {}, companies = [], sites = [], departments = [], positions = [] }) {
 	const { confirm } = useAlertStore();
 	const [search, setSearch] = useState(filters.search || "");
@@ -3332,6 +3377,4270 @@ function EmployeesIndex({ employees, filters = {}, companies = [], sites = [], d
 			})
 		]
 	});
+}
+// resources/js/components/molecules/Card.jsx
+function Card({ children, className = "", ...props }) {
+	return /* @__PURE__ */ jsx("div", {
+		className: `bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs transition-colors duration-200 ${className}`,
+		...props,
+		children
+	});
+}
+// resources/js/components/molecules/Modal.jsx
+function Modal({ isOpen, onClose, title, children, maxWidth = "max-w-xl" }) {
+	useEffect(() => {
+		const handleKeyDown = (e) => {
+			if (e.key === "Escape" && isOpen) onClose();
+		};
+		window.addEventListener("keydown", handleKeyDown);
+		return () => window.removeEventListener("keydown", handleKeyDown);
+	}, [isOpen, onClose]);
+	if (!isOpen) return null;
+	return /* @__PURE__ */ jsxs("div", {
+		className: "fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto",
+		children: [/* @__PURE__ */ jsx("div", {
+			className: "fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity",
+			onClick: onClose
+		}), /* @__PURE__ */ jsxs("div", {
+			className: `relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl w-full ${maxWidth} z-10 overflow-hidden transform transition-all my-8 max-h-[90vh] flex flex-col`,
+			children: [/* @__PURE__ */ jsxs("div", {
+				className: "px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between",
+				children: [/* @__PURE__ */ jsx("h3", {
+					className: "text-base font-bold text-slate-900 dark:text-white",
+					children: title
+				}), /* @__PURE__ */ jsx("button", {
+					onClick: onClose,
+					className: "p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition",
+					children: /* @__PURE__ */ jsx(X, { className: "w-5 h-5" })
+				})]
+			}), /* @__PURE__ */ jsx("div", {
+				className: "p-5 overflow-y-auto",
+				children
+			})]
+		})]
+	});
+}
+// resources/js/components/molecules/Pagination.jsx
+function Pagination({ links = [] }) {
+	if (!links || links.length <= 1) return null;
+	return /* @__PURE__ */ jsx(PaginationControls, { links });
+}
+// resources/js/Pages/Fleet/HMKM/Index.jsx
+var Index_exports$19 = /* @__PURE__ */ __exportAll({ default: () => HmKmMonitoringIndex });
+function HmKmMonitoringIndex({ logs = {
+	data: [],
+	links: []
+}, serviceIntervals = [], filters = {}, kpi = {}, master = {} }) {
+	const [dateFrom, setDateFrom] = useState(filters.date_from || "");
+	const [dateTo, setDateTo] = useState(filters.date_to || "");
+	const [unitId, setUnitId] = useState(filters.unit_id || "");
+	const [shiftId, setShiftId] = useState(filters.shift_id || "");
+	const [onlyAnomaly, setOnlyAnomaly] = useState(filters.only_anomaly || false);
+	const [isCreateOpen, setIsCreateOpen] = useState(false);
+	const [activeTab, setActiveTab] = useState("logs");
+	const form = useForm({
+		unit_id: master.units?.[0]?.id || "",
+		driver_id: master.drivers?.[0]?.id || "",
+		shift_id: master.shifts?.[0]?.id || "",
+		log_date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+		start_hm: master.units?.[0]?.last_hm || 0,
+		end_hm: (Number(master.units?.[0]?.last_hm || 0) + 9.5).toFixed(1),
+		start_km: master.units?.[0]?.last_km || 0,
+		end_km: (Number(master.units?.[0]?.last_km || 0) + 180).toFixed(1),
+		notes: ""
+	});
+	const handleFilter = (e) => {
+		e?.preventDefault();
+		router.get("/fleet/hm-km", {
+			date_from: dateFrom,
+			date_to: dateTo,
+			unit_id: unitId,
+			shift_id: shiftId,
+			only_anomaly: onlyAnomaly ? "1" : ""
+		}, {
+			preserveState: true,
+			preserveScroll: true
+		});
+	};
+	const handleReset = () => {
+		setDateFrom("");
+		setDateTo("");
+		setUnitId("");
+		setShiftId("");
+		setOnlyAnomaly(false);
+		router.get("/fleet/hm-km");
+	};
+	const handleUnitSelect = (id) => {
+		const u = master.units?.find((item) => item.id == id);
+		const lastHm = Number(u?.last_hm || 0);
+		const lastKm = Number(u?.last_km || 0);
+		form.setData({
+			...form.data,
+			unit_id: id,
+			start_hm: lastHm,
+			end_hm: (lastHm + 10).toFixed(1),
+			start_km: lastKm,
+			end_km: (lastKm + 200).toFixed(1)
+		});
+	};
+	const calcDeltaHm = (Number(form.data.end_hm) - Number(form.data.start_hm)).toFixed(1);
+	const calcDeltaKm = (Number(form.data.end_km) - Number(form.data.start_km)).toFixed(1);
+	const isCalculatedAnomaly = Number(calcDeltaHm) > 14 || Number(calcDeltaKm) > 600;
+	const isNegativeDelta = Number(calcDeltaHm) < 0 || Number(calcDeltaKm) < 0;
+	const submitLog = (e) => {
+		e.preventDefault();
+		form.post("/fleet/hm-km", { onSuccess: () => {
+			form.reset();
+			setIsCreateOpen(false);
+		} });
+	};
+	return /* @__PURE__ */ jsxs(DashboardLayout, { children: [
+		/* @__PURE__ */ jsx(Head, { title: "Monitoring HM/KM & PM Planner - TAP" }),
+		/* @__PURE__ */ jsxs("div", {
+			className: "space-y-6",
+			children: [
+				/* @__PURE__ */ jsxs("div", {
+					className: "flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700",
+					children: [/* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsxs("div", {
+						className: "flex items-center space-x-3",
+						children: [/* @__PURE__ */ jsx("div", {
+							className: "p-2.5 rounded-xl bg-cyan-50 text-cyan-600 dark:bg-cyan-950/60 dark:text-cyan-400",
+							children: /* @__PURE__ */ jsx(Gauge, { className: "w-6 h-6" })
+						}), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("h1", {
+							className: "text-2xl font-bold text-slate-900 dark:text-white",
+							children: "Monitoring HM/KM & PM Service Planner"
+						}), /* @__PURE__ */ jsx("p", {
+							className: "text-sm text-slate-500 dark:text-slate-400",
+							children: "Pencatatan hour meter & odometer per shift, audit anomali angka, dan pemantauan interval servis berkala (PM 250 - PM 2000)"
+						})] })]
+					}) }), /* @__PURE__ */ jsxs("div", {
+						className: "flex items-center space-x-3 w-full sm:w-auto",
+						children: [/* @__PURE__ */ jsxs(Button, {
+							variant: "secondary",
+							onClick: () => router.get("/fleet/hm-km"),
+							className: "flex items-center space-x-2",
+							children: [/* @__PURE__ */ jsx(RefreshCw, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { children: "Segarkan" })]
+						}), /* @__PURE__ */ jsxs(Button, {
+							variant: "primary",
+							onClick: () => setIsCreateOpen(true),
+							className: "flex items-center space-x-2",
+							children: [/* @__PURE__ */ jsx(Plus, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { children: "Catat HM/KM Shift" })]
+						})]
+					})]
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4",
+					children: [
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-slate-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider",
+								children: "Total Catatan"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-slate-900 dark:text-white",
+									children: kpi.total_logs || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-slate-400",
+									children: "Shift"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-cyan-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-cyan-600 dark:text-cyan-400 uppercase tracking-wider",
+								children: "Jam Operasi (HM)"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-cyan-600 dark:text-cyan-400",
+									children: kpi.total_operating_hm || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-cyan-600/80",
+									children: "Jam Mesin"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-blue-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider",
+								children: "Total Jarak (KM)"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-slate-900 dark:text-white",
+									children: kpi.total_distance_km || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-slate-400",
+									children: "Kilometer"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-rose-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-rose-600 dark:text-rose-400 uppercase tracking-wider",
+								children: "Anomali Terdeteksi"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-rose-600 dark:text-rose-400",
+									children: kpi.anomalies_detected || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-rose-500",
+									children: "Kasus"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-amber-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wider",
+								children: "Servis Mendekati"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-amber-600 dark:text-amber-400",
+									children: kpi.service_due_soon || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-amber-500",
+									children: "Due Soon"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-rose-700",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-rose-700 dark:text-rose-400 uppercase tracking-wider",
+								children: "Servis Terlewat"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-rose-700 dark:text-rose-400",
+									children: kpi.service_overdue || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-rose-500",
+									children: "Overdue!"
+								})]
+							})]
+						})
+					]
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "flex border-b border-slate-200 dark:border-slate-700",
+					children: [/* @__PURE__ */ jsxs("button", {
+						onClick: () => setActiveTab("logs"),
+						className: `py-3 px-6 font-semibold text-sm border-b-2 transition flex items-center space-x-2 ${activeTab === "logs" ? "border-cyan-500 text-cyan-600 dark:text-cyan-400" : "border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400"}`,
+						children: [/* @__PURE__ */ jsx(Clock, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { children: "Log HM/KM Harian & Anomali" })]
+					}), /* @__PURE__ */ jsxs("button", {
+						onClick: () => setActiveTab("intervals"),
+						className: `py-3 px-6 font-semibold text-sm border-b-2 transition flex items-center space-x-2 ${activeTab === "intervals" ? "border-cyan-500 text-cyan-600 dark:text-cyan-400" : "border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400"}`,
+						children: [
+							/* @__PURE__ */ jsx(Wrench, { className: "w-4 h-4" }),
+							/* @__PURE__ */ jsx("span", { children: "Program Servis Berkala (PM Planner)" }),
+							(kpi.service_due_soon > 0 || kpi.service_overdue > 0) && /* @__PURE__ */ jsxs("span", {
+								className: "px-2 py-0.5 rounded-full text-xs bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 font-bold",
+								children: [kpi.service_due_soon + kpi.service_overdue, " Alert"]
+							})
+						]
+					})]
+				}),
+				activeTab === "logs" && /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx(Card, {
+					className: "p-5 bg-white dark:bg-slate-800",
+					children: /* @__PURE__ */ jsxs("form", {
+						onSubmit: handleFilter,
+						className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+								children: "Dari Tanggal"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "date",
+								value: dateFrom,
+								onChange: (e) => setDateFrom(e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+								children: "Sampai Tanggal"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "date",
+								value: dateTo,
+								onChange: (e) => setDateTo(e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+								children: "Armada Unit"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: unitId,
+								onChange: (e) => setUnitId(e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+								children: [/* @__PURE__ */ jsx("option", {
+									value: "",
+									children: "Semua Unit"
+								}), master.units?.map((u) => /* @__PURE__ */ jsx("option", {
+									value: u.id,
+									children: u.unit_code
+								}, u.id))]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+								children: "Shift"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: shiftId,
+								onChange: (e) => setShiftId(e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+								children: [/* @__PURE__ */ jsx("option", {
+									value: "",
+									children: "Semua Shift"
+								}), master.shifts?.map((s) => /* @__PURE__ */ jsx("option", {
+									value: s.id,
+									children: s.name
+								}, s.id))]
+							})] }),
+							/* @__PURE__ */ jsx("div", {
+								className: "flex items-center pt-5",
+								children: /* @__PURE__ */ jsxs("label", {
+									className: "flex items-center space-x-2 text-xs font-semibold text-rose-600 dark:text-rose-400 cursor-pointer",
+									children: [/* @__PURE__ */ jsx("input", {
+										type: "checkbox",
+										checked: onlyAnomaly,
+										onChange: (e) => setOnlyAnomaly(e.target.checked),
+										className: "rounded text-rose-600 focus:ring-rose-500"
+									}), /* @__PURE__ */ jsx("span", { children: "Hanya Anomali" })]
+								})
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex items-end space-x-2",
+								children: [/* @__PURE__ */ jsxs(Button, {
+									type: "submit",
+									variant: "primary",
+									className: "flex-1 flex items-center justify-center space-x-1",
+									children: [/* @__PURE__ */ jsx(Filter, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { children: "Filter" })]
+								}), /* @__PURE__ */ jsx(Button, {
+									type: "button",
+									variant: "secondary",
+									onClick: handleReset,
+									children: "Reset"
+								})]
+							})
+						]
+					})
+				}), /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden",
+					children: [/* @__PURE__ */ jsx("div", {
+						className: "overflow-x-auto",
+						children: /* @__PURE__ */ jsxs("table", {
+							className: "w-full text-left border-collapse text-sm",
+							children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", {
+								className: "border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300",
+								children: [
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Tanggal & Shift"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Armada & Driver"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Hour Meter (HM)"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Delta HM"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Odometer (KM)"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Delta KM"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Status & Anomali"
+									})
+								]
+							}) }), /* @__PURE__ */ jsx("tbody", {
+								className: "divide-y divide-slate-200 dark:divide-slate-700",
+								children: logs.data?.length > 0 ? logs.data.map((log) => /* @__PURE__ */ jsxs("tr", {
+									className: `hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors ${log.is_anomaly ? "bg-rose-50/60 dark:bg-rose-950/20" : ""}`,
+									children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3.5 px-4",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-bold text-slate-900 dark:text-white",
+												children: log.log_date
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-xs text-slate-500",
+												children: [
+													log.shift?.name,
+													" (",
+													log.shift?.code,
+													")"
+												]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3.5 px-4",
+											children: [/* @__PURE__ */ jsxs("div", {
+												className: "font-bold text-slate-900 dark:text-white flex items-center space-x-1.5",
+												children: [/* @__PURE__ */ jsx(Truck, { className: "w-4 h-4 text-emerald-600" }), /* @__PURE__ */ jsx("span", { children: log.unit?.unit_code })]
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-xs text-slate-500 dark:text-slate-400",
+												children: log.driver?.employee?.name || "Driver Shift"
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3.5 px-4 font-mono text-xs",
+											children: [/* @__PURE__ */ jsxs("div", { children: ["Awal: ", /* @__PURE__ */ jsx("span", {
+												className: "font-bold text-slate-900 dark:text-white",
+												children: Number(log.start_hm).toLocaleString("id-ID")
+											})] }), /* @__PURE__ */ jsxs("div", { children: ["Akhir: ", /* @__PURE__ */ jsx("span", {
+												className: "font-bold text-slate-900 dark:text-white",
+												children: Number(log.end_hm).toLocaleString("id-ID")
+											})] })]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-3.5 px-4",
+											children: /* @__PURE__ */ jsxs("span", {
+												className: `inline-flex items-center px-2 py-0.5 rounded font-mono font-bold text-xs ${log.diff_hm > 14 ? "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300" : "bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300"}`,
+												children: [
+													"+",
+													Number(log.diff_hm).toFixed(1),
+													" Jam"
+												]
+											})
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3.5 px-4 font-mono text-xs",
+											children: [/* @__PURE__ */ jsxs("div", { children: ["Awal: ", /* @__PURE__ */ jsx("span", {
+												className: "font-bold text-slate-900 dark:text-white",
+												children: Number(log.start_km).toLocaleString("id-ID")
+											})] }), /* @__PURE__ */ jsxs("div", { children: ["Akhir: ", /* @__PURE__ */ jsx("span", {
+												className: "font-bold text-slate-900 dark:text-white",
+												children: Number(log.end_km).toLocaleString("id-ID")
+											})] })]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-3.5 px-4",
+											children: /* @__PURE__ */ jsxs("span", {
+												className: `inline-flex items-center px-2 py-0.5 rounded font-mono font-bold text-xs ${log.diff_km > 600 ? "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300" : "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300"}`,
+												children: [
+													"+",
+													Number(log.diff_km).toFixed(1),
+													" KM"
+												]
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-3.5 px-4",
+											children: log.is_anomaly ? /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsxs("span", {
+												className: "inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300",
+												children: [/* @__PURE__ */ jsx(AlertTriangle, { className: "w-3.5 h-3.5 mr-1" }), "ANOMALI"]
+											}), /* @__PURE__ */ jsx("p", {
+												className: "text-[11px] text-rose-600 dark:text-rose-400 mt-1 max-w-xs",
+												children: log.anomaly_reason
+											})] }) : /* @__PURE__ */ jsxs("span", {
+												className: "inline-flex items-center text-xs text-emerald-600 dark:text-emerald-400",
+												children: [/* @__PURE__ */ jsx(CheckCircle2, { className: "w-3.5 h-3.5 mr-1" }), "Valid & Wajar"]
+											})
+										})
+									]
+								}, log.id)) : /* @__PURE__ */ jsx("tr", { children: /* @__PURE__ */ jsx("td", {
+									colSpan: "7",
+									className: "py-12 text-center text-slate-400 dark:text-slate-500",
+									children: "Belum ada histori pencatatan HM/KM sesuai filter yang dipilih."
+								}) })
+							})]
+						})
+					}), /* @__PURE__ */ jsxs("div", {
+						className: "p-4 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center",
+						children: [/* @__PURE__ */ jsxs("span", {
+							className: "text-xs text-slate-500 dark:text-slate-400",
+							children: [
+								"Menampilkan ",
+								logs.data?.length || 0,
+								" dari ",
+								logs.total || 0,
+								" catatan operasional"
+							]
+						}), /* @__PURE__ */ jsx(Pagination, { links: logs.links })]
+					})]
+				})] }),
+				activeTab === "intervals" && /* @__PURE__ */ jsx("div", {
+					className: "space-y-4",
+					children: /* @__PURE__ */ jsx("div", {
+						className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4",
+						children: serviceIntervals.map((interval) => {
+							const isOverdue = interval.status === "overdue";
+							const isDueSoon = interval.status === "due_soon";
+							const currentHm = Number(interval.unit?.last_hm || 0);
+							const lastHm = Number(interval.last_service_hm || 0);
+							const nextHm = Number(interval.next_service_hm || 0);
+							const totalCycle = nextHm - lastHm || interval.interval_hm;
+							const progress = Math.min(100, Math.max(0, (currentHm - lastHm) / totalCycle * 100));
+							return /* @__PURE__ */ jsxs(Card, {
+								className: `p-4 bg-white dark:bg-slate-800 border-t-4 ${isOverdue ? "border-t-rose-600" : isDueSoon ? "border-t-amber-500" : "border-t-emerald-500"}`,
+								children: [
+									/* @__PURE__ */ jsxs("div", {
+										className: "flex justify-between items-start mb-2",
+										children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+											className: "font-bold text-slate-900 dark:text-white text-base",
+											children: interval.unit?.unit_code
+										}), /* @__PURE__ */ jsxs("span", {
+											className: "text-xs text-slate-500 block",
+											children: [
+												"Program: ",
+												interval.service_type,
+												" (",
+												interval.interval_hm,
+												" HM)"
+											]
+										})] }), /* @__PURE__ */ jsx("span", {
+											className: `px-2 py-0.5 rounded text-[11px] font-bold uppercase ${isOverdue ? "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 animate-pulse" : isDueSoon ? "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300" : "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"}`,
+											children: interval.status.replace("_", " ")
+										})]
+									}),
+									/* @__PURE__ */ jsxs("div", {
+										className: "my-3 space-y-1.5",
+										children: [
+											/* @__PURE__ */ jsxs("div", {
+												className: "flex justify-between text-xs",
+												children: [/* @__PURE__ */ jsx("span", {
+													className: "text-slate-500",
+													children: "HM Saat Ini:"
+												}), /* @__PURE__ */ jsxs("span", {
+													className: "font-mono font-bold text-slate-900 dark:text-white",
+													children: [currentHm.toLocaleString("id-ID"), " HM"]
+												})]
+											}),
+											/* @__PURE__ */ jsxs("div", {
+												className: "flex justify-between text-xs",
+												children: [/* @__PURE__ */ jsx("span", {
+													className: "text-slate-500",
+													children: "Target Servis:"
+												}), /* @__PURE__ */ jsxs("span", {
+													className: "font-mono font-bold text-slate-900 dark:text-white",
+													children: [nextHm.toLocaleString("id-ID"), " HM"]
+												})]
+											}),
+											/* @__PURE__ */ jsxs("div", {
+												className: "flex justify-between text-xs",
+												children: [/* @__PURE__ */ jsx("span", {
+													className: "text-slate-500",
+													children: "Sisa Menuju Servis:"
+												}), /* @__PURE__ */ jsxs("span", {
+													className: `font-mono font-bold ${isOverdue ? "text-rose-600" : isDueSoon ? "text-amber-600" : "text-emerald-600"}`,
+													children: [Number(interval.remaining_hm).toFixed(1), " HM"]
+												})]
+											}),
+											/* @__PURE__ */ jsx("div", {
+												className: "w-full bg-slate-100 dark:bg-slate-700 h-2 rounded-full overflow-hidden mt-2",
+												children: /* @__PURE__ */ jsx("div", {
+													className: `h-full transition-all duration-500 ${isOverdue ? "bg-rose-600" : isDueSoon ? "bg-amber-500" : "bg-emerald-500"}`,
+													style: { width: `${progress}%` }
+												})
+											})
+										]
+									}),
+									/* @__PURE__ */ jsxs("div", {
+										className: "pt-2 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center text-xs",
+										children: [/* @__PURE__ */ jsxs("span", {
+											className: "text-slate-400",
+											children: [
+												"Servis terakhir: ",
+												lastHm,
+												" HM"
+											]
+										}), isOverdue && /* @__PURE__ */ jsxs("span", {
+											className: "text-rose-600 font-bold flex items-center",
+											children: [/* @__PURE__ */ jsx(AlertTriangle, { className: "w-3.5 h-3.5 mr-1" }), "Segera Masuk Bengkel"]
+										})]
+									})
+								]
+							}, interval.id);
+						})
+					})
+				})
+			]
+		}),
+		/* @__PURE__ */ jsx(Modal, {
+			isOpen: isCreateOpen,
+			onClose: () => setIsCreateOpen(false),
+			title: "Pencatatan HM/KM Awal & Akhir Shift",
+			maxWidth: "max-w-2xl",
+			children: /* @__PURE__ */ jsxs("form", {
+				onSubmit: submitLog,
+				className: "space-y-4",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-1 sm:grid-cols-2 gap-4",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Armada Unit *"
+							}), /* @__PURE__ */ jsx("select", {
+								required: true,
+								value: form.data.unit_id,
+								onChange: (e) => handleUnitSelect(e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+								children: master.units?.map((u) => /* @__PURE__ */ jsxs("option", {
+									value: u.id,
+									children: [
+										u.unit_code,
+										" (HM Terakhir: ",
+										u.last_hm,
+										")"
+									]
+								}, u.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Driver Penanggung Jawab"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: form.data.driver_id,
+								onChange: (e) => form.setData("driver_id", e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+								children: [/* @__PURE__ */ jsx("option", {
+									value: "",
+									children: "Pilih Driver"
+								}), master.drivers?.map((d) => /* @__PURE__ */ jsxs("option", {
+									value: d.id,
+									children: [
+										d.employee?.name,
+										" (",
+										d.driver_code,
+										")"
+									]
+								}, d.id))]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Shift Kerja *"
+							}), /* @__PURE__ */ jsx("select", {
+								required: true,
+								value: form.data.shift_id,
+								onChange: (e) => form.setData("shift_id", e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+								children: master.shifts?.map((s) => /* @__PURE__ */ jsxs("option", {
+									value: s.id,
+									children: [
+										s.name,
+										" (",
+										s.code,
+										")"
+									]
+								}, s.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Tanggal Operasi *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "date",
+								required: true,
+								value: form.data.log_date,
+								onChange: (e) => form.setData("log_date", e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+							})] })
+						]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "p-4 bg-slate-50 dark:bg-slate-900 rounded-xl space-y-4",
+						children: [
+							/* @__PURE__ */ jsx("h4", {
+								className: "text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider",
+								children: "Pencatatan Jam Mesin (Hour Meter)"
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-2 gap-4",
+								children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block text-xs font-medium text-slate-500 mb-1",
+									children: "HM Awal Shift"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									step: "0.1",
+									required: true,
+									value: form.data.start_hm,
+									onChange: (e) => form.setData("start_hm", e.target.value),
+									className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono"
+								})] }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block text-xs font-medium text-slate-500 mb-1",
+									children: "HM Akhir Shift"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									step: "0.1",
+									required: true,
+									value: form.data.end_hm,
+									onChange: (e) => form.setData("end_hm", e.target.value),
+									className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono"
+								})] })]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-between items-center text-xs",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-slate-500",
+									children: "Estimasi Selisih HM Operasi:"
+								}), /* @__PURE__ */ jsxs("span", {
+									className: `font-mono font-bold text-sm ${Number(calcDeltaHm) > 14 ? "text-rose-600" : "text-cyan-600 dark:text-cyan-400"}`,
+									children: [
+										"+",
+										calcDeltaHm,
+										" Jam"
+									]
+								})]
+							})
+						]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "p-4 bg-slate-50 dark:bg-slate-900 rounded-xl space-y-4",
+						children: [
+							/* @__PURE__ */ jsx("h4", {
+								className: "text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider",
+								children: "Pencatatan Odometer (Kilo Meter)"
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-2 gap-4",
+								children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block text-xs font-medium text-slate-500 mb-1",
+									children: "KM Awal Shift"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									step: "0.1",
+									required: true,
+									value: form.data.start_km,
+									onChange: (e) => form.setData("start_km", e.target.value),
+									className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono"
+								})] }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block text-xs font-medium text-slate-500 mb-1",
+									children: "KM Akhir Shift"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									step: "0.1",
+									required: true,
+									value: form.data.end_km,
+									onChange: (e) => form.setData("end_km", e.target.value),
+									className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono"
+								})] })]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-between items-center text-xs",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-slate-500",
+									children: "Estimasi Selisih Jarak Tempuh:"
+								}), /* @__PURE__ */ jsxs("span", {
+									className: `font-mono font-bold text-sm ${Number(calcDeltaKm) > 600 ? "text-rose-600" : "text-blue-600 dark:text-blue-400"}`,
+									children: [
+										"+",
+										calcDeltaKm,
+										" KM"
+									]
+								})]
+							})
+						]
+					}),
+					isCalculatedAnomaly && /* @__PURE__ */ jsxs("div", {
+						className: "p-3.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-900 rounded-xl flex items-center space-x-2 text-xs text-rose-700 dark:text-rose-300",
+						children: [/* @__PURE__ */ jsx(AlertOctagon, { className: "w-5 h-5 flex-shrink-0" }), /* @__PURE__ */ jsxs("span", { children: [/* @__PURE__ */ jsx("strong", { children: "Perhatian:" }), " Angka yang dimasukkan terdeteksi anomali (> 14 jam atau > 600 KM dalam 1 shift). Sistem akan memberi tanda investigasi pada data ini."] })]
+					}),
+					isNegativeDelta && /* @__PURE__ */ jsx("div", {
+						className: "p-3 bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-200 text-xs rounded-lg font-bold",
+						children: "Error: Angka Akhir tidak boleh lebih kecil dari Angka Awal!"
+					}),
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+						className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+						children: "Catatan / Alasan Log"
+					}), /* @__PURE__ */ jsx("input", {
+						type: "text",
+						placeholder: "Contoh: Operasi hauling normal, tidak ada kendala mesin",
+						value: form.data.notes,
+						onChange: (e) => form.setData("notes", e.target.value),
+						className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+					})] }),
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex justify-end space-x-3 pt-4 border-t border-slate-200 dark:border-slate-700",
+						children: [/* @__PURE__ */ jsx(Button, {
+							type: "button",
+							variant: "secondary",
+							onClick: () => setIsCreateOpen(false),
+							children: "Batal"
+						}), /* @__PURE__ */ jsx(Button, {
+							type: "submit",
+							variant: "primary",
+							disabled: form.processing || isNegativeDelta,
+							children: form.processing ? "Menyimpan..." : "Simpan Log & Perbarui PM"
+						})]
+					})
+				]
+			})
+		})
+	] });
+}
+// resources/js/Pages/Fleet/KPI/Index.jsx
+var Index_exports$18 = /* @__PURE__ */ __exportAll({ default: () => FleetKpiIndex });
+function FleetKpiIndex({ metrics = {}, formulas = {}, dailyTrends = [], unitBreakdown = [], filters = {}, master = {} }) {
+	const [dateFrom, setDateFrom] = useState(filters.date_from || "");
+	const [dateTo, setDateTo] = useState(filters.date_to || "");
+	const [siteId, setSiteId] = useState(filters.site_id || "");
+	const [unitId, setUnitId] = useState(filters.unit_id || "");
+	const [isFormulaOpen, setIsFormulaOpen] = useState(true);
+	const handleFilter = (e) => {
+		e?.preventDefault();
+		router.get("/fleet/kpi", {
+			date_from: dateFrom,
+			date_to: dateTo,
+			site_id: siteId,
+			unit_id: unitId
+		}, {
+			preserveState: true,
+			preserveScroll: true
+		});
+	};
+	const handleReset = () => {
+		setDateFrom("");
+		setDateTo("");
+		setSiteId("");
+		setUnitId("");
+		router.get("/fleet/kpi");
+	};
+	const getKpiColor = (val, thresholdGood = 85, thresholdWarn = 70) => {
+		if (val >= thresholdGood) return "text-emerald-600 dark:text-emerald-400";
+		if (val >= thresholdWarn) return "text-amber-600 dark:text-amber-400";
+		return "text-rose-600 dark:text-rose-400";
+	};
+	const getKpiBg = (val, thresholdGood = 85, thresholdWarn = 70) => {
+		if (val >= thresholdGood) return "bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800";
+		if (val >= thresholdWarn) return "bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800";
+		return "bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800";
+	};
+	return /* @__PURE__ */ jsxs(DashboardLayout, { children: [/* @__PURE__ */ jsx(Head, { title: "Fleet KPI Dashboard (PA, MA, UA, MTTR, MTBF) - TAP" }), /* @__PURE__ */ jsxs("div", {
+		className: "space-y-6",
+		children: [
+			/* @__PURE__ */ jsxs("div", {
+				className: "flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700",
+				children: [/* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsxs("div", {
+					className: "flex items-center space-x-3",
+					children: [/* @__PURE__ */ jsx("div", {
+						className: "p-2.5 rounded-xl bg-violet-50 text-violet-600 dark:bg-violet-950/60 dark:text-violet-400",
+						children: /* @__PURE__ */ jsx(Activity, { className: "w-6 h-6" })
+					}), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("h1", {
+						className: "text-2xl font-bold text-slate-900 dark:text-white",
+						children: "Fleet KPI & Availability Dashboard"
+					}), /* @__PURE__ */ jsx("p", {
+						className: "text-sm text-slate-500 dark:text-slate-400",
+						children: "Analisis kehandalan armada: Physical Availability (PA), Mechanical Availability (MA), Utilization (UA), MTTR & MTBF"
+					})] })]
+				}) }), /* @__PURE__ */ jsx("div", {
+					className: "flex items-center space-x-3 w-full sm:w-auto",
+					children: /* @__PURE__ */ jsxs(Button, {
+						variant: "secondary",
+						onClick: () => router.get("/fleet/kpi"),
+						className: "flex items-center space-x-2",
+						children: [/* @__PURE__ */ jsx(RefreshCw, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { children: "Segarkan" })]
+					})
+				})]
+			}),
+			/* @__PURE__ */ jsx(Card, {
+				className: "p-5 bg-white dark:bg-slate-800",
+				children: /* @__PURE__ */ jsxs("form", {
+					onSubmit: handleFilter,
+					className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4",
+					children: [
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+							children: "Dari Tanggal"
+						}), /* @__PURE__ */ jsx("input", {
+							type: "date",
+							value: dateFrom,
+							onChange: (e) => setDateFrom(e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+						})] }),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+							children: "Sampai Tanggal"
+						}), /* @__PURE__ */ jsx("input", {
+							type: "date",
+							value: dateTo,
+							onChange: (e) => setDateTo(e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+						})] }),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+							children: "Site Proyek"
+						}), /* @__PURE__ */ jsxs("select", {
+							value: siteId,
+							onChange: (e) => setSiteId(e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+							children: [/* @__PURE__ */ jsx("option", {
+								value: "",
+								children: "Semua Site"
+							}), master.sites?.map((s) => /* @__PURE__ */ jsxs("option", {
+								value: s.id,
+								children: [
+									s.name,
+									" (",
+									s.code,
+									")"
+								]
+							}, s.id))]
+						})] }),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+							children: "Pilih Unit Spesifik"
+						}), /* @__PURE__ */ jsxs("select", {
+							value: unitId,
+							onChange: (e) => setUnitId(e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+							children: [/* @__PURE__ */ jsx("option", {
+								value: "",
+								children: "Seluruh Armada Fleet"
+							}), master.units?.map((u) => /* @__PURE__ */ jsxs("option", {
+								value: u.id,
+								children: [
+									u.unit_code,
+									" - ",
+									u.registration_number
+								]
+							}, u.id))]
+						})] }),
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex items-end space-x-2",
+							children: [/* @__PURE__ */ jsxs(Button, {
+								type: "submit",
+								variant: "primary",
+								className: "flex-1 flex items-center justify-center space-x-1",
+								children: [/* @__PURE__ */ jsx(Filter, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { children: "Filter" })]
+							}), /* @__PURE__ */ jsx(Button, {
+								type: "button",
+								variant: "secondary",
+								onClick: handleReset,
+								children: "Reset"
+							})]
+						})
+					]
+				})
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "grid grid-cols-1 sm:grid-cols-3 gap-6",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: `p-6 rounded-2xl border transition-all ${getKpiBg(metrics.physical_availability)}`,
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-between items-start",
+							children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400",
+								children: "Physical Availability (PA)"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline space-x-2 mt-2",
+								children: [/* @__PURE__ */ jsxs("span", {
+									className: `text-4xl font-black ${getKpiColor(metrics.physical_availability)}`,
+									children: [metrics.physical_availability, "%"]
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-slate-500 font-medium",
+									children: "Target ≥ 85%"
+								})]
+							})] }), /* @__PURE__ */ jsx("div", {
+								className: "p-3 rounded-xl bg-white dark:bg-slate-800 shadow-sm",
+								children: /* @__PURE__ */ jsx(ShieldCheck, { className: "w-6 h-6 text-emerald-600" })
+							})]
+						}), /* @__PURE__ */ jsxs("p", {
+							className: "text-xs text-slate-600 dark:text-slate-300 mt-4 border-t border-slate-200 dark:border-slate-700/60 pt-3",
+							children: [
+								"Tingkat kesiapan fisik unit untuk dioperasikan terhadap seluruh jam kalender (",
+								metrics.total_calendar_hours,
+								" Jam TH)."
+							]
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: `p-6 rounded-2xl border transition-all ${getKpiBg(metrics.mechanical_availability)}`,
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-between items-start",
+							children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400",
+								children: "Mechanical Availability (MA)"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline space-x-2 mt-2",
+								children: [/* @__PURE__ */ jsxs("span", {
+									className: `text-4xl font-black ${getKpiColor(metrics.mechanical_availability)}`,
+									children: [metrics.mechanical_availability, "%"]
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-slate-500 font-medium",
+									children: "Target ≥ 90%"
+								})]
+							})] }), /* @__PURE__ */ jsx("div", {
+								className: "p-3 rounded-xl bg-white dark:bg-slate-800 shadow-sm",
+								children: /* @__PURE__ */ jsx(Wrench, { className: "w-6 h-6 text-amber-600" })
+							})]
+						}), /* @__PURE__ */ jsx("p", {
+							className: "text-xs text-slate-600 dark:text-slate-300 mt-4 border-t border-slate-200 dark:border-slate-700/60 pt-3",
+							children: "Efektivitas mekanikal unit tanpa memperhitungkan idle/standby: OH / (OH + DT)."
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: `p-6 rounded-2xl border transition-all ${getKpiBg(metrics.utilization_ua, 70, 50)}`,
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-between items-start",
+							children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400",
+								children: "Utilization of Availability (UA)"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline space-x-2 mt-2",
+								children: [/* @__PURE__ */ jsxs("span", {
+									className: `text-4xl font-black ${getKpiColor(metrics.utilization_ua, 70, 50)}`,
+									children: [metrics.utilization_ua, "%"]
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-slate-500 font-medium",
+									children: "Target ≥ 70%"
+								})]
+							})] }), /* @__PURE__ */ jsx("div", {
+								className: "p-3 rounded-xl bg-white dark:bg-slate-800 shadow-sm",
+								children: /* @__PURE__ */ jsx(TrendingUp, { className: "w-6 h-6 text-blue-600" })
+							})]
+						}), /* @__PURE__ */ jsx("p", {
+							className: "text-xs text-slate-600 dark:text-slate-300 mt-4 border-t border-slate-200 dark:border-slate-700/60 pt-3",
+							children: "Optimalisasi armada siap pakai (RFU) yang benar-benar aktif mengangkut batubara."
+						})]
+					})
+				]
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4",
+				children: [
+					/* @__PURE__ */ jsxs(Card, {
+						className: "p-4 bg-white dark:bg-slate-800",
+						children: [/* @__PURE__ */ jsx("span", {
+							className: "text-xs font-medium text-slate-500 block",
+							children: "Calendar Hours (TH)"
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "flex items-baseline justify-between mt-1",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xl font-black text-slate-900 dark:text-white",
+								children: metrics.total_calendar_hours
+							}), /* @__PURE__ */ jsx("span", {
+								className: "text-xs text-slate-400",
+								children: "Jam Total"
+							})]
+						})]
+					}),
+					/* @__PURE__ */ jsxs(Card, {
+						className: "p-4 bg-white dark:bg-slate-800",
+						children: [/* @__PURE__ */ jsx("span", {
+							className: "text-xs font-medium text-emerald-600 block",
+							children: "Operating Hours (OH)"
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "flex items-baseline justify-between mt-1",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xl font-black text-emerald-600",
+								children: metrics.total_operating_hours
+							}), /* @__PURE__ */ jsx("span", {
+								className: "text-xs text-emerald-500",
+								children: "Jam Kerja"
+							})]
+						})]
+					}),
+					/* @__PURE__ */ jsxs(Card, {
+						className: "p-4 bg-white dark:bg-slate-800",
+						children: [/* @__PURE__ */ jsx("span", {
+							className: "text-xs font-medium text-blue-600 block",
+							children: "Standby Hours (SB)"
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "flex items-baseline justify-between mt-1",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xl font-black text-blue-600",
+								children: metrics.total_standby_hours
+							}), /* @__PURE__ */ jsx("span", {
+								className: "text-xs text-blue-500",
+								children: "Jam Idle"
+							})]
+						})]
+					}),
+					/* @__PURE__ */ jsxs(Card, {
+						className: "p-4 bg-white dark:bg-slate-800",
+						children: [/* @__PURE__ */ jsx("span", {
+							className: "text-xs font-medium text-rose-600 block",
+							children: "Downtime Hours (DT)"
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "flex items-baseline justify-between mt-1",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xl font-black text-rose-600",
+								children: metrics.total_downtime_hours
+							}), /* @__PURE__ */ jsx("span", {
+								className: "text-xs text-rose-500",
+								children: "Jam Rusak"
+							})]
+						})]
+					}),
+					/* @__PURE__ */ jsxs(Card, {
+						className: "p-4 bg-white dark:bg-slate-800",
+						children: [/* @__PURE__ */ jsx("span", {
+							className: "text-xs font-medium text-amber-600 block",
+							children: "MTTR (Rata-rata Servis)"
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "flex items-baseline justify-between mt-1",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xl font-black text-amber-600",
+								children: metrics.mttr_hours
+							}), /* @__PURE__ */ jsx("span", {
+								className: "text-xs text-amber-500",
+								children: "Jam/Breakdown"
+							})]
+						})]
+					}),
+					/* @__PURE__ */ jsxs(Card, {
+						className: "p-4 bg-white dark:bg-slate-800",
+						children: [/* @__PURE__ */ jsx("span", {
+							className: "text-xs font-medium text-purple-600 block",
+							children: "MTBF (Antar Kerusakan)"
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "flex items-baseline justify-between mt-1",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xl font-black text-purple-600",
+								children: metrics.mtbf_hours
+							}), /* @__PURE__ */ jsx("span", {
+								className: "text-xs text-purple-500",
+								children: "Jam/Failure"
+							})]
+						})]
+					})
+				]
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "bg-slate-900 text-white rounded-2xl p-6 shadow-sm border border-slate-800",
+				children: [/* @__PURE__ */ jsxs("div", {
+					onClick: () => setIsFormulaOpen(!isFormulaOpen),
+					className: "flex justify-between items-center cursor-pointer select-none",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "flex items-center space-x-3",
+						children: [/* @__PURE__ */ jsx(Info, { className: "w-5 h-5 text-cyan-400" }), /* @__PURE__ */ jsx("h3", {
+							className: "font-bold text-base text-slate-100",
+							children: "Definisi Formula & Dasar Perhitungan Ketersediaan Armada Tambang (Explicit Standards)"
+						})]
+					}), /* @__PURE__ */ jsx("button", {
+						className: "text-slate-400 hover:text-white transition",
+						children: isFormulaOpen ? /* @__PURE__ */ jsx(ChevronUp, { className: "w-5 h-5" }) : /* @__PURE__ */ jsx(ChevronDown, { className: "w-5 h-5" })
+					})]
+				}), isFormulaOpen && /* @__PURE__ */ jsxs("div", {
+					className: "mt-4 pt-4 border-t border-slate-800 grid grid-cols-1 md:grid-cols-2 gap-4 text-xs",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-3 bg-slate-800/80 rounded-xl space-y-1",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "font-bold text-cyan-400 block text-sm",
+									children: "1. Total Calendar Hours (TH)"
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-slate-300 font-mono",
+									children: formulas.calendar_hours
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-slate-400 text-[11px]",
+									children: [
+										"Dasar waktu absolut 24 jam sehari dikalikan jumlah unit dalam populasi fleet aktif (",
+										metrics.fleet_size,
+										" Unit × ",
+										metrics.days_count,
+										" Hari = ",
+										metrics.total_calendar_hours,
+										" Jam)."
+									]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-3 bg-slate-800/80 rounded-xl space-y-1",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "font-bold text-emerald-400 block text-sm",
+									children: "2. Physical Availability (PA)"
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-slate-300 font-mono",
+									children: formulas.physical_availability
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-slate-400 text-[11px]",
+									children: "Pembagi adalah TH (Total Calendar Hours). Menghitung persentase unit berada dalam kondisi siap operasi (RFU = OH + SB) terhadap jam kalender."
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-3 bg-slate-800/80 rounded-xl space-y-1",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "font-bold text-amber-400 block text-sm",
+									children: "3. Mechanical Availability (MA)"
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-slate-300 font-mono",
+									children: formulas.mechanical_availability
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-slate-400 text-[11px]",
+									children: "Pembagi adalah OH + DT. Mengabaikan waktu standby (misal hujan, antre, jalan licin), khusus mengukur murni kehandalan teknis mesin dan kecepatan bengkel."
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-3 bg-slate-800/80 rounded-xl space-y-1",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "font-bold text-blue-400 block text-sm",
+									children: "4. Utilization of Availability (UA)"
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-slate-300 font-mono",
+									children: formulas.utilization_ua
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-slate-400 text-[11px]",
+									children: "Pembagi adalah Jam RFU (OH + SB). Mengukur seberapa efisien unit yang sehat dan siap jalan benar-benar dioperasikan untuk pengangkutan."
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-3 bg-slate-800/80 rounded-xl space-y-1",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "font-bold text-purple-400 block text-sm",
+									children: "5. MTTR (Mean Time to Repair)"
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-slate-300 font-mono",
+									children: formulas.mttr
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-slate-400 text-[11px]",
+									children: "Rata-rata waktu yang dibutuhkan mekanik untuk menyelesaikan satu perbaikan hingga unit kembali RFU."
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-3 bg-slate-800/80 rounded-xl space-y-1",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "font-bold text-pink-400 block text-sm",
+									children: "6. MTBF (Mean Time Between Failures)"
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-slate-300 font-mono",
+									children: formulas.mtbf
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-slate-400 text-[11px]",
+									children: "Rata-rata durasi jam kerja operasi (OH) sebelum unit mengalami kegagalan / breakdown berikutnya."
+								})
+							]
+						})
+					]
+				})]
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden p-6 space-y-4",
+				children: [/* @__PURE__ */ jsxs("div", {
+					className: "flex justify-between items-center",
+					children: [/* @__PURE__ */ jsxs("h3", {
+						className: "font-bold text-slate-900 dark:text-white text-base flex items-center space-x-2",
+						children: [/* @__PURE__ */ jsx(TrendingUp, { className: "w-5 h-5 text-emerald-600" }), /* @__PURE__ */ jsx("span", { children: "Tren Harian Availability Armada (PA, MA, UA)" })]
+					}), /* @__PURE__ */ jsx("span", {
+						className: "text-xs text-slate-500",
+						children: "Rentang Periode Terpilih"
+					})]
+				}), /* @__PURE__ */ jsx("div", {
+					className: "overflow-x-auto",
+					children: /* @__PURE__ */ jsxs("table", {
+						className: "w-full text-left border-collapse text-sm",
+						children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", {
+							className: "border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300",
+							children: [
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "Tanggal"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "Operating (OH)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "Standby (SB)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "Downtime (DT)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "PA (%)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "MA (%)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "UA (%)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "Breakdowns"
+								})
+							]
+						}) }), /* @__PURE__ */ jsx("tbody", {
+							className: "divide-y divide-slate-200 dark:divide-slate-700 text-xs font-mono",
+							children: dailyTrends.map((trend, idx) => /* @__PURE__ */ jsxs("tr", {
+								className: "hover:bg-slate-50 dark:hover:bg-slate-700/30",
+								children: [
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-4 font-sans font-bold text-slate-900 dark:text-white",
+										children: trend.date
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "py-3 px-4 text-emerald-600 font-bold",
+										children: [trend.operating_hours, " Jam"]
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "py-3 px-4 text-blue-600",
+										children: [trend.standby_hours, " Jam"]
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "py-3 px-4 text-rose-600",
+										children: [trend.downtime_hours, " Jam"]
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-4",
+										children: /* @__PURE__ */ jsxs("span", {
+											className: `px-2 py-0.5 rounded font-bold ${getKpiColor(trend.pa)}`,
+											children: [trend.pa, "%"]
+										})
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-4",
+										children: /* @__PURE__ */ jsxs("span", {
+											className: `px-2 py-0.5 rounded font-bold ${getKpiColor(trend.ma)}`,
+											children: [trend.ma, "%"]
+										})
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-4",
+										children: /* @__PURE__ */ jsxs("span", {
+											className: `px-2 py-0.5 rounded font-bold ${getKpiColor(trend.ua, 70, 50)}`,
+											children: [trend.ua, "%"]
+										})
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-4",
+										children: trend.breakdowns > 0 ? /* @__PURE__ */ jsxs("span", {
+											className: "px-2 py-0.5 rounded bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 font-bold",
+											children: [trend.breakdowns, " Kali"]
+										}) : /* @__PURE__ */ jsx("span", {
+											className: "text-slate-400",
+											children: "0"
+										})
+									})
+								]
+							}, idx))
+						})]
+					})
+				})]
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden p-6 space-y-4",
+				children: [/* @__PURE__ */ jsxs("div", {
+					className: "flex justify-between items-center",
+					children: [/* @__PURE__ */ jsxs("h3", {
+						className: "font-bold text-slate-900 dark:text-white text-base flex items-center space-x-2",
+						children: [/* @__PURE__ */ jsx(Truck, { className: "w-5 h-5 text-blue-600" }), /* @__PURE__ */ jsx("span", { children: "Kinerja & Availability Per Armada Unit" })]
+					}), /* @__PURE__ */ jsx("span", {
+						className: "text-xs text-slate-500",
+						children: "Evaluasi Individu Dump Truck"
+					})]
+				}), /* @__PURE__ */ jsx("div", {
+					className: "overflow-x-auto",
+					children: /* @__PURE__ */ jsxs("table", {
+						className: "w-full text-left border-collapse text-sm",
+						children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", {
+							className: "border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300",
+							children: [
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "Armada"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "Tipe"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "Status"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "Operating (OH)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "Standby (SB)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "Downtime (DT)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "PA"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "MA"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "UA"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "py-3 px-4",
+									children: "Breakdown"
+								})
+							]
+						}) }), /* @__PURE__ */ jsx("tbody", {
+							className: "divide-y divide-slate-200 dark:divide-slate-700 text-xs",
+							children: unitBreakdown.map((u) => /* @__PURE__ */ jsxs("tr", {
+								className: "hover:bg-slate-50 dark:hover:bg-slate-700/30",
+								children: [
+									/* @__PURE__ */ jsxs("td", {
+										className: "py-3 px-4",
+										children: [/* @__PURE__ */ jsx("span", {
+											className: "font-bold text-slate-900 dark:text-white block",
+											children: u.unit_code
+										}), /* @__PURE__ */ jsx("span", {
+											className: "text-[11px] text-slate-500 font-mono",
+											children: u.registration_number
+										})]
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-4 capitalize text-slate-700 dark:text-slate-300",
+										children: u.unit_type.replace("_", " ")
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-4",
+										children: /* @__PURE__ */ jsx("span", {
+											className: `px-2 py-0.5 rounded text-[10px] font-bold uppercase ${u.status === "operating" ? "bg-emerald-100 text-emerald-800" : u.status === "standby" ? "bg-blue-100 text-blue-800" : u.status === "breakdown" ? "bg-rose-100 text-rose-800" : "bg-amber-100 text-amber-800"}`,
+											children: u.status
+										})
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "py-3 px-4 font-mono font-bold text-emerald-600",
+										children: [u.operating_hours, " Jam"]
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "py-3 px-4 font-mono text-blue-600",
+										children: [u.standby_hours, " Jam"]
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "py-3 px-4 font-mono text-rose-600",
+										children: [u.downtime_hours, " Jam"]
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-4 font-mono font-bold",
+										children: /* @__PURE__ */ jsxs("span", {
+											className: getKpiColor(u.pa),
+											children: [u.pa, "%"]
+										})
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-4 font-mono font-bold",
+										children: /* @__PURE__ */ jsxs("span", {
+											className: getKpiColor(u.ma),
+											children: [u.ma, "%"]
+										})
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-4 font-mono font-bold",
+										children: /* @__PURE__ */ jsxs("span", {
+											className: getKpiColor(u.ua, 70, 50),
+											children: [u.ua, "%"]
+										})
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-4 font-mono",
+										children: u.breakdown_count > 0 ? /* @__PURE__ */ jsxs("span", {
+											className: "text-rose-600 font-bold",
+											children: [u.breakdown_count, "×"]
+										}) : /* @__PURE__ */ jsx("span", {
+											className: "text-slate-400",
+											children: "0"
+										})
+									})
+								]
+							}, u.id))
+						})]
+					})
+				})]
+			})
+		]
+	})] });
+}
+// resources/js/Pages/Fleet/P2H/Index.jsx
+var Index_exports$17 = /* @__PURE__ */ __exportAll({ default: () => DigitalP2hIndex });
+var STANDARD_P2H_ITEMS = [
+	{
+		name: "Engine (Suara & Getaran Mesin)",
+		category: "Engine & Fluids",
+		is_critical: true
+	},
+	{
+		name: "Oil Level (Oli Mesin, Transmisi & Kebocoran)",
+		category: "Engine & Fluids",
+		is_critical: true
+	},
+	{
+		name: "Coolant (Air Radiator & Sistem Pendingin)",
+		category: "Engine & Fluids",
+		is_critical: false
+	},
+	{
+		name: "Brake System (Rem Servis & Rem Parkir)",
+		category: "Brake & Steering",
+		is_critical: true
+	},
+	{
+		name: "Steering System (Kemudi & Power Steering)",
+		category: "Brake & Steering",
+		is_critical: true
+	},
+	{
+		name: "Tire Condition & Pressure (Kondisi & Tekanan Ban)",
+		category: "Wheels & Tires",
+		is_critical: false
+	},
+	{
+		name: "Wheel Nut (Baut & Mur Roda)",
+		category: "Wheels & Tires",
+		is_critical: true
+	},
+	{
+		name: "Lamps & Rotary (Lampu Kerja, Rem, Sein, Rotari)",
+		category: "Electrical & Visibility",
+		is_critical: false
+	},
+	{
+		name: "Horn & Backup Alarm (Klakson & Sirine Mundur)",
+		category: "Electrical & Visibility",
+		is_critical: false
+	},
+	{
+		name: "Mirrors & Glass (Kaca Spion & Kaca Depan)",
+		category: "Electrical & Visibility",
+		is_critical: false
+	},
+	{
+		name: "Seat Belt (Sabuk Pengaman Driver)",
+		category: "Cabin & Safety",
+		is_critical: true
+	},
+	{
+		name: "Body & Chassis (Dump Body & Kerangka)",
+		category: "Cabin & Safety",
+		is_critical: false
+	},
+	{
+		name: "Hydraulic System (Pompa & Silinder Dump)",
+		category: "Hydraulic",
+		is_critical: true
+	},
+	{
+		name: "Battery (Aki & Terminal Kabel)",
+		category: "Electrical & Visibility",
+		is_critical: false
+	},
+	{
+		name: "Safety Equipment (APAR, Ganjal Ban, Kotak P3K)",
+		category: "Cabin & Safety",
+		is_critical: true
+	}
+];
+function DigitalP2hIndex({ inspections = {
+	data: [],
+	links: []
+}, filters = {}, metrics = {}, master = {} }) {
+	const [date, setDate] = useState(filters.date || (/* @__PURE__ */ new Date()).toISOString().split("T")[0]);
+	const [condition, setCondition] = useState(filters.condition || "");
+	const [unitId, setUnitId] = useState(filters.unit_id || "");
+	const [shiftId, setShiftId] = useState(filters.shift_id || "");
+	const [isCreateOpen, setIsCreateOpen] = useState(false);
+	const [isDetailOpen, setIsDetailOpen] = useState(false);
+	const [selectedInspection, setSelectedInspection] = useState(null);
+	const initialItems = STANDARD_P2H_ITEMS.map((item) => ({
+		item_name: item.name,
+		category: item.category,
+		is_critical: item.is_critical,
+		status: "good",
+		defect_description: "",
+		photo_path: ""
+	}));
+	const form = useForm({
+		unit_id: master.units?.[0]?.id || "",
+		driver_id: master.drivers?.[0]?.id || "",
+		shift_id: master.shifts?.[0]?.id || "",
+		inspection_date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+		inspection_time: (/* @__PURE__ */ new Date()).toTimeString().split(" ")[0].substring(0, 5),
+		current_hm: master.units?.[0]?.last_hm || 0,
+		current_km: master.units?.[0]?.last_km || 0,
+		driver_notes: "",
+		items: initialItems
+	});
+	const handleFilter = (e) => {
+		e?.preventDefault();
+		router.get("/fleet/p2h", {
+			date,
+			condition,
+			unit_id: unitId,
+			shift_id: shiftId
+		}, {
+			preserveState: true,
+			preserveScroll: true
+		});
+	};
+	const handleReset = () => {
+		setDate((/* @__PURE__ */ new Date()).toISOString().split("T")[0]);
+		setCondition("");
+		setUnitId("");
+		setShiftId("");
+		router.get("/fleet/p2h");
+	};
+	const handleUnitSelect = (id) => {
+		const u = master.units?.find((item) => item.id == id);
+		form.setData({
+			...form.data,
+			unit_id: id,
+			current_hm: u?.last_hm || 0,
+			current_km: u?.last_km || 0
+		});
+	};
+	const handleItemStatusChange = (index, status) => {
+		const newItems = [...form.data.items];
+		newItems[index].status = status;
+		if (status === "good") newItems[index].defect_description = "";
+		form.setData("items", newItems);
+	};
+	const handleItemDefectChange = (index, desc) => {
+		const newItems = [...form.data.items];
+		newItems[index].defect_description = desc;
+		form.setData("items", newItems);
+	};
+	const hasCriticalDefect = form.data.items.some((it) => it.is_critical && it.status === "not_good");
+	form.data.items.some((it) => !it.is_critical && it.status === "not_good");
+	const submitP2h = (e) => {
+		e.preventDefault();
+		form.post("/fleet/p2h", { onSuccess: () => {
+			form.reset();
+			setIsCreateOpen(false);
+		} });
+	};
+	const openDetail = (insp) => {
+		setSelectedInspection(insp);
+		setIsDetailOpen(true);
+	};
+	const getConditionBadge = (cond) => {
+		switch (cond) {
+			case "rfu": return /* @__PURE__ */ jsxs("span", {
+				className: "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
+				children: [/* @__PURE__ */ jsx(CheckCircle2, { className: "w-3.5 h-3.5 mr-1" }), "SIAP OPERASI (RFU)"]
+			});
+			case "rfu_with_notes": return /* @__PURE__ */ jsxs("span", {
+				className: "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
+				children: [/* @__PURE__ */ jsx(AlertTriangle, { className: "w-3.5 h-3.5 mr-1" }), "RFU DENGAN CATATAN"]
+			});
+			case "not_rfu": return /* @__PURE__ */ jsxs("span", {
+				className: "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 animate-pulse",
+				children: [/* @__PURE__ */ jsx(AlertOctagon, { className: "w-3.5 h-3.5 mr-1" }), "TIDAK SIAP (NOT RFU)"]
+			});
+			default: return /* @__PURE__ */ jsx("span", { children: cond });
+		}
+	};
+	return /* @__PURE__ */ jsxs(DashboardLayout, { children: [
+		/* @__PURE__ */ jsx(Head, { title: "Digital P2H - Pemeriksaan Pra-Operasi Harian - TAP" }),
+		/* @__PURE__ */ jsxs("div", {
+			className: "space-y-6",
+			children: [
+				/* @__PURE__ */ jsxs("div", {
+					className: "flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700",
+					children: [/* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsxs("div", {
+						className: "flex items-center space-x-3",
+						children: [/* @__PURE__ */ jsx("div", {
+							className: "p-2.5 rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400",
+							children: /* @__PURE__ */ jsx(ClipboardCheck, { className: "w-6 h-6" })
+						}), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("h1", {
+							className: "text-2xl font-bold text-slate-900 dark:text-white",
+							children: "Digital P2H (Pemeriksaan Pra-Operasi Harian)"
+						}), /* @__PURE__ */ jsx("p", {
+							className: "text-sm text-slate-500 dark:text-slate-400",
+							children: "Checklist keselamatan 15 item pra-shift, deteksi kegagalan kritis, dan integrasi otomatis ke Maintenance Work Order"
+						})] })]
+					}) }), /* @__PURE__ */ jsxs("div", {
+						className: "flex items-center space-x-3 w-full sm:w-auto",
+						children: [/* @__PURE__ */ jsxs(Button, {
+							variant: "secondary",
+							onClick: () => router.get("/fleet/p2h"),
+							className: "flex items-center space-x-2",
+							children: [/* @__PURE__ */ jsx(RefreshCw, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { children: "Segarkan" })]
+						}), /* @__PURE__ */ jsxs(Button, {
+							variant: "primary",
+							onClick: () => setIsCreateOpen(true),
+							className: "flex items-center space-x-2",
+							children: [/* @__PURE__ */ jsx(Plus, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { children: "Isi Form P2H Baru" })]
+						})]
+					})]
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-2 sm:grid-cols-5 gap-4",
+					children: [
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-slate-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider",
+								children: "Total Inspeksi"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-slate-900 dark:text-white",
+									children: metrics.total || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-slate-400",
+									children: "Hari ini"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-emerald-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider",
+								children: "Lolos RFU"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-emerald-600 dark:text-emerald-400",
+									children: metrics.rfu || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-emerald-600/80",
+									children: "Kondisi Baik"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-amber-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wider",
+								children: "RFU Catatan"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-amber-600 dark:text-amber-400",
+									children: metrics.rfu_with_notes || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-amber-500",
+									children: "Minor Defect"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-rose-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-rose-600 dark:text-rose-400 uppercase tracking-wider",
+								children: "Not RFU"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-rose-600 dark:text-rose-400",
+									children: metrics.not_rfu || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-rose-500",
+									children: "Dilarang Jalan"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-rose-700",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-rose-700 dark:text-rose-400 uppercase tracking-wider",
+								children: "Cacat Kritis"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-rose-700 dark:text-rose-400",
+									children: metrics.critical_defects || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-rose-500",
+									children: "Auto WO"
+								})]
+							})]
+						})
+					]
+				}),
+				/* @__PURE__ */ jsx(Card, {
+					className: "p-5 bg-white dark:bg-slate-800",
+					children: /* @__PURE__ */ jsxs("form", {
+						onSubmit: handleFilter,
+						className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+								children: "Tanggal Inspeksi"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "date",
+								value: date,
+								onChange: (e) => setDate(e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+								children: "Hasil Kelayakan"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: condition,
+								onChange: (e) => setCondition(e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+								children: [
+									/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "Semua Hasil"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "rfu",
+										children: "Lolos Siap Operasi (RFU)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "rfu_with_notes",
+										children: "RFU dengan Catatan"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "not_rfu",
+										children: "Tidak Siap Operasi (NOT RFU)"
+									})
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+								children: "Armada Unit"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: unitId,
+								onChange: (e) => setUnitId(e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+								children: [/* @__PURE__ */ jsx("option", {
+									value: "",
+									children: "Semua Unit"
+								}), master.units?.map((u) => /* @__PURE__ */ jsxs("option", {
+									value: u.id,
+									children: [
+										u.unit_code,
+										" (",
+										u.unit_type,
+										")"
+									]
+								}, u.id))]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+								children: "Shift Kerja"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: shiftId,
+								onChange: (e) => setShiftId(e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+								children: [/* @__PURE__ */ jsx("option", {
+									value: "",
+									children: "Semua Shift"
+								}), master.shifts?.map((s) => /* @__PURE__ */ jsxs("option", {
+									value: s.id,
+									children: [
+										s.name,
+										" (",
+										s.code,
+										")"
+									]
+								}, s.id))]
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex items-end space-x-2",
+								children: [/* @__PURE__ */ jsxs(Button, {
+									type: "submit",
+									variant: "primary",
+									className: "flex-1 flex items-center justify-center space-x-1",
+									children: [/* @__PURE__ */ jsx(Filter, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { children: "Filter" })]
+								}), /* @__PURE__ */ jsx(Button, {
+									type: "button",
+									variant: "secondary",
+									onClick: handleReset,
+									children: "Reset"
+								})]
+							})
+						]
+					})
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden",
+					children: [/* @__PURE__ */ jsx("div", {
+						className: "overflow-x-auto",
+						children: /* @__PURE__ */ jsxs("table", {
+							className: "w-full text-left border-collapse text-sm",
+							children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", {
+								className: "border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300",
+								children: [
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "No. P2H & Waktu"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Armada & HM/KM"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Driver Penguji"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Shift"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Kondisi Kelayakan"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Status Work Order"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4 text-right",
+										children: "Aksi"
+									})
+								]
+							}) }), /* @__PURE__ */ jsx("tbody", {
+								className: "divide-y divide-slate-200 dark:divide-slate-700",
+								children: inspections.data?.length > 0 ? inspections.data.map((insp) => /* @__PURE__ */ jsxs("tr", {
+									className: "hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors",
+									children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3.5 px-4",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-mono font-bold text-slate-900 dark:text-white",
+												children: insp.inspection_number
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-xs text-slate-500 dark:text-slate-400",
+												children: [
+													insp.inspection_date,
+													" • ",
+													insp.inspection_time,
+													" WITA"
+												]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3.5 px-4",
+											children: [/* @__PURE__ */ jsxs("div", {
+												className: "font-bold text-slate-900 dark:text-white flex items-center space-x-1.5",
+												children: [/* @__PURE__ */ jsx(Truck, { className: "w-4 h-4 text-emerald-600" }), /* @__PURE__ */ jsx("span", { children: insp.unit?.unit_code })]
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-xs text-slate-500 dark:text-slate-400 font-mono",
+												children: [
+													Number(insp.current_hm).toLocaleString("id-ID"),
+													" HM • ",
+													Number(insp.current_km).toLocaleString("id-ID"),
+													" KM"
+												]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3.5 px-4",
+											children: [/* @__PURE__ */ jsxs("div", {
+												className: "text-slate-900 dark:text-white font-medium flex items-center space-x-1.5",
+												children: [/* @__PURE__ */ jsx(User, { className: "w-3.5 h-3.5 text-blue-500" }), /* @__PURE__ */ jsx("span", { children: insp.driver?.employee?.name || "-" })]
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-xs font-mono text-slate-400",
+												children: insp.driver?.driver_code
+											})]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-3.5 px-4",
+											children: /* @__PURE__ */ jsx("span", {
+												className: "px-2 py-0.5 rounded text-xs bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+												children: insp.shift?.name || "-"
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-3.5 px-4",
+											children: getConditionBadge(insp.overall_condition)
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-3.5 px-4",
+											children: insp.work_order ? /* @__PURE__ */ jsxs("div", {
+												className: "inline-flex items-center space-x-1 text-xs font-semibold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 px-2 py-1 rounded-lg",
+												children: [/* @__PURE__ */ jsx(Wrench, { className: "w-3.5 h-3.5" }), /* @__PURE__ */ jsxs("span", { children: [
+													insp.work_order.wo_number,
+													" (",
+													insp.work_order.status,
+													")"
+												] })]
+											}) : /* @__PURE__ */ jsx("span", {
+												className: "text-xs text-slate-400",
+												children: "Tidak ada kerusakan"
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-3.5 px-4 text-right",
+											children: /* @__PURE__ */ jsxs(Button, {
+												size: "sm",
+												variant: "secondary",
+												onClick: () => openDetail(insp),
+												className: "inline-flex items-center space-x-1",
+												children: [/* @__PURE__ */ jsx(Eye, { className: "w-3.5 h-3.5" }), /* @__PURE__ */ jsx("span", { children: "Lihat Form" })]
+											})
+										})
+									]
+								}, insp.id)) : /* @__PURE__ */ jsx("tr", { children: /* @__PURE__ */ jsx("td", {
+									colSpan: "7",
+									className: "py-12 text-center text-slate-400 dark:text-slate-500",
+									children: "Belum ada data pemeriksaan P2H pada tanggal dan filter yang dipilih."
+								}) })
+							})]
+						})
+					}), /* @__PURE__ */ jsxs("div", {
+						className: "p-4 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center",
+						children: [/* @__PURE__ */ jsxs("span", {
+							className: "text-xs text-slate-500 dark:text-slate-400",
+							children: [
+								"Menampilkan ",
+								inspections.data?.length || 0,
+								" dari ",
+								inspections.total || 0,
+								" lembar P2H"
+							]
+						}), /* @__PURE__ */ jsx(Pagination, { links: inspections.links })]
+					})]
+				})
+			]
+		}),
+		/* @__PURE__ */ jsx(Modal, {
+			isOpen: isCreateOpen,
+			onClose: () => setIsCreateOpen(false),
+			title: "Form Pemeriksaan Pra-Operasi Harian (Digital P2H)",
+			maxWidth: "max-w-4xl",
+			children: /* @__PURE__ */ jsxs("form", {
+				onSubmit: submitP2h,
+				className: "space-y-6",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-1 sm:grid-cols-4 gap-4 p-4 bg-slate-50 dark:bg-slate-900 rounded-xl",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Armada Unit *"
+							}), /* @__PURE__ */ jsx("select", {
+								required: true,
+								value: form.data.unit_id,
+								onChange: (e) => handleUnitSelect(e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white",
+								children: master.units?.map((u) => /* @__PURE__ */ jsxs("option", {
+									value: u.id,
+									children: [
+										u.unit_code,
+										" - ",
+										u.unit_type,
+										" (HM: ",
+										u.last_hm,
+										")"
+									]
+								}, u.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Driver Penguji *"
+							}), /* @__PURE__ */ jsx("select", {
+								required: true,
+								value: form.data.driver_id,
+								onChange: (e) => form.setData("driver_id", e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white",
+								children: master.drivers?.map((d) => /* @__PURE__ */ jsxs("option", {
+									value: d.id,
+									children: [
+										d.employee?.name,
+										" (",
+										d.driver_code,
+										")"
+									]
+								}, d.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Shift Kerja *"
+							}), /* @__PURE__ */ jsx("select", {
+								required: true,
+								value: form.data.shift_id,
+								onChange: (e) => form.setData("shift_id", e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white",
+								children: master.shifts?.map((s) => /* @__PURE__ */ jsxs("option", {
+									value: s.id,
+									children: [
+										s.name,
+										" (",
+										s.code,
+										")"
+									]
+								}, s.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Waktu Inspeksi"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex space-x-1",
+								children: [/* @__PURE__ */ jsx("input", {
+									type: "date",
+									required: true,
+									value: form.data.inspection_date,
+									onChange: (e) => form.setData("inspection_date", e.target.value),
+									className: "w-2/3 px-2 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "time",
+									required: true,
+									value: form.data.inspection_time,
+									onChange: (e) => form.setData("inspection_time", e.target.value),
+									className: "w-1/3 px-1 py-2 text-xs rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+								})]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Hour Meter (HM) Saat Ini *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "number",
+								step: "0.1",
+								required: true,
+								value: form.data.current_hm,
+								onChange: (e) => form.setData("current_hm", e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Kilo Meter (KM) Saat Ini *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "number",
+								step: "0.1",
+								required: true,
+								value: form.data.current_km,
+								onChange: (e) => form.setData("current_km", e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "sm:col-span-2",
+								children: [/* @__PURE__ */ jsx("label", {
+									className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+									children: "Catatan Tambahan Driver"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "text",
+									placeholder: "Contoh: Bunyi decit halus pada rem kanan belakang",
+									value: form.data.driver_notes,
+									onChange: (e) => form.setData("driver_notes", e.target.value),
+									className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white"
+								})]
+							})
+						]
+					}),
+					hasCriticalDefect && /* @__PURE__ */ jsxs("div", {
+						className: "p-4 bg-rose-50 dark:bg-rose-950/50 border-2 border-rose-500 rounded-xl flex items-start space-x-3 text-rose-900 dark:text-rose-200 animate-pulse",
+						children: [/* @__PURE__ */ jsx(AlertOctagon, { className: "w-6 h-6 text-rose-600 flex-shrink-0 mt-0.5" }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("h4", {
+							className: "font-bold text-sm",
+							children: "PERINGATAN KESELAMATAN KRITIS (SOP K3LH TAP)"
+						}), /* @__PURE__ */ jsxs("p", {
+							className: "text-xs mt-1",
+							children: [
+								"Item bertanda ",
+								/* @__PURE__ */ jsx("strong", { children: "KRITIS" }),
+								" dinyatakan Rusak (Not Good). Berdasarkan standar operasional tambang, armada ini ",
+								/* @__PURE__ */ jsx("strong", { children: "TIDAK DAPAT DIJALANKAN (NOT RFU)" }),
+								". Sistem akan secara otomatis mengunci status armada ke ",
+								/* @__PURE__ */ jsx("strong", { children: "BREAKDOWN" }),
+								" dan menerbitkan Work Order langsung ke divisi Maintenance."
+							]
+						})] })]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "space-y-3",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-between items-center",
+							children: [/* @__PURE__ */ jsxs("h3", {
+								className: "text-sm font-bold text-slate-900 dark:text-white flex items-center space-x-2",
+								children: [/* @__PURE__ */ jsx(ClipboardCheck, { className: "w-4 h-4 text-emerald-600" }), /* @__PURE__ */ jsx("span", { children: "Checklist Pemeriksaan 15 Item Wajib" })]
+							}), /* @__PURE__ */ jsxs("span", {
+								className: "text-xs text-slate-500",
+								children: [form.data.items.filter((i) => i.status === "good").length, "/15 Baik"]
+							})]
+						}), /* @__PURE__ */ jsx("div", {
+							className: "border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden divide-y divide-slate-200 dark:divide-slate-700",
+							children: form.data.items.map((item, idx) => /* @__PURE__ */ jsxs("div", {
+								className: `p-3 text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${item.status === "not_good" ? item.is_critical ? "bg-rose-50/70 dark:bg-rose-950/20" : "bg-amber-50/70 dark:bg-amber-950/20" : "hover:bg-slate-50 dark:hover:bg-slate-800/40"}`,
+								children: [/* @__PURE__ */ jsxs("div", {
+									className: "flex-1",
+									children: [
+										/* @__PURE__ */ jsxs("div", {
+											className: "flex items-center space-x-2",
+											children: [/* @__PURE__ */ jsxs("span", {
+												className: "font-semibold text-slate-900 dark:text-white",
+												children: [
+													idx + 1,
+													". ",
+													item.item_name
+												]
+											}), item.is_critical && /* @__PURE__ */ jsx("span", {
+												className: "px-1.5 py-0.5 rounded text-[10px] font-black bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 uppercase",
+												children: "KRITIS"
+											})]
+										}),
+										/* @__PURE__ */ jsx("span", {
+											className: "text-[11px] text-slate-400 block",
+											children: item.category
+										}),
+										item.status === "not_good" && /* @__PURE__ */ jsx("div", {
+											className: "mt-2",
+											children: /* @__PURE__ */ jsx("input", {
+												type: "text",
+												required: true,
+												placeholder: "Deskripsikan kerusakan / temuan...",
+												value: item.defect_description,
+												onChange: (e) => handleItemDefectChange(idx, e.target.value),
+												className: "w-full px-2.5 py-1.5 text-xs rounded border border-rose-300 dark:border-rose-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+											})
+										})
+									]
+								}), /* @__PURE__ */ jsxs("div", {
+									className: "flex items-center space-x-2",
+									children: [
+										/* @__PURE__ */ jsxs("label", {
+											className: `px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer border transition flex items-center space-x-1 ${item.status === "good" ? "bg-emerald-600 text-white border-emerald-600" : "border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"}`,
+											children: [/* @__PURE__ */ jsx("input", {
+												type: "radio",
+												name: `item_${idx}`,
+												className: "hidden",
+												checked: item.status === "good",
+												onChange: () => handleItemStatusChange(idx, "good")
+											}), /* @__PURE__ */ jsx("span", { children: "Good" })]
+										}),
+										/* @__PURE__ */ jsxs("label", {
+											className: `px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer border transition flex items-center space-x-1 ${item.status === "not_good" ? "bg-rose-600 text-white border-rose-600" : "border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"}`,
+											children: [/* @__PURE__ */ jsx("input", {
+												type: "radio",
+												name: `item_${idx}`,
+												className: "hidden",
+												checked: item.status === "not_good",
+												onChange: () => handleItemStatusChange(idx, "not_good")
+											}), /* @__PURE__ */ jsx("span", { children: "Not Good" })]
+										}),
+										/* @__PURE__ */ jsxs("label", {
+											className: `px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer border transition flex items-center space-x-1 ${item.status === "not_applicable" ? "bg-slate-600 text-white border-slate-600" : "border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"}`,
+											children: [/* @__PURE__ */ jsx("input", {
+												type: "radio",
+												name: `item_${idx}`,
+												className: "hidden",
+												checked: item.status === "not_applicable",
+												onChange: () => handleItemStatusChange(idx, "not_applicable")
+											}), /* @__PURE__ */ jsx("span", { children: "N/A" })]
+										})
+									]
+								})]
+							}, idx))
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "p-4 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900 rounded-xl flex items-center space-x-3",
+						children: [/* @__PURE__ */ jsx(ShieldCheck, { className: "w-5 h-5 text-emerald-600 flex-shrink-0" }), /* @__PURE__ */ jsx("div", {
+							className: "text-xs text-slate-700 dark:text-slate-300",
+							children: "Dengan mengklik tombol submit, saya menyatakan telah melakukan pemeriksaan fisik menyeluruh terhadap armada ini secara jujur dan bertanggung jawab sesuai SOP K3LH PT Teknindo Adhya Pane. Hash tanda tangan digital akan dicatat secara kriptografis."
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex justify-end space-x-3 pt-4 border-t border-slate-200 dark:border-slate-700",
+						children: [/* @__PURE__ */ jsx(Button, {
+							type: "button",
+							variant: "secondary",
+							onClick: () => setIsCreateOpen(false),
+							children: "Batal"
+						}), /* @__PURE__ */ jsx(Button, {
+							type: "submit",
+							variant: hasCriticalDefect ? "danger" : "primary",
+							disabled: form.processing,
+							children: form.processing ? "Menyimpan & Menandatangani..." : hasCriticalDefect ? "Laporkan Cacat Kritis & Kirim WO" : "Kirim Form P2H Selesai"
+						})]
+					})
+				]
+			})
+		}),
+		selectedInspection && /* @__PURE__ */ jsx(Modal, {
+			isOpen: isDetailOpen,
+			onClose: () => setIsDetailOpen(false),
+			title: `Lembar Pemeriksaan P2H: ${selectedInspection.inspection_number}`,
+			maxWidth: "max-w-3xl",
+			children: /* @__PURE__ */ jsxs("div", {
+				className: "space-y-4",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "p-4 bg-slate-50 dark:bg-slate-900 rounded-xl grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-slate-500 block",
+								children: "Unit Armada"
+							}), /* @__PURE__ */ jsx("span", {
+								className: "font-bold text-slate-900 dark:text-white text-sm",
+								children: selectedInspection.unit?.unit_code
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-slate-500 block",
+								children: "Driver Penguji"
+							}), /* @__PURE__ */ jsx("span", {
+								className: "font-bold text-slate-900 dark:text-white text-sm",
+								children: selectedInspection.driver?.employee?.name
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-slate-500 block",
+								children: "Tanggal & Waktu"
+							}), /* @__PURE__ */ jsxs("span", {
+								className: "font-medium text-slate-900 dark:text-white",
+								children: [
+									selectedInspection.inspection_date,
+									" ",
+									selectedInspection.inspection_time
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-slate-500 block",
+								children: "Shift Kerja"
+							}), /* @__PURE__ */ jsx("span", {
+								className: "font-medium text-slate-900 dark:text-white",
+								children: selectedInspection.shift?.name
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-slate-500 block",
+								children: "Hour Meter (HM)"
+							}), /* @__PURE__ */ jsxs("span", {
+								className: "font-mono font-bold text-slate-900 dark:text-white",
+								children: [Number(selectedInspection.current_hm).toLocaleString("id-ID"), " HM"]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-slate-500 block",
+								children: "Kilo Meter (KM)"
+							}), /* @__PURE__ */ jsxs("span", {
+								className: "font-mono font-bold text-slate-900 dark:text-white",
+								children: [Number(selectedInspection.current_km).toLocaleString("id-ID"), " KM"]
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "sm:col-span-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-slate-500 block",
+									children: "Hasil Kelayakan"
+								}), /* @__PURE__ */ jsx("div", { children: getConditionBadge(selectedInspection.overall_condition) })]
+							})
+						]
+					}),
+					selectedInspection.work_order && /* @__PURE__ */ jsxs("div", {
+						className: "p-3.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-300 dark:border-rose-900 rounded-xl text-xs",
+						children: [/* @__PURE__ */ jsxs("span", {
+							className: "font-bold text-rose-800 dark:text-rose-300 block mb-1",
+							children: ["Work Order Otomatis: ", selectedInspection.work_order.wo_number]
+						}), /* @__PURE__ */ jsx("p", {
+							className: "text-rose-700 dark:text-rose-400",
+							children: selectedInspection.work_order.defect_summary
+						})]
+					}),
+					/* @__PURE__ */ jsx("div", {
+						className: "border border-slate-200 dark:border-slate-700 rounded-xl divide-y divide-slate-200 dark:divide-slate-700 max-h-80 overflow-y-auto",
+						children: selectedInspection.items?.map((item, idx) => /* @__PURE__ */ jsxs("div", {
+							className: "p-3 text-xs flex items-center justify-between",
+							children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsxs("span", {
+								className: "font-semibold text-slate-900 dark:text-white block",
+								children: [
+									idx + 1,
+									". ",
+									item.item_name,
+									" ",
+									item.is_critical && /* @__PURE__ */ jsx("span", {
+										className: "text-rose-500 font-bold",
+										children: "(Kritis)"
+									})
+								]
+							}), item.defect_description && /* @__PURE__ */ jsxs("span", {
+								className: "text-rose-600 dark:text-rose-400 italic",
+								children: ["Temuan: ", item.defect_description]
+							})] }), /* @__PURE__ */ jsx("span", {
+								className: `px-2 py-0.5 rounded font-bold uppercase text-[10px] ${item.status === "good" ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300" : item.status === "not_good" ? "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300" : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"}`,
+								children: item.status.replace("_", " ")
+							})]
+						}, idx))
+					}),
+					selectedInspection.driver_signature_hash && /* @__PURE__ */ jsxs("div", {
+						className: "p-2.5 bg-slate-100 dark:bg-slate-900 rounded-lg text-[11px] font-mono text-slate-500 break-all",
+						children: ["Digital Signature Hash: ", selectedInspection.driver_signature_hash]
+					}),
+					/* @__PURE__ */ jsx("div", {
+						className: "flex justify-end pt-2",
+						children: /* @__PURE__ */ jsx(Button, {
+							variant: "secondary",
+							onClick: () => setIsDetailOpen(false),
+							children: "Tutup"
+						})
+					})
+				]
+			})
+		})
+	] });
+}
+// resources/js/Pages/Fleet/Registry/Index.jsx
+var Index_exports$16 = /* @__PURE__ */ __exportAll({ default: () => FleetRegistryIndex });
+function FleetRegistryIndex({ units = {
+	data: [],
+	links: []
+}, filters = {}, summary = {}, master = {} }) {
+	const [search, setSearch] = useState(filters.search || "");
+	const [status, setStatus] = useState(filters.status || "");
+	const [unitType, setUnitType] = useState(filters.unit_type || "");
+	const [siteId, setSiteId] = useState(filters.site_id || "");
+	const [isCreateOpen, setIsCreateOpen] = useState(false);
+	const [isEditOpen, setIsEditOpen] = useState(false);
+	const [isStatusOpen, setIsStatusOpen] = useState(false);
+	const [isDetailOpen, setIsDetailOpen] = useState(false);
+	const [selectedUnit, setSelectedUnit] = useState(null);
+	const createForm = useForm({
+		unit_code: "",
+		registration_number: "",
+		unit_type: "dump_truck_10",
+		brand: "Hino",
+		model: "FM 260 JD",
+		year: (/* @__PURE__ */ new Date()).getFullYear(),
+		capacity_ton: 25,
+		capacity_m3: 18,
+		chassis_number: "",
+		engine_number: "",
+		last_hm: 0,
+		last_km: 0,
+		status: "standby",
+		site_id: master.sites?.[0]?.id || "",
+		vendor_id: master.vendors?.[0]?.id || "",
+		operation_start_date: (/* @__PURE__ */ new Date()).toISOString().split("T")[0]
+	});
+	const editForm = useForm({
+		registration_number: "",
+		unit_type: "",
+		brand: "",
+		model: "",
+		year: "",
+		capacity_ton: "",
+		capacity_m3: "",
+		chassis_number: "",
+		engine_number: "",
+		last_hm: "",
+		last_km: "",
+		status: "",
+		site_id: "",
+		vendor_id: ""
+	});
+	const statusForm = useForm({ status: "standby" });
+	const handleFilter = (e) => {
+		e?.preventDefault();
+		router.get("/fleet/registry", {
+			search,
+			status,
+			unit_type: unitType,
+			site_id: siteId
+		}, {
+			preserveState: true,
+			preserveScroll: true
+		});
+	};
+	const handleReset = () => {
+		setSearch("");
+		setStatus("");
+		setUnitType("");
+		setSiteId("");
+		router.get("/fleet/registry");
+	};
+	const handleOpenEdit = (unit) => {
+		setSelectedUnit(unit);
+		editForm.setData({
+			registration_number: unit.registration_number,
+			unit_type: unit.unit_type,
+			brand: unit.brand,
+			model: unit.model || "",
+			year: unit.year || "",
+			capacity_ton: unit.capacity_ton,
+			capacity_m3: unit.capacity_m3 || "",
+			chassis_number: unit.chassis_number || "",
+			engine_number: unit.engine_number || "",
+			last_hm: unit.last_hm,
+			last_km: unit.last_km,
+			status: unit.status,
+			site_id: unit.site_id,
+			vendor_id: unit.vendor_id || ""
+		});
+		setIsEditOpen(true);
+	};
+	const handleOpenStatus = (unit) => {
+		setSelectedUnit(unit);
+		statusForm.setData("status", unit.status);
+		setIsStatusOpen(true);
+	};
+	const handleOpenDetail = (unit) => {
+		setSelectedUnit(unit);
+		setIsDetailOpen(true);
+	};
+	const submitCreate = (e) => {
+		e.preventDefault();
+		createForm.post("/fleet/registry", { onSuccess: () => {
+			createForm.reset();
+			setIsCreateOpen(false);
+		} });
+	};
+	const submitEdit = (e) => {
+		e.preventDefault();
+		editForm.put(`/fleet/registry/${selectedUnit.id}`, { onSuccess: () => {
+			setIsEditOpen(false);
+		} });
+	};
+	const submitStatus = (e) => {
+		e.preventDefault();
+		statusForm.put(`/fleet/registry/${selectedUnit.id}/status`, { onSuccess: () => {
+			setIsStatusOpen(false);
+		} });
+	};
+	const getStatusBadge = (unitStatus) => {
+		switch (unitStatus) {
+			case "operating": return /* @__PURE__ */ jsxs("span", {
+				className: "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 animate-pulse",
+				children: [/* @__PURE__ */ jsx("span", { className: "w-1.5 h-1.5 mr-1.5 rounded-full bg-emerald-500" }), "Operating"]
+			});
+			case "standby": return /* @__PURE__ */ jsxs("span", {
+				className: "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300",
+				children: [/* @__PURE__ */ jsx("span", { className: "w-1.5 h-1.5 mr-1.5 rounded-full bg-blue-500" }), "Standby RFU"]
+			});
+			case "breakdown": return /* @__PURE__ */ jsxs("span", {
+				className: "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300",
+				children: [/* @__PURE__ */ jsx("span", { className: "w-1.5 h-1.5 mr-1.5 rounded-full bg-rose-500" }), "Breakdown"]
+			});
+			case "maintenance": return /* @__PURE__ */ jsxs("span", {
+				className: "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
+				children: [/* @__PURE__ */ jsx("span", { className: "w-1.5 h-1.5 mr-1.5 rounded-full bg-amber-500" }), "Maintenance"]
+			});
+			default: return /* @__PURE__ */ jsx("span", {
+				className: "px-2 py-0.5 rounded text-xs bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300",
+				children: unitStatus
+			});
+		}
+	};
+	const formatUnitType = (type) => {
+		return {
+			dump_truck_10: "DT 10 Roda",
+			dump_truck_12: "DT 12 Roda",
+			light_vehicle: "Light Vehicle (LV)",
+			fuel_truck: "Fuel Truck",
+			service_truck: "Service Truck",
+			support_equipment: "Support Equipment"
+		}[type] || type;
+	};
+	return /* @__PURE__ */ jsxs(DashboardLayout, { children: [
+		/* @__PURE__ */ jsx(Head, { title: "Unit Registry & Fleet Status Monitoring - TAP" }),
+		/* @__PURE__ */ jsxs("div", {
+			className: "space-y-6",
+			children: [
+				/* @__PURE__ */ jsxs("div", {
+					className: "flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700",
+					children: [/* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsxs("div", {
+						className: "flex items-center space-x-3",
+						children: [/* @__PURE__ */ jsx("div", {
+							className: "p-2.5 rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400",
+							children: /* @__PURE__ */ jsx(Truck, { className: "w-6 h-6" })
+						}), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("h1", {
+							className: "text-2xl font-bold text-slate-900 dark:text-white",
+							children: "Unit Registry & Fleet Status"
+						}), /* @__PURE__ */ jsx("p", {
+							className: "text-sm text-slate-500 dark:text-slate-400",
+							children: "Registrasi seluruh unit dump truck, armada pendukung, dan pemantauan status RFU real-time"
+						})] })]
+					}) }), /* @__PURE__ */ jsxs("div", {
+						className: "flex items-center space-x-3 w-full sm:w-auto",
+						children: [/* @__PURE__ */ jsxs(Button, {
+							variant: "secondary",
+							onClick: () => router.get("/fleet/registry"),
+							className: "flex items-center space-x-2",
+							children: [/* @__PURE__ */ jsx(RefreshCw, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { children: "Segarkan" })]
+						}), /* @__PURE__ */ jsxs(Button, {
+							variant: "primary",
+							onClick: () => setIsCreateOpen(true),
+							className: "flex items-center space-x-2",
+							children: [/* @__PURE__ */ jsx(Plus, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { children: "Registrasi Unit Baru" })]
+						})]
+					})]
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4",
+					children: [
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-slate-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider",
+								children: "Total Armada"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-slate-900 dark:text-white",
+									children: summary.total || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-slate-400",
+									children: "Unit"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-emerald-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider",
+								children: "Ready (RFU)"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-emerald-600 dark:text-emerald-400",
+									children: summary.rfu_ready || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-emerald-600/80",
+									children: "Siap Jalan"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-emerald-400",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider",
+								children: "Operating"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-slate-900 dark:text-white",
+									children: summary.operating || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-slate-400",
+									children: "Hauling"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-blue-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider",
+								children: "Standby"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-slate-900 dark:text-white",
+									children: summary.standby || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-slate-400",
+									children: "Siaga"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-rose-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-rose-600 dark:text-rose-400 uppercase tracking-wider",
+								children: "Breakdown"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-rose-600 dark:text-rose-400",
+									children: summary.breakdown || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-rose-500",
+									children: "Kritis"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-amber-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wider",
+								children: "Maintenance"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-amber-600 dark:text-amber-400",
+									children: summary.maintenance || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-amber-500",
+									children: "Workshop"
+								})]
+							})]
+						})
+					]
+				}),
+				/* @__PURE__ */ jsx(Card, {
+					className: "p-5 bg-white dark:bg-slate-800",
+					children: /* @__PURE__ */ jsxs("form", {
+						onSubmit: handleFilter,
+						className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+								children: "Cari Armada"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "relative",
+								children: [/* @__PURE__ */ jsx(Search, { className: "w-4 h-4 absolute left-3 top-3 text-slate-400" }), /* @__PURE__ */ jsx("input", {
+									type: "text",
+									value: search,
+									onChange: (e) => setSearch(e.target.value),
+									placeholder: "No. Lambung / Plat / Seri...",
+									className: "w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-emerald-500"
+								})]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+								children: "Status Operasi"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: status,
+								onChange: (e) => setStatus(e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+								children: [
+									/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "Semua Status"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "operating",
+										children: "Operating"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "standby",
+										children: "Standby (RFU)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "breakdown",
+										children: "Breakdown"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "maintenance",
+										children: "Maintenance"
+									})
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+								children: "Jenis Unit"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: unitType,
+								onChange: (e) => setUnitType(e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+								children: [
+									/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "Semua Tipe"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "dump_truck_10",
+										children: "Dump Truck 10 Roda"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "dump_truck_12",
+										children: "Dump Truck 12 Roda"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "light_vehicle",
+										children: "Light Vehicle"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "fuel_truck",
+										children: "Fuel Truck"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "service_truck",
+										children: "Service Truck"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "support_equipment",
+										children: "Support Equipment"
+									})
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+								children: "Site Proyek"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: siteId,
+								onChange: (e) => setSiteId(e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+								children: [/* @__PURE__ */ jsx("option", {
+									value: "",
+									children: "Semua Site"
+								}), master.sites?.map((s) => /* @__PURE__ */ jsxs("option", {
+									value: s.id,
+									children: [
+										s.name,
+										" (",
+										s.code,
+										")"
+									]
+								}, s.id))]
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex items-end space-x-2",
+								children: [/* @__PURE__ */ jsxs(Button, {
+									type: "submit",
+									variant: "primary",
+									className: "flex-1 flex items-center justify-center space-x-1",
+									children: [/* @__PURE__ */ jsx(Filter, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { children: "Filter" })]
+								}), /* @__PURE__ */ jsx(Button, {
+									type: "button",
+									variant: "secondary",
+									onClick: handleReset,
+									children: "Reset"
+								})]
+							})
+						]
+					})
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden",
+					children: [/* @__PURE__ */ jsx("div", {
+						className: "overflow-x-auto",
+						children: /* @__PURE__ */ jsxs("table", {
+							className: "w-full text-left border-collapse text-sm",
+							children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", {
+								className: "border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300",
+								children: [
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "No. Lambung & Plat"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Tipe & Spesifikasi"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Kapasitas"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "HM & KM Terakhir"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Status & RFU"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "P2H Terakhir"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4 text-right",
+										children: "Aksi"
+									})
+								]
+							}) }), /* @__PURE__ */ jsx("tbody", {
+								className: "divide-y divide-slate-200 dark:divide-slate-700",
+								children: units.data?.length > 0 ? units.data.map((unit) => {
+									const isRfu = (unit.status === "operating" || unit.status === "standby") && !unit.active_work_order;
+									return /* @__PURE__ */ jsxs("tr", {
+										className: "hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors",
+										children: [
+											/* @__PURE__ */ jsx("td", {
+												className: "py-3.5 px-4",
+												children: /* @__PURE__ */ jsxs("div", {
+													className: "flex items-center space-x-3",
+													children: [/* @__PURE__ */ jsx("div", {
+														className: "w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center font-bold text-slate-700 dark:text-slate-200",
+														children: /* @__PURE__ */ jsx(Truck, { className: "w-5 h-5 text-emerald-600" })
+													}), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+														className: "font-bold text-slate-900 dark:text-white block text-base",
+														children: unit.unit_code
+													}), /* @__PURE__ */ jsx("span", {
+														className: "text-xs font-mono text-slate-500 dark:text-slate-400",
+														children: unit.registration_number
+													})] })]
+												})
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-3.5 px-4",
+												children: [/* @__PURE__ */ jsx("div", {
+													className: "text-slate-900 dark:text-white font-medium",
+													children: formatUnitType(unit.unit_type)
+												}), /* @__PURE__ */ jsxs("div", {
+													className: "text-xs text-slate-500 dark:text-slate-400",
+													children: [
+														unit.brand,
+														" ",
+														unit.model,
+														" (",
+														unit.year || "-",
+														")"
+													]
+												})]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-3.5 px-4",
+												children: [/* @__PURE__ */ jsxs("div", {
+													className: "font-semibold text-slate-900 dark:text-white",
+													children: [
+														unit.capacity_ton,
+														" ",
+														/* @__PURE__ */ jsx("span", {
+															className: "text-xs font-normal text-slate-500",
+															children: "Ton"
+														})
+													]
+												}), unit.capacity_m3 && /* @__PURE__ */ jsxs("div", {
+													className: "text-xs text-slate-500 dark:text-slate-400",
+													children: [unit.capacity_m3, " m³"]
+												})]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-3.5 px-4",
+												children: [/* @__PURE__ */ jsxs("div", {
+													className: "text-slate-900 dark:text-white font-mono font-medium",
+													children: [
+														Number(unit.last_hm).toLocaleString("id-ID"),
+														" ",
+														/* @__PURE__ */ jsx("span", {
+															className: "text-xs font-sans text-slate-500",
+															children: "HM"
+														})
+													]
+												}), /* @__PURE__ */ jsxs("div", {
+													className: "text-xs font-mono text-slate-500 dark:text-slate-400",
+													children: [Number(unit.last_km).toLocaleString("id-ID"), " KM"]
+												})]
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-3.5 px-4",
+												children: /* @__PURE__ */ jsxs("div", {
+													className: "space-y-1",
+													children: [/* @__PURE__ */ jsx("div", { children: getStatusBadge(unit.status) }), /* @__PURE__ */ jsx("div", { children: isRfu ? /* @__PURE__ */ jsxs("span", {
+														className: "inline-flex items-center text-xs font-medium text-emerald-600 dark:text-emerald-400",
+														children: [/* @__PURE__ */ jsx(CheckCircle2, { className: "w-3.5 h-3.5 mr-1" }), "RFU Verified"]
+													}) : /* @__PURE__ */ jsxs("span", {
+														className: "inline-flex items-center text-xs font-medium text-rose-600 dark:text-rose-400",
+														children: [/* @__PURE__ */ jsx(AlertTriangle, { className: "w-3.5 h-3.5 mr-1" }), "Not RFU"]
+													}) })]
+												})
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-3.5 px-4",
+												children: unit.latest_p2h ? /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+													className: `inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${unit.latest_p2h.overall_condition === "rfu" ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300" : unit.latest_p2h.overall_condition === "rfu_with_notes" ? "bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300" : "bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 font-bold"}`,
+													children: unit.latest_p2h.overall_condition.toUpperCase()
+												}), /* @__PURE__ */ jsx("div", {
+													className: "text-[11px] text-slate-500 dark:text-slate-400 mt-0.5",
+													children: unit.latest_p2h.inspection_date
+												})] }) : /* @__PURE__ */ jsx("span", {
+													className: "text-xs text-slate-400 italic",
+													children: "Belum Ada P2H"
+												})
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-3.5 px-4 text-right",
+												children: /* @__PURE__ */ jsxs("div", {
+													className: "flex items-center justify-end space-x-1.5",
+													children: [
+														/* @__PURE__ */ jsx("button", {
+															onClick: () => handleOpenDetail(unit),
+															className: "p-1.5 text-slate-500 hover:text-emerald-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition",
+															title: "Detail Armada",
+															children: /* @__PURE__ */ jsx(Eye, { className: "w-4 h-4" })
+														}),
+														/* @__PURE__ */ jsx("button", {
+															onClick: () => handleOpenStatus(unit),
+															className: "p-1.5 text-slate-500 hover:text-blue-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition",
+															title: "Ubah Status",
+															children: /* @__PURE__ */ jsx(Activity, { className: "w-4 h-4" })
+														}),
+														/* @__PURE__ */ jsx("button", {
+															onClick: () => handleOpenEdit(unit),
+															className: "p-1.5 text-slate-500 hover:text-amber-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition",
+															title: "Edit Spesifikasi",
+															children: /* @__PURE__ */ jsx(Edit, { className: "w-4 h-4" })
+														})
+													]
+												})
+											})
+										]
+									}, unit.id);
+								}) : /* @__PURE__ */ jsx("tr", { children: /* @__PURE__ */ jsx("td", {
+									colSpan: "7",
+									className: "py-12 text-center text-slate-400 dark:text-slate-500",
+									children: "Tidak ada unit yang sesuai dengan kriteria filter."
+								}) })
+							})]
+						})
+					}), /* @__PURE__ */ jsxs("div", {
+						className: "p-4 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center",
+						children: [/* @__PURE__ */ jsxs("span", {
+							className: "text-xs text-slate-500 dark:text-slate-400",
+							children: [
+								"Menampilkan ",
+								units.data?.length || 0,
+								" unit dari ",
+								units.total || 0,
+								" armada terdaftar"
+							]
+						}), /* @__PURE__ */ jsx(Pagination, { links: units.links })]
+					})]
+				})
+			]
+		}),
+		/* @__PURE__ */ jsx(Modal, {
+			isOpen: isCreateOpen,
+			onClose: () => setIsCreateOpen(false),
+			title: "Registrasi Unit Armada Baru",
+			maxWidth: "max-w-3xl",
+			children: /* @__PURE__ */ jsxs("form", {
+				onSubmit: submitCreate,
+				className: "space-y-4",
+				children: [/* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 sm:grid-cols-2 gap-4",
+					children: [
+						/* @__PURE__ */ jsxs("div", { children: [
+							/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Nomor Lambung (Unit Code) *"
+							}),
+							/* @__PURE__ */ jsx("input", {
+								type: "text",
+								required: true,
+								placeholder: "Contoh: DT-201",
+								value: createForm.data.unit_code,
+								onChange: (e) => createForm.setData("unit_code", e.target.value.toUpperCase()),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+							}),
+							createForm.errors.unit_code && /* @__PURE__ */ jsx("p", {
+								className: "text-xs text-rose-500 mt-1",
+								children: createForm.errors.unit_code
+							})
+						] }),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Nomor Polisi (Plat) *"
+						}), /* @__PURE__ */ jsx("input", {
+							type: "text",
+							required: true,
+							placeholder: "Contoh: KT 8234 TAP",
+							value: createForm.data.registration_number,
+							onChange: (e) => createForm.setData("registration_number", e.target.value.toUpperCase()),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+						})] }),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Jenis Armada *"
+						}), /* @__PURE__ */ jsxs("select", {
+							value: createForm.data.unit_type,
+							onChange: (e) => createForm.setData("unit_type", e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+							children: [
+								/* @__PURE__ */ jsx("option", {
+									value: "dump_truck_10",
+									children: "Dump Truck 10 Roda"
+								}),
+								/* @__PURE__ */ jsx("option", {
+									value: "dump_truck_12",
+									children: "Dump Truck 12 Roda"
+								}),
+								/* @__PURE__ */ jsx("option", {
+									value: "light_vehicle",
+									children: "Light Vehicle (LV)"
+								}),
+								/* @__PURE__ */ jsx("option", {
+									value: "fuel_truck",
+									children: "Fuel Truck"
+								}),
+								/* @__PURE__ */ jsx("option", {
+									value: "service_truck",
+									children: "Service Truck"
+								}),
+								/* @__PURE__ */ jsx("option", {
+									value: "support_equipment",
+									children: "Support Equipment"
+								})
+							]
+						})] }),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Merek (Brand) *"
+						}), /* @__PURE__ */ jsx("input", {
+							type: "text",
+							required: true,
+							placeholder: "Hino / Scania / Volvo / Mitsubishi",
+							value: createForm.data.brand,
+							onChange: (e) => createForm.setData("brand", e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+						})] }),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Model / Tipe Seri"
+						}), /* @__PURE__ */ jsx("input", {
+							type: "text",
+							placeholder: "FM 260 JD / FMX 440",
+							value: createForm.data.model,
+							onChange: (e) => createForm.setData("model", e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+						})] }),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Tahun Pembuatan"
+						}), /* @__PURE__ */ jsx("input", {
+							type: "number",
+							placeholder: "2024",
+							value: createForm.data.year,
+							onChange: (e) => createForm.setData("year", e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+						})] }),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Kapasitas Angkut (Ton) *"
+						}), /* @__PURE__ */ jsx("input", {
+							type: "number",
+							step: "0.1",
+							required: true,
+							value: createForm.data.capacity_ton,
+							onChange: (e) => createForm.setData("capacity_ton", e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+						})] }),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Kapasitas Bak (m³)"
+						}), /* @__PURE__ */ jsx("input", {
+							type: "number",
+							step: "0.1",
+							value: createForm.data.capacity_m3,
+							onChange: (e) => createForm.setData("capacity_m3", e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+						})] }),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Hour Meter (HM) Awal *"
+						}), /* @__PURE__ */ jsx("input", {
+							type: "number",
+							step: "0.1",
+							required: true,
+							value: createForm.data.last_hm,
+							onChange: (e) => createForm.setData("last_hm", e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+						})] }),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Kilo Meter (KM) Awal *"
+						}), /* @__PURE__ */ jsx("input", {
+							type: "number",
+							step: "0.1",
+							required: true,
+							value: createForm.data.last_km,
+							onChange: (e) => createForm.setData("last_km", e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+						})] }),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Site Proyek *"
+						}), /* @__PURE__ */ jsx("select", {
+							required: true,
+							value: createForm.data.site_id,
+							onChange: (e) => createForm.setData("site_id", e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+							children: master.sites?.map((s) => /* @__PURE__ */ jsxs("option", {
+								value: s.id,
+								children: [
+									s.name,
+									" (",
+									s.code,
+									")"
+								]
+							}, s.id))
+						})] }),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Vendor / Kepemilikan"
+						}), /* @__PURE__ */ jsxs("select", {
+							value: createForm.data.vendor_id,
+							onChange: (e) => createForm.setData("vendor_id", e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+							children: [/* @__PURE__ */ jsx("option", {
+								value: "",
+								children: "Internal TAP"
+							}), master.vendors?.map((v) => /* @__PURE__ */ jsx("option", {
+								value: v.id,
+								children: v.name
+							}, v.id))]
+						})] })
+					]
+				}), /* @__PURE__ */ jsxs("div", {
+					className: "flex justify-end space-x-3 pt-4 border-t border-slate-200 dark:border-slate-700",
+					children: [/* @__PURE__ */ jsx(Button, {
+						type: "button",
+						variant: "secondary",
+						onClick: () => setIsCreateOpen(false),
+						children: "Batal"
+					}), /* @__PURE__ */ jsx(Button, {
+						type: "submit",
+						variant: "primary",
+						disabled: createForm.processing,
+						children: createForm.processing ? "Menyimpan..." : "Simpan & Daftarkan Unit"
+					})]
+				})]
+			})
+		}),
+		/* @__PURE__ */ jsx(Modal, {
+			isOpen: isEditOpen,
+			onClose: () => setIsEditOpen(false),
+			title: `Edit Spesifikasi Armada: ${selectedUnit?.unit_code}`,
+			children: /* @__PURE__ */ jsxs("form", {
+				onSubmit: submitEdit,
+				className: "space-y-4",
+				children: [/* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 sm:grid-cols-2 gap-4",
+					children: [
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Nomor Polisi (Plat)"
+						}), /* @__PURE__ */ jsx("input", {
+							type: "text",
+							required: true,
+							value: editForm.data.registration_number,
+							onChange: (e) => editForm.setData("registration_number", e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+						})] }),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Kapasitas (Ton)"
+						}), /* @__PURE__ */ jsx("input", {
+							type: "number",
+							step: "0.1",
+							required: true,
+							value: editForm.data.capacity_ton,
+							onChange: (e) => editForm.setData("capacity_ton", e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+						})] }),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Hour Meter (HM)"
+						}), /* @__PURE__ */ jsx("input", {
+							type: "number",
+							step: "0.1",
+							required: true,
+							value: editForm.data.last_hm,
+							onChange: (e) => editForm.setData("last_hm", e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+						})] }),
+						/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+							children: "Kilo Meter (KM)"
+						}), /* @__PURE__ */ jsx("input", {
+							type: "number",
+							step: "0.1",
+							required: true,
+							value: editForm.data.last_km,
+							onChange: (e) => editForm.setData("last_km", e.target.value),
+							className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+						})] })
+					]
+				}), /* @__PURE__ */ jsxs("div", {
+					className: "flex justify-end space-x-3 pt-4 border-t border-slate-200 dark:border-slate-700",
+					children: [/* @__PURE__ */ jsx(Button, {
+						type: "button",
+						variant: "secondary",
+						onClick: () => setIsEditOpen(false),
+						children: "Batal"
+					}), /* @__PURE__ */ jsx(Button, {
+						type: "submit",
+						variant: "primary",
+						disabled: editForm.processing,
+						children: editForm.processing ? "Menyimpan..." : "Perbarui Spesifikasi"
+					})]
+				})]
+			})
+		}),
+		/* @__PURE__ */ jsx(Modal, {
+			isOpen: isStatusOpen,
+			onClose: () => setIsStatusOpen(false),
+			title: `Ubah Status Armada: ${selectedUnit?.unit_code}`,
+			children: /* @__PURE__ */ jsxs("form", {
+				onSubmit: submitStatus,
+				className: "space-y-4",
+				children: [
+					/* @__PURE__ */ jsxs("p", {
+						className: "text-sm text-slate-600 dark:text-slate-300",
+						children: [
+							"Pilih status operasional terkini untuk unit ",
+							/* @__PURE__ */ jsx("strong", { children: selectedUnit?.unit_code }),
+							" (",
+							selectedUnit?.registration_number,
+							"):"
+						]
+					}),
+					/* @__PURE__ */ jsx("div", {
+						className: "space-y-2",
+						children: [
+							"operating",
+							"standby",
+							"breakdown",
+							"maintenance"
+						].map((st) => /* @__PURE__ */ jsxs("label", {
+							className: `flex items-center justify-between p-3.5 rounded-xl border cursor-pointer transition ${statusForm.data.status === st ? "border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/30" : "border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"}`,
+							children: [/* @__PURE__ */ jsxs("div", {
+								className: "flex items-center space-x-3",
+								children: [/* @__PURE__ */ jsx("input", {
+									type: "radio",
+									name: "status",
+									value: st,
+									checked: statusForm.data.status === st,
+									onChange: () => statusForm.setData("status", st),
+									className: "text-emerald-600 focus:ring-emerald-500"
+								}), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+									className: "font-semibold text-slate-900 dark:text-white capitalize block",
+									children: st
+								}), /* @__PURE__ */ jsxs("span", {
+									className: "text-xs text-slate-500 dark:text-slate-400",
+									children: [
+										st === "operating" && "Unit sedang berjalan beroperasi hauling batubara.",
+										st === "standby" && "Unit siap operasi (RFU) namun idle / antre / pergantian shift.",
+										st === "breakdown" && "Unit mengalami kerusakan mendadak di jalan / pit / tambang.",
+										st === "maintenance" && "Unit sedang berada di bengkel/workshop untuk perbaikan/PM."
+									]
+								})] })]
+							}), getStatusBadge(st)]
+						}, st))
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex justify-end space-x-3 pt-4 border-t border-slate-200 dark:border-slate-700",
+						children: [/* @__PURE__ */ jsx(Button, {
+							type: "button",
+							variant: "secondary",
+							onClick: () => setIsStatusOpen(false),
+							children: "Batal"
+						}), /* @__PURE__ */ jsx(Button, {
+							type: "submit",
+							variant: "primary",
+							disabled: statusForm.processing,
+							children: statusForm.processing ? "Menyimpan..." : "Simpan Status"
+						})]
+					})
+				]
+			})
+		}),
+		selectedUnit && /* @__PURE__ */ jsx(Modal, {
+			isOpen: isDetailOpen,
+			onClose: () => setIsDetailOpen(false),
+			title: `Detail Armada: ${selectedUnit.unit_code}`,
+			maxWidth: "max-w-2xl",
+			children: /* @__PURE__ */ jsxs("div", {
+				className: "space-y-4",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "p-4 bg-slate-50 dark:bg-slate-900 rounded-xl grid grid-cols-2 gap-4 text-sm",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs text-slate-500 dark:text-slate-400 block",
+								children: "Nomor Lambung"
+							}), /* @__PURE__ */ jsx("span", {
+								className: "font-bold text-slate-900 dark:text-white text-base",
+								children: selectedUnit.unit_code
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs text-slate-500 dark:text-slate-400 block",
+								children: "Nomor Polisi"
+							}), /* @__PURE__ */ jsx("span", {
+								className: "font-mono font-bold text-slate-900 dark:text-white",
+								children: selectedUnit.registration_number
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs text-slate-500 dark:text-slate-400 block",
+								children: "Tipe Unit"
+							}), /* @__PURE__ */ jsx("span", {
+								className: "font-medium text-slate-900 dark:text-white",
+								children: formatUnitType(selectedUnit.unit_type)
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs text-slate-500 dark:text-slate-400 block",
+								children: "Brand & Model"
+							}), /* @__PURE__ */ jsxs("span", {
+								className: "text-slate-900 dark:text-white",
+								children: [
+									selectedUnit.brand,
+									" ",
+									selectedUnit.model,
+									" (",
+									selectedUnit.year,
+									")"
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs text-slate-500 dark:text-slate-400 block",
+								children: "Kapasitas Muatan"
+							}), /* @__PURE__ */ jsxs("span", {
+								className: "font-semibold text-slate-900 dark:text-white",
+								children: [
+									selectedUnit.capacity_ton,
+									" Ton / ",
+									selectedUnit.capacity_m3 || "-",
+									" m³"
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs text-slate-500 dark:text-slate-400 block",
+								children: "Status Terkini"
+							}), /* @__PURE__ */ jsx("div", { children: getStatusBadge(selectedUnit.status) })] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs text-slate-500 dark:text-slate-400 block",
+								children: "Total Hour Meter (HM)"
+							}), /* @__PURE__ */ jsxs("span", {
+								className: "font-mono font-bold text-slate-900 dark:text-white",
+								children: [Number(selectedUnit.last_hm).toLocaleString("id-ID"), " HM"]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs text-slate-500 dark:text-slate-400 block",
+								children: "Total Kilo Meter (KM)"
+							}), /* @__PURE__ */ jsxs("span", {
+								className: "font-mono font-bold text-slate-900 dark:text-white",
+								children: [Number(selectedUnit.last_km).toLocaleString("id-ID"), " KM"]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs text-slate-500 dark:text-slate-400 block",
+								children: "Nomor Rangka"
+							}), /* @__PURE__ */ jsx("span", {
+								className: "font-mono text-xs text-slate-700 dark:text-slate-300",
+								children: selectedUnit.chassis_number || "-"
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs text-slate-500 dark:text-slate-400 block",
+								children: "Nomor Mesin"
+							}), /* @__PURE__ */ jsx("span", {
+								className: "font-mono text-xs text-slate-700 dark:text-slate-300",
+								children: selectedUnit.engine_number || "-"
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs text-slate-500 dark:text-slate-400 block",
+								children: "Site Penempatan"
+							}), /* @__PURE__ */ jsx("span", {
+								className: "text-slate-900 dark:text-white font-medium",
+								children: selectedUnit.site?.name || "-"
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs text-slate-500 dark:text-slate-400 block",
+								children: "Vendor / Pemilik"
+							}), /* @__PURE__ */ jsx("span", {
+								className: "text-slate-900 dark:text-white",
+								children: selectedUnit.vendor?.name || "Internal TAP"
+							})] })
+						]
+					}),
+					selectedUnit.active_work_order && /* @__PURE__ */ jsxs("div", {
+						className: "p-4 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-xl",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex items-center space-x-2 text-rose-700 dark:text-rose-300 font-bold mb-1",
+							children: [/* @__PURE__ */ jsx(ShieldAlert, { className: "w-5 h-5" }), /* @__PURE__ */ jsxs("span", { children: ["Work Order Aktif: ", selectedUnit.active_work_order.wo_number] })]
+						}), /* @__PURE__ */ jsx("p", {
+							className: "text-xs text-rose-600 dark:text-rose-400",
+							children: selectedUnit.active_work_order.defect_summary
+						})]
+					}),
+					/* @__PURE__ */ jsx("div", {
+						className: "flex justify-end pt-2",
+						children: /* @__PURE__ */ jsx(Button, {
+							variant: "secondary",
+							onClick: () => setIsDetailOpen(false),
+							children: "Tutup"
+						})
+					})
+				]
+			})
+		})
+	] });
+}
+// resources/js/Pages/Fleet/WorkOrders/Index.jsx
+var Index_exports$15 = /* @__PURE__ */ __exportAll({ default: () => WorkOrdersIndex });
+function WorkOrdersIndex({ workOrders = {
+	data: [],
+	links: []
+}, filters = {}, metrics = {}, master = {} }) {
+	const [status, setStatus] = useState(filters.status || "");
+	const [priority, setPriority] = useState(filters.priority || "");
+	const [unitId, setUnitId] = useState(filters.unit_id || "");
+	const [isCreateOpen, setIsCreateOpen] = useState(false);
+	const [isStatusOpen, setIsStatusOpen] = useState(false);
+	const [selectedWo, setSelectedWo] = useState(null);
+	const createForm = useForm({
+		unit_id: master.units?.[0]?.id || "",
+		source: "road_breakdown",
+		priority: "high",
+		breakdown_time: (/* @__PURE__ */ new Date()).toISOString().substring(0, 16),
+		defect_summary: "",
+		assigned_mechanic_id: master.mechanics?.[0]?.id || ""
+	});
+	const statusForm = useForm({
+		status: "in_progress",
+		action_taken: "",
+		assigned_mechanic_id: ""
+	});
+	const handleFilter = (e) => {
+		e?.preventDefault();
+		router.get("/fleet/work-orders", {
+			status,
+			priority,
+			unit_id: unitId
+		}, {
+			preserveState: true,
+			preserveScroll: true
+		});
+	};
+	const handleReset = () => {
+		setStatus("");
+		setPriority("");
+		setUnitId("");
+		router.get("/fleet/work-orders");
+	};
+	const handleOpenStatus = (wo) => {
+		setSelectedWo(wo);
+		statusForm.setData({
+			status: wo.status === "open" ? "in_progress" : wo.status === "in_progress" ? "completed" : wo.status,
+			action_taken: wo.action_taken || "",
+			assigned_mechanic_id: wo.assigned_mechanic_id || master.mechanics?.[0]?.id || ""
+		});
+		setIsStatusOpen(true);
+	};
+	const submitCreate = (e) => {
+		e.preventDefault();
+		createForm.post("/fleet/work-orders", { onSuccess: () => {
+			createForm.reset();
+			setIsCreateOpen(false);
+		} });
+	};
+	const submitStatus = (e) => {
+		e.preventDefault();
+		statusForm.put(`/fleet/work-orders/${selectedWo.id}/status`, { onSuccess: () => {
+			setIsStatusOpen(false);
+		} });
+	};
+	const getPriorityBadge = (p) => {
+		switch (p) {
+			case "critical_emergency": return /* @__PURE__ */ jsx("span", {
+				className: "px-2.5 py-0.5 rounded-full text-xs font-black bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 uppercase animate-pulse",
+				children: "Critical Emergency"
+			});
+			case "high": return /* @__PURE__ */ jsx("span", {
+				className: "px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 uppercase",
+				children: "High"
+			});
+			case "medium": return /* @__PURE__ */ jsx("span", {
+				className: "px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 uppercase",
+				children: "Medium"
+			});
+			case "low": return /* @__PURE__ */ jsx("span", {
+				className: "px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 uppercase",
+				children: "Low"
+			});
+			default: return /* @__PURE__ */ jsx("span", { children: p });
+		}
+	};
+	const getStatusBadge = (st) => {
+		switch (st) {
+			case "open": return /* @__PURE__ */ jsxs("span", {
+				className: "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300",
+				children: [/* @__PURE__ */ jsx("span", { className: "w-1.5 h-1.5 mr-1.5 rounded-full bg-rose-500" }), "OPEN (ANTRE)"]
+			});
+			case "in_progress": return /* @__PURE__ */ jsxs("span", {
+				className: "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 animate-pulse",
+				children: [/* @__PURE__ */ jsx("span", { className: "w-1.5 h-1.5 mr-1.5 rounded-full bg-blue-500" }), "PROSES PERBAIKAN"]
+			});
+			case "waiting_parts": return /* @__PURE__ */ jsxs("span", {
+				className: "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
+				children: [/* @__PURE__ */ jsx("span", { className: "w-1.5 h-1.5 mr-1.5 rounded-full bg-amber-500" }), "MENUNGGU SPAREPART"]
+			});
+			case "completed": return /* @__PURE__ */ jsxs("span", {
+				className: "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
+				children: [/* @__PURE__ */ jsx(CheckCircle2, { className: "w-3.5 h-3.5 mr-1 text-emerald-600" }), "SELESAI (RESTORED RFU)"]
+			});
+			case "cancelled": return /* @__PURE__ */ jsx("span", {
+				className: "px-2 py-0.5 rounded text-xs bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+				children: "DIBATALKAN"
+			});
+			default: return /* @__PURE__ */ jsx("span", { children: st });
+		}
+	};
+	const formatSource = (src) => {
+		return {
+			p2h_defect: "Temuan P2H Digital",
+			road_breakdown: "Breakdown Jalan Hauling",
+			scheduled_pm: "Jadwal PM Berkala",
+			inspection: "Inspeksi K3LH & Mekanik"
+		}[src] || src;
+	};
+	return /* @__PURE__ */ jsxs(DashboardLayout, { children: [
+		/* @__PURE__ */ jsx(Head, { title: "Work Orders & Perbaikan Maintenance - TAP" }),
+		/* @__PURE__ */ jsxs("div", {
+			className: "space-y-6",
+			children: [
+				/* @__PURE__ */ jsxs("div", {
+					className: "flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700",
+					children: [/* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsxs("div", {
+						className: "flex items-center space-x-3",
+						children: [/* @__PURE__ */ jsx("div", {
+							className: "p-2.5 rounded-xl bg-amber-50 text-amber-600 dark:bg-amber-950/60 dark:text-amber-400",
+							children: /* @__PURE__ */ jsx(Wrench, { className: "w-6 h-6" })
+						}), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("h1", {
+							className: "text-2xl font-bold text-slate-900 dark:text-white",
+							children: "Work Order Perbaikan & Maintenance"
+						}), /* @__PURE__ */ jsx("p", {
+							className: "text-sm text-slate-500 dark:text-slate-400",
+							children: "Penerbitan surat perintah kerja perbaikan armada, pelacakan downtime, dan pemulihan status armada ke Siap Operasi (RFU)"
+						})] })]
+					}) }), /* @__PURE__ */ jsxs("div", {
+						className: "flex items-center space-x-3 w-full sm:w-auto",
+						children: [/* @__PURE__ */ jsxs(Button, {
+							variant: "secondary",
+							onClick: () => router.get("/fleet/work-orders"),
+							className: "flex items-center space-x-2",
+							children: [/* @__PURE__ */ jsx(RefreshCw, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { children: "Segarkan" })]
+						}), /* @__PURE__ */ jsxs(Button, {
+							variant: "primary",
+							onClick: () => setIsCreateOpen(true),
+							className: "flex items-center space-x-2",
+							children: [/* @__PURE__ */ jsx(Plus, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { children: "Terbitkan WO Baru" })]
+						})]
+					})]
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4",
+					children: [
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-slate-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider",
+								children: "Total Work Orders"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-slate-900 dark:text-white",
+									children: metrics.total || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-slate-400",
+									children: "SPK"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-rose-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-rose-600 dark:text-rose-400 uppercase tracking-wider",
+								children: "Antre (Open)"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-rose-600 dark:text-rose-400",
+									children: metrics.open || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-rose-500",
+									children: "Menunggu"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-blue-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider",
+								children: "In Progress"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-blue-600 dark:text-blue-400",
+									children: metrics.in_progress || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-blue-500",
+									children: "Sedang Dikerjakan"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-amber-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wider",
+								children: "Tunggu Part"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-amber-600 dark:text-amber-400",
+									children: metrics.waiting_parts || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-amber-500",
+									children: "Sparepart"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-emerald-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-emerald-600 dark:text-emerald-400 uppercase tracking-wider",
+								children: "Selesai (RFU)"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-emerald-600 dark:text-emerald-400",
+									children: metrics.completed || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-emerald-600/80",
+									children: "Pulih Siaga"
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs(Card, {
+							className: "p-4 bg-white dark:bg-slate-800 border-l-4 border-l-purple-500",
+							children: [/* @__PURE__ */ jsx("p", {
+								className: "text-xs font-medium text-purple-600 dark:text-purple-400 uppercase tracking-wider",
+								children: "Akumulasi Downtime"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "flex items-baseline justify-between mt-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-2xl font-black text-purple-600 dark:text-purple-400",
+									children: metrics.total_downtime_hours || 0
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-purple-500",
+									children: "Jam Mati"
+								})]
+							})]
+						})
+					]
+				}),
+				/* @__PURE__ */ jsx(Card, {
+					className: "p-5 bg-white dark:bg-slate-800",
+					children: /* @__PURE__ */ jsxs("form", {
+						onSubmit: handleFilter,
+						className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+								children: "Status Work Order"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: status,
+								onChange: (e) => setStatus(e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+								children: [
+									/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "Semua Status"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "open",
+										children: "Open (Antre)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "in_progress",
+										children: "In Progress (Perbaikan)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "waiting_parts",
+										children: "Waiting Parts"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "completed",
+										children: "Completed (Selesai RFU)"
+									})
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+								children: "Prioritas"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: priority,
+								onChange: (e) => setPriority(e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+								children: [
+									/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "Semua Prioritas"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "critical_emergency",
+										children: "Critical Emergency"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "high",
+										children: "High"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "medium",
+										children: "Medium"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "low",
+										children: "Low"
+									})
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1",
+								children: "Armada Unit"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: unitId,
+								onChange: (e) => setUnitId(e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+								children: [/* @__PURE__ */ jsx("option", {
+									value: "",
+									children: "Semua Unit"
+								}), master.units?.map((u) => /* @__PURE__ */ jsxs("option", {
+									value: u.id,
+									children: [
+										u.unit_code,
+										" (",
+										u.status,
+										")"
+									]
+								}, u.id))]
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex items-end space-x-2",
+								children: [/* @__PURE__ */ jsxs(Button, {
+									type: "submit",
+									variant: "primary",
+									className: "flex-1 flex items-center justify-center space-x-1",
+									children: [/* @__PURE__ */ jsx(Filter, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { children: "Filter" })]
+								}), /* @__PURE__ */ jsx(Button, {
+									type: "button",
+									variant: "secondary",
+									onClick: handleReset,
+									children: "Reset"
+								})]
+							})
+						]
+					})
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden",
+					children: [/* @__PURE__ */ jsx("div", {
+						className: "overflow-x-auto",
+						children: /* @__PURE__ */ jsxs("table", {
+							className: "w-full text-left border-collapse text-sm",
+							children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", {
+								className: "border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60 text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300",
+								children: [
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "No. WO & Waktu Kejadian"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Armada & Sumber Kerusakan"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Ringkasan Kerusakan"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Prioritas"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Mekanik PIC"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Downtime (Jam)"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4",
+										children: "Status & Progres"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-3.5 px-4 text-right",
+										children: "Aksi"
+									})
+								]
+							}) }), /* @__PURE__ */ jsx("tbody", {
+								className: "divide-y divide-slate-200 dark:divide-slate-700",
+								children: workOrders.data?.length > 0 ? workOrders.data.map((wo) => {
+									const downtimeHours = wo.downtime_minutes ? (wo.downtime_minutes / 60).toFixed(1) : "-";
+									return /* @__PURE__ */ jsxs("tr", {
+										className: "hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors",
+										children: [
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-3.5 px-4",
+												children: [/* @__PURE__ */ jsx("div", {
+													className: "font-mono font-bold text-slate-900 dark:text-white",
+													children: wo.wo_number
+												}), /* @__PURE__ */ jsx("div", {
+													className: "text-xs text-slate-500",
+													children: wo.breakdown_time ? new Date(wo.breakdown_time).toLocaleString("id-ID", {
+														dateStyle: "medium",
+														timeStyle: "short"
+													}) : "-"
+												})]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-3.5 px-4",
+												children: [/* @__PURE__ */ jsxs("div", {
+													className: "font-bold text-slate-900 dark:text-white flex items-center space-x-1.5",
+													children: [/* @__PURE__ */ jsx(Truck, { className: "w-4 h-4 text-emerald-600" }), /* @__PURE__ */ jsx("span", { children: wo.unit?.unit_code })]
+												}), /* @__PURE__ */ jsx("div", {
+													className: "text-xs text-slate-500 dark:text-slate-400",
+													children: formatSource(wo.source)
+												})]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-3.5 px-4 max-w-xs",
+												children: [/* @__PURE__ */ jsx("p", {
+													className: "text-xs text-slate-800 dark:text-slate-200 line-clamp-2",
+													title: wo.defect_summary,
+													children: wo.defect_summary
+												}), wo.action_taken && /* @__PURE__ */ jsxs("p", {
+													className: "text-[11px] text-emerald-600 dark:text-emerald-400 mt-1 italic line-clamp-1",
+													children: ["Tindakan: ", wo.action_taken]
+												})]
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-3.5 px-4",
+												children: getPriorityBadge(wo.priority)
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-3.5 px-4",
+												children: /* @__PURE__ */ jsxs("div", {
+													className: "text-slate-900 dark:text-white text-xs font-medium flex items-center space-x-1",
+													children: [/* @__PURE__ */ jsx(User, { className: "w-3.5 h-3.5 text-blue-500" }), /* @__PURE__ */ jsx("span", { children: wo.mechanic?.name || "Belum Ditugaskan" })]
+												})
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-3.5 px-4",
+												children: /* @__PURE__ */ jsx("span", {
+													className: "font-mono text-xs font-bold text-purple-600 dark:text-purple-400",
+													children: downtimeHours !== "-" ? `${downtimeHours} Jam` : "Berjalan..."
+												})
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-3.5 px-4",
+												children: getStatusBadge(wo.status)
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-3.5 px-4 text-right",
+												children: /* @__PURE__ */ jsxs(Button, {
+													size: "sm",
+													variant: wo.status === "completed" ? "secondary" : "primary",
+													onClick: () => handleOpenStatus(wo),
+													className: "inline-flex items-center space-x-1",
+													children: [/* @__PURE__ */ jsx(Wrench, { className: "w-3.5 h-3.5" }), /* @__PURE__ */ jsx("span", { children: wo.status === "completed" ? "Detail" : "Update Status" })]
+												})
+											})
+										]
+									}, wo.id);
+								}) : /* @__PURE__ */ jsx("tr", { children: /* @__PURE__ */ jsx("td", {
+									colSpan: "8",
+									className: "py-12 text-center text-slate-400 dark:text-slate-500",
+									children: "Belum ada data Work Order perbaikan yang sesuai filter."
+								}) })
+							})]
+						})
+					}), /* @__PURE__ */ jsxs("div", {
+						className: "p-4 border-t border-slate-200 dark:border-slate-700 flex justify-between items-center",
+						children: [/* @__PURE__ */ jsxs("span", {
+							className: "text-xs text-slate-500 dark:text-slate-400",
+							children: [
+								"Menampilkan ",
+								workOrders.data?.length || 0,
+								" dari ",
+								workOrders.total || 0,
+								" Work Orders"
+							]
+						}), /* @__PURE__ */ jsx(Pagination, { links: workOrders.links })]
+					})]
+				})
+			]
+		}),
+		/* @__PURE__ */ jsx(Modal, {
+			isOpen: isCreateOpen,
+			onClose: () => setIsCreateOpen(false),
+			title: "Terbitkan Work Order (SPK Perbaikan) Baru",
+			maxWidth: "max-w-2xl",
+			children: /* @__PURE__ */ jsxs("form", {
+				onSubmit: submitCreate,
+				className: "space-y-4",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-1 sm:grid-cols-2 gap-4",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Armada Unit Mengalami Kendala *"
+							}), /* @__PURE__ */ jsx("select", {
+								required: true,
+								value: createForm.data.unit_id,
+								onChange: (e) => createForm.setData("unit_id", e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+								children: master.units?.map((u) => /* @__PURE__ */ jsxs("option", {
+									value: u.id,
+									children: [
+										u.unit_code,
+										" - ",
+										u.unit_type,
+										" (Status: ",
+										u.status,
+										")"
+									]
+								}, u.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Sumber Kejadian *"
+							}), /* @__PURE__ */ jsxs("select", {
+								required: true,
+								value: createForm.data.source,
+								onChange: (e) => createForm.setData("source", e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+								children: [
+									/* @__PURE__ */ jsx("option", {
+										value: "road_breakdown",
+										children: "Breakdown Jalan Hauling"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "p2h_defect",
+										children: "Temuan P2H Digital Driver"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "scheduled_pm",
+										children: "Jadwal PM Berkala"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "inspection",
+										children: "Inspeksi Mekanik / K3LH"
+									})
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Tingkat Prioritas *"
+							}), /* @__PURE__ */ jsxs("select", {
+								required: true,
+								value: createForm.data.priority,
+								onChange: (e) => createForm.setData("priority", e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+								children: [
+									/* @__PURE__ */ jsx("option", {
+										value: "critical_emergency",
+										children: "Critical Emergency (Stop Operasi)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "high",
+										children: "High (Mendesak)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "medium",
+										children: "Medium (Normal)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "low",
+										children: "Low (Ringan)"
+									})
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Waktu Mulai Breakdown *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "datetime-local",
+								required: true,
+								value: createForm.data.breakdown_time,
+								onChange: (e) => createForm.setData("breakdown_time", e.target.value),
+								className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "sm:col-span-2",
+								children: [/* @__PURE__ */ jsx("label", {
+									className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+									children: "Mekanik PIC / Penanggung Jawab"
+								}), /* @__PURE__ */ jsxs("select", {
+									value: createForm.data.assigned_mechanic_id,
+									onChange: (e) => createForm.setData("assigned_mechanic_id", e.target.value),
+									className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+									children: [/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "Pilih Mekanik"
+									}), master.mechanics?.map((m) => /* @__PURE__ */ jsxs("option", {
+										value: m.id,
+										children: [
+											m.name,
+											" (",
+											m.employee_code,
+											")"
+										]
+									}, m.id))]
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "sm:col-span-2",
+								children: [/* @__PURE__ */ jsx("label", {
+									className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+									children: "Deskripsi Kerusakan / Gejala *"
+								}), /* @__PURE__ */ jsx("textarea", {
+									rows: "3",
+									required: true,
+									placeholder: "Contoh: Mesin overheat di hauling road KM 14, selang radiator bocor, perlu penggantian selang dan coolant...",
+									value: createForm.data.defect_summary,
+									onChange: (e) => createForm.setData("defect_summary", e.target.value),
+									className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+								})]
+							})
+						]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "p-3 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900 rounded-xl text-xs text-rose-700 dark:text-rose-300",
+						children: [
+							/* @__PURE__ */ jsx("strong", { children: "Catatan:" }),
+							" Penerbitan Work Order ini otomatis mengubah status unit yang dipilih menjadi ",
+							/* @__PURE__ */ jsx("strong", { children: "BREAKDOWN" }),
+							" dan membatasi penugasan di Daily Dispatch."
+						]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex justify-end space-x-3 pt-4 border-t border-slate-200 dark:border-slate-700",
+						children: [/* @__PURE__ */ jsx(Button, {
+							type: "button",
+							variant: "secondary",
+							onClick: () => setIsCreateOpen(false),
+							children: "Batal"
+						}), /* @__PURE__ */ jsx(Button, {
+							type: "submit",
+							variant: "primary",
+							disabled: createForm.processing,
+							children: createForm.processing ? "Menerbitkan..." : "Terbitkan Work Order"
+						})]
+					})
+				]
+			})
+		}),
+		selectedWo && /* @__PURE__ */ jsx(Modal, {
+			isOpen: isStatusOpen,
+			onClose: () => setIsStatusOpen(false),
+			title: `Update Status Work Order: ${selectedWo.wo_number}`,
+			maxWidth: "max-w-xl",
+			children: /* @__PURE__ */ jsxs("form", {
+				onSubmit: submitStatus,
+				className: "space-y-4",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "p-3.5 bg-slate-50 dark:bg-slate-900 rounded-xl space-y-1 text-xs",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-between",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-slate-500",
+								children: "Armada Unit:"
+							}), /* @__PURE__ */ jsx("span", {
+								className: "font-bold text-slate-900 dark:text-white text-sm",
+								children: selectedWo.unit?.unit_code
+							})]
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "flex justify-between",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-slate-500",
+								children: "Kerusakan:"
+							}), /* @__PURE__ */ jsx("span", {
+								className: "text-slate-800 dark:text-slate-200",
+								children: selectedWo.defect_summary
+							})]
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+						className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+						children: "Status Progres *"
+					}), /* @__PURE__ */ jsxs("select", {
+						required: true,
+						value: statusForm.data.status,
+						onChange: (e) => statusForm.setData("status", e.target.value),
+						className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white font-bold",
+						children: [
+							/* @__PURE__ */ jsx("option", {
+								value: "open",
+								children: "Open (Antre Diperiksa)"
+							}),
+							/* @__PURE__ */ jsx("option", {
+								value: "in_progress",
+								children: "In Progress (Sedang Dikerjakan Mekanik)"
+							}),
+							/* @__PURE__ */ jsx("option", {
+								value: "waiting_parts",
+								children: "Waiting Parts (Menunggu Ketersediaan Sparepart)"
+							}),
+							/* @__PURE__ */ jsx("option", {
+								value: "completed",
+								children: "Completed (Perbaikan Selesai - Pulihkan ke RFU!)"
+							}),
+							/* @__PURE__ */ jsx("option", {
+								value: "cancelled",
+								children: "Cancelled (Dibatalkan)"
+							})
+						]
+					})] }),
+					statusForm.data.status === "completed" && /* @__PURE__ */ jsxs("div", {
+						className: "p-3.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 rounded-xl flex items-start space-x-2 text-xs text-emerald-800 dark:text-emerald-200",
+						children: [/* @__PURE__ */ jsx(CheckCircle, { className: "w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("strong", { children: "Pemulihan Status Armada Otomatis:" }), /* @__PURE__ */ jsxs("p", {
+							className: "mt-0.5",
+							children: [
+								"Dengan menandai status ",
+								/* @__PURE__ */ jsx("strong", { children: "COMPLETED" }),
+								", sistem akan mencatat waktu selesai, menghitung total menit downtime, dan secara otomatis ",
+								/* @__PURE__ */ jsx("strong", { children: "MENGEMBALIKAN STATUS ARMADA MENJADI STANDBY / RFU (READY FOR USE)" }),
+								" sehingga siap dijadwalkan kembali dalam Daily Dispatch."
+							]
+						})] })]
+					}),
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+						className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+						children: "Mekanik PIC"
+					}), /* @__PURE__ */ jsxs("select", {
+						value: statusForm.data.assigned_mechanic_id,
+						onChange: (e) => statusForm.setData("assigned_mechanic_id", e.target.value),
+						className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white",
+						children: [/* @__PURE__ */ jsx("option", {
+							value: "",
+							children: "Pilih Mekanik"
+						}), master.mechanics?.map((m) => /* @__PURE__ */ jsxs("option", {
+							value: m.id,
+							children: [
+								m.name,
+								" (",
+								m.employee_code,
+								")"
+							]
+						}, m.id))]
+					})] }),
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+						className: "block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1",
+						children: "Tindakan Perbaikan yang Dilakukan"
+					}), /* @__PURE__ */ jsx("textarea", {
+						rows: "3",
+						placeholder: "Contoh: Penggantian selang radiator atas, pengisian coolant baru 10 liter, uji running mesin 15 menit temperatur normal...",
+						value: statusForm.data.action_taken,
+						onChange: (e) => statusForm.setData("action_taken", e.target.value),
+						className: "w-full px-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white"
+					})] }),
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex justify-end space-x-3 pt-4 border-t border-slate-200 dark:border-slate-700",
+						children: [/* @__PURE__ */ jsx(Button, {
+							type: "button",
+							variant: "secondary",
+							onClick: () => setIsStatusOpen(false),
+							children: "Batal"
+						}), /* @__PURE__ */ jsx(Button, {
+							type: "submit",
+							variant: "primary",
+							disabled: statusForm.processing,
+							children: statusForm.processing ? "Menyimpan..." : "Perbarui Status"
+						})]
+					})
+				]
+			})
+		})
+	] });
 }
 // resources/js/Pages/Locations/Index.jsx
 var Index_exports$14 = /* @__PURE__ */ __exportAll({ default: () => LocationsIndex });
@@ -4943,14 +9252,6 @@ function OrganizationIndex({ tab = "sites", companies = [], sites, departments, 
 		]
 	});
 }
-// resources/js/components/molecules/Card.jsx
-function Card({ children, className = "", ...props }) {
-	return /* @__PURE__ */ jsx("div", {
-		className: `bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs transition-colors duration-200 ${className}`,
-		...props,
-		children
-	});
-}
 // resources/js/Pages/Production/Dashboard.jsx
 var Dashboard_exports = /* @__PURE__ */ __exportAll({ default: () => ProductionDashboard });
 function ProductionDashboard({ site_id, sites = [], kpi = {}, shift_breakdown = [], top_units = [], top_drivers = [], daily_chart = [], monthly_chart = [], active_dispatches = [] }) {
@@ -5443,40 +9744,6 @@ function ProductionDashboard({ site_id, sites = [], kpi = {}, shift_breakdown = 
 			})]
 		})
 	] });
-}
-// resources/js/components/molecules/Modal.jsx
-function Modal({ isOpen, onClose, title, children, maxWidth = "max-w-xl" }) {
-	useEffect(() => {
-		const handleKeyDown = (e) => {
-			if (e.key === "Escape" && isOpen) onClose();
-		};
-		window.addEventListener("keydown", handleKeyDown);
-		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [isOpen, onClose]);
-	if (!isOpen) return null;
-	return /* @__PURE__ */ jsxs("div", {
-		className: "fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto",
-		children: [/* @__PURE__ */ jsx("div", {
-			className: "fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity",
-			onClick: onClose
-		}), /* @__PURE__ */ jsxs("div", {
-			className: `relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl w-full ${maxWidth} z-10 overflow-hidden transform transition-all my-8 max-h-[90vh] flex flex-col`,
-			children: [/* @__PURE__ */ jsxs("div", {
-				className: "px-5 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between",
-				children: [/* @__PURE__ */ jsx("h3", {
-					className: "text-base font-bold text-slate-900 dark:text-white",
-					children: title
-				}), /* @__PURE__ */ jsx("button", {
-					onClick: onClose,
-					className: "p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition",
-					children: /* @__PURE__ */ jsx(X, { className: "w-5 h-5" })
-				})]
-			}), /* @__PURE__ */ jsx("div", {
-				className: "p-5 overflow-y-auto",
-				children
-			})]
-		})]
-	});
 }
 // resources/js/Pages/Production/Dispatch/Index.jsx
 var Index_exports$11 = /* @__PURE__ */ __exportAll({ default: () => DispatchIndex });
@@ -6261,11 +10528,6 @@ function DispatchIndex({ dispatches = [], filters = {}, summary = {}, master = {
 			})
 		})
 	] });
-}
-// resources/js/components/molecules/Pagination.jsx
-function Pagination({ links = [] }) {
-	if (!links || links.length <= 1) return null;
-	return /* @__PURE__ */ jsx(PaginationControls, { links });
 }
 // resources/js/Pages/Production/Hauling/Index.jsx
 var Index_exports$10 = /* @__PURE__ */ __exportAll({ default: () => HaulingIndex });
@@ -13490,11 +17752,16 @@ createServer((page) => createInertiaApp({
 	title: (title) => title ? `${title} - ${appName}` : appName,
 	resolve: (name) => {
 		return (/* @__PURE__ */ Object.assign({
-			"./Pages/Analytics/Index.jsx": Index_exports$19,
-			"./Pages/Customers/Index.jsx": Index_exports$18,
-			"./Pages/Dashboard/Index.jsx": Index_exports$17,
-			"./Pages/Drivers/Index.jsx": Index_exports$16,
-			"./Pages/Employees/Index.jsx": Index_exports$15,
+			"./Pages/Analytics/Index.jsx": Index_exports$24,
+			"./Pages/Customers/Index.jsx": Index_exports$23,
+			"./Pages/Dashboard/Index.jsx": Index_exports$22,
+			"./Pages/Drivers/Index.jsx": Index_exports$21,
+			"./Pages/Employees/Index.jsx": Index_exports$20,
+			"./Pages/Fleet/HMKM/Index.jsx": Index_exports$19,
+			"./Pages/Fleet/KPI/Index.jsx": Index_exports$18,
+			"./Pages/Fleet/P2H/Index.jsx": Index_exports$17,
+			"./Pages/Fleet/Registry/Index.jsx": Index_exports$16,
+			"./Pages/Fleet/WorkOrders/Index.jsx": Index_exports$15,
 			"./Pages/Locations/Index.jsx": Index_exports$14,
 			"./Pages/Materials/Index.jsx": Index_exports$13,
 			"./Pages/Organization/Index.jsx": Index_exports$12,

@@ -140,6 +140,13 @@ class DailyDispatchController extends Controller
 
             if (!empty($validated['assignments'])) {
                 foreach ($validated['assignments'] as $asg) {
+                    $unit = Unit::findOrFail($asg['unit_id']);
+                    if (!$unit->isRfu()) {
+                        throw \Illuminate\Validation\ValidationException::withMessages([
+                            'assignments' => "Unit {$unit->unit_code} tidak dapat ditugaskan karena status operasional tidak memenuhi syarat (Status: {$unit->status}, Not RFU / Perlu Perbaikan)."
+                        ]);
+                    }
+
                     $assignment = DispatchAssignment::create([
                         'daily_dispatch_id' => $dispatch->id,
                         'unit_id' => $asg['unit_id'],
@@ -183,6 +190,13 @@ class DailyDispatchController extends Controller
         ]);
 
         return DB::transaction(function () use ($dispatch, $validated) {
+            $unit = Unit::findOrFail($validated['unit_id']);
+            if (!$unit->isRfu()) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'unit_id' => "Unit {$unit->unit_code} tidak dapat ditugaskan karena status operasional tidak memenuhi syarat (Status: {$unit->status}, Not RFU / Perlu Perbaikan)."
+                ]);
+            }
+
             $assignment = DispatchAssignment::create([
                 'daily_dispatch_id' => $dispatch->id,
                 'unit_id' => $validated['unit_id'],

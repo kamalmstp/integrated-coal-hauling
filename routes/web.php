@@ -3,11 +3,16 @@
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DailyDispatchController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DigitalP2hController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\DumpingTicketController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\FleetKpiController;
+use App\Http\Controllers\FleetRegistryController;
 use App\Http\Controllers\HaulingActivityController;
+use App\Http\Controllers\HmKmMonitoringController;
 use App\Http\Controllers\LocationController;
+
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\OrganizationController;
 use App\Http\Controllers\ProductionDashboardController;
@@ -21,6 +26,7 @@ use App\Http\Controllers\TicketReconciliationController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendorController;
+use App\Http\Controllers\WorkOrderController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -180,3 +186,31 @@ Route::prefix('production')->name('production.')->group(function () {
     Route::put('/reconciliation/items/{item}', [TicketReconciliationController::class, 'resolveItem'])->name('reconciliation.items.resolve');
     Route::post('/reconciliation/{reconciliation}/settle', [TicketReconciliationController::class, 'settle'])->name('reconciliation.settle');
 });
+
+// 9. Phase 3: Fleet & Unit Management
+Route::prefix('fleet')->name('fleet.')->group(function () {
+    // A. Unit Registry & Real-Time Status Monitoring
+    Route::get('/registry', [FleetRegistryController::class, 'index'])->name('registry.index');
+    Route::post('/registry', [FleetRegistryController::class, 'store'])->name('registry.store');
+    Route::put('/registry/{unit}', [FleetRegistryController::class, 'update'])->name('registry.update');
+    Route::put('/registry/{unit}/status', [FleetRegistryController::class, 'updateStatus'])->name('registry.status');
+    Route::get('/registry/{unit}', [FleetRegistryController::class, 'show'])->name('registry.show');
+
+    // B. Digital P2H (Pemeriksaan Pra-Operasi Harian)
+    Route::get('/p2h', [DigitalP2hController::class, 'index'])->name('p2h.index');
+    Route::post('/p2h', [DigitalP2hController::class, 'store'])->name('p2h.store');
+    Route::get('/p2h/{p2h}', [DigitalP2hController::class, 'show'])->name('p2h.show');
+
+    // C. HM & KM Monitoring & Maintenance Service Intervals
+    Route::get('/hm-km', [HmKmMonitoringController::class, 'index'])->name('hm-km.index');
+    Route::post('/hm-km', [HmKmMonitoringController::class, 'store'])->name('hm-km.store');
+
+    // D. Work Orders & Maintenance
+    Route::get('/work-orders', [WorkOrderController::class, 'index'])->name('work-orders.index');
+    Route::post('/work-orders', [WorkOrderController::class, 'store'])->name('work-orders.store');
+    Route::put('/work-orders/{workOrder}/status', [WorkOrderController::class, 'updateStatus'])->name('work-orders.status');
+
+    // E. Fleet KPI Dashboard
+    Route::get('/kpi', [FleetKpiController::class, 'index'])->name('kpi.index');
+});
+
