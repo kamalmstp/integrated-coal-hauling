@@ -10,7 +10,7 @@ export default function UserProfileDropdown({ user = null, className = '' }) {
     const { theme, toggleTheme } = useThemeStore();
 
     const currentUser = user || {
-        name: 'Ahmad Fauzi',
+        name: 'Mustapa Ahmad Kamal',
         email: 'admin@example.com',
         role: 'Administrator',
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',

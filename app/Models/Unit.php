@@ -75,7 +75,37 @@ class Unit extends Model
 
     public function activeWorkOrder()
     {
-        return $this->hasOne(WorkOrder::class)->whereIn('status', ['open', 'in_progress', 'waiting_parts'])->latestOfMany();
+        return $this->hasOne(WorkOrder::class)->whereIn('status', ['open', 'submitted', 'approved', 'assigned', 'in_progress', 'waiting_sparepart', 'waiting_parts', 'waiting_inspection'])->latestOfMany();
+    }
+
+    public function breakdownReports()
+    {
+        return $this->hasMany(BreakdownReport::class)->orderBy('breakdown_date', 'desc');
+    }
+
+    public function activeBreakdownReport()
+    {
+        return $this->hasOne(BreakdownReport::class)->whereIn('status', ['submitted', 'reviewed', 'converted_to_request'])->latestOfMany();
+    }
+
+    public function maintenanceRequests()
+    {
+        return $this->hasMany(MaintenanceRequest::class)->orderBy('request_date', 'desc');
+    }
+
+    public function jobCards()
+    {
+        return $this->hasMany(JobCard::class)->orderBy('issue_date', 'desc');
+    }
+
+    public function maintenanceCosts()
+    {
+        return $this->hasMany(MaintenanceCost::class)->orderBy('cost_date', 'desc');
+    }
+
+    public function maintenanceSchedules()
+    {
+        return $this->hasMany(MaintenanceSchedule::class);
     }
 
     public function hmKmLogs()
@@ -100,6 +130,10 @@ class Unit extends Model
         }
 
         if ($this->activeWorkOrder()->exists()) {
+            return false;
+        }
+
+        if ($this->activeBreakdownReport()->where('is_critical', true)->exists()) {
             return false;
         }
 

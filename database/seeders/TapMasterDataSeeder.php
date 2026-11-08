@@ -532,7 +532,7 @@ class TapMasterDataSeeder extends Seeder
         $adminUser = User::firstOrCreate(
             ['email' => 'admin@tap-mining.com'],
             [
-                'name' => 'Ahmad Fauzi (Super Administrator)',
+                'name' => 'Mustapa Adhmad Kamal (Super Administrator)',
                 'role' => 'admin',
                 'status' => 'active',
                 'phone' => '+62 812-3456-7890',

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\BreakdownManagementController;
+use App\Http\Controllers\CorrectiveMaintenanceController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DailyDispatchController;
 use App\Http\Controllers\DashboardController;
@@ -11,7 +13,24 @@ use App\Http\Controllers\FleetKpiController;
 use App\Http\Controllers\FleetRegistryController;
 use App\Http\Controllers\HaulingActivityController;
 use App\Http\Controllers\HmKmMonitoringController;
+use App\Http\Controllers\InventoryItemController;
+use App\Http\Controllers\InventoryReportController;
+use App\Http\Controllers\InventoryTransactionController;
+use App\Http\Controllers\JobCardController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\MaintenanceCostController;
+use App\Http\Controllers\MaintenanceDashboardController;
+use App\Http\Controllers\MaintenanceRequestController;
+use App\Http\Controllers\MechanicManagementController;
+use App\Http\Controllers\PreventiveMaintenanceController;
+use App\Http\Controllers\RfuManagementController;
+use App\Http\Controllers\SparepartRequestController;
+use App\Http\Controllers\StockCardController;
+use App\Http\Controllers\StockOpnameController;
+use App\Http\Controllers\WarehouseDashboardController;
+use App\Http\Controllers\WarehouseManagementController;
+use App\Http\Controllers\WarehouseSparepartFulfillmentController;
+use App\Http\Controllers\WorkOrderManagementController;
 
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\OrganizationController;
@@ -213,4 +232,123 @@ Route::prefix('fleet')->name('fleet.')->group(function () {
     // E. Fleet KPI Dashboard
     Route::get('/kpi', [FleetKpiController::class, 'index'])->name('kpi.index');
 });
+
+// 10. Phase 4: Maintenance & Workshop Management
+Route::prefix('maintenance')->name('maintenance.')->group(function () {
+    // 1. Maintenance Dashboard
+    Route::get('/', [MaintenanceDashboardController::class, 'index'])->name('index');
+    Route::get('/dashboard', [MaintenanceDashboardController::class, 'index'])->name('dashboard');
+
+    // 2. Breakdown Management
+    Route::get('/breakdown', [BreakdownManagementController::class, 'index']);
+    Route::post('/breakdown', [BreakdownManagementController::class, 'store']);
+    Route::get('/breakdowns', [BreakdownManagementController::class, 'index'])->name('breakdowns.index');
+    Route::post('/breakdowns', [BreakdownManagementController::class, 'store'])->name('breakdowns.store');
+    Route::put('/breakdowns/{report}/review', [BreakdownManagementController::class, 'review'])->name('breakdowns.review');
+    Route::post('/breakdowns/{report}/convert-request', [BreakdownManagementController::class, 'convertToRequest'])->name('breakdowns.convert-request');
+    Route::post('/breakdowns/{report}/convert-wo', [BreakdownManagementController::class, 'convertToWorkOrder'])->name('breakdowns.convert-wo');
+
+    // 3. Maintenance Requests
+    Route::get('/requests', [MaintenanceRequestController::class, 'index'])->name('requests.index');
+    Route::post('/requests', [MaintenanceRequestController::class, 'store'])->name('requests.store');
+    Route::put('/requests/{mRequest}/approve', [MaintenanceRequestController::class, 'approve'])->name('requests.approve');
+    Route::put('/requests/{mRequest}/reject', [MaintenanceRequestController::class, 'reject'])->name('requests.reject');
+    Route::post('/requests/{mRequest}/convert-wo', [MaintenanceRequestController::class, 'convertToWorkOrder'])->name('requests.convert-wo');
+
+    // 4. Work Order Management
+    Route::get('/work-orders', [WorkOrderManagementController::class, 'index'])->name('work-orders.index');
+    Route::post('/work-orders', [WorkOrderManagementController::class, 'store'])->name('work-orders.store');
+    Route::get('/work-orders/{workOrder}', [WorkOrderManagementController::class, 'show'])->name('work-orders.show');
+    Route::match(['put', 'post'], '/work-orders/{workOrder}/status', [WorkOrderManagementController::class, 'updateStatus'])->name('work-orders.status');
+    Route::post('/work-orders/{workOrder}/assign-mechanic', [WorkOrderManagementController::class, 'assignMechanic'])->name('work-orders.assign-mechanic');
+    Route::post('/work-orders/{workOrder}/tasks', [WorkOrderManagementController::class, 'addTask'])->name('work-orders.tasks.store');
+    Route::match(['put', 'post'], '/work-order-tasks/{task}/toggle', [WorkOrderManagementController::class, 'toggleTask'])->name('work-orders.tasks.toggle');
+    Route::match(['put', 'post'], '/work-orders/tasks/{task}/toggle', [WorkOrderManagementController::class, 'toggleTask']);
+
+    // 5. Preventive Maintenance (PM)
+    Route::get('/preventive', [PreventiveMaintenanceController::class, 'index'])->name('preventive.index');
+    Route::post('/preventive/schedules', [PreventiveMaintenanceController::class, 'storeSchedule'])->name('preventive.schedules.store');
+    Route::post('/preventive/schedules/{schedule}/generate-wo', [PreventiveMaintenanceController::class, 'generateWorkOrder'])->name('preventive.generate-wo');
+
+    // 6. Corrective Maintenance (CM)
+    Route::get('/corrective', [CorrectiveMaintenanceController::class, 'index'])->name('corrective.index');
+
+    // 7. Mechanic Management & Mobile HP Portal
+    Route::get('/mechanics', [MechanicManagementController::class, 'index'])->name('mechanics.index');
+    Route::get('/mechanic-portal', [MechanicManagementController::class, 'portal'])->name('mechanics.portal');
+    Route::post('/mechanic-portal/work-log', [MechanicManagementController::class, 'storeWorkLog'])->name('mechanics.work-log');
+
+    // 8. Job Card Management & Print
+    Route::get('/job-cards', [JobCardController::class, 'index'])->name('job-cards.index');
+    Route::get('/job-cards/{jobCard}', [JobCardController::class, 'show'])->name('job-cards.show');
+    Route::match(['put', 'post'], '/job-cards/checklists/{checklist}', [JobCardController::class, 'updateChecklist'])->name('job-cards.checklist.update');
+    Route::match(['put', 'post'], '/job-cards/{jobCard}/sign-off', [JobCardController::class, 'supervisorSignOff'])->name('job-cards.sign-off');
+    Route::get('/job-cards/{jobCard}/print', [JobCardController::class, 'print'])->name('job-cards.print');
+
+    // 9. Sparepart Requests (Warehouse Integration)
+    Route::get('/spareparts', [SparepartRequestController::class, 'index'])->name('spareparts.index');
+    Route::post('/spareparts', [SparepartRequestController::class, 'store'])->name('spareparts.store');
+    Route::match(['put', 'post'], '/spareparts/{sparepartRequest}/approve', [SparepartRequestController::class, 'approve'])->name('spareparts.approve');
+    Route::post('/spareparts/{sparepartRequest}/issue', [SparepartRequestController::class, 'issueParts'])->name('spareparts.issue');
+
+    // 10. RFU Management (Inspection & Final Approval)
+    Route::get('/rfu', [RfuManagementController::class, 'index'])->name('rfu.index');
+    Route::post('/rfu/inspect', [RfuManagementController::class, 'submitInspection']);
+    Route::post('/rfu/{workOrder}/inspect', [RfuManagementController::class, 'submitInspection'])->name('rfu.inspect');
+    Route::post('/rfu/approve', [RfuManagementController::class, 'approveRfu']);
+    Route::post('/rfu/{workOrder}/approve', [RfuManagementController::class, 'approveRfu'])->name('rfu.approve');
+
+    // 11. Maintenance Cost Management
+    Route::get('/costs', [MaintenanceCostController::class, 'index'])->name('costs.index');
+    Route::post('/costs', [MaintenanceCostController::class, 'store'])->name('costs.store');
+});
+
+// 11. Phase 5: Warehouse & Sparepart Management
+Route::prefix('warehouse')->name('warehouse.')->group(function () {
+    // 1. Warehouse Dashboard & Reorder Alerts
+    Route::get('/', [WarehouseDashboardController::class, 'index'])->name('index');
+    Route::get('/dashboard', [WarehouseDashboardController::class, 'index'])->name('dashboard');
+
+    // 2. Item Master & Categories
+    Route::get('/items', [InventoryItemController::class, 'index'])->name('items.index');
+    Route::post('/items', [InventoryItemController::class, 'store'])->name('items.store');
+    Route::put('/items/{inventoryItem}', [InventoryItemController::class, 'update'])->name('items.update');
+
+    // 3. Multi-Warehouse, Rack/Bin Locations & Inter-Warehouse Transfers
+    Route::get('/warehouses', [WarehouseManagementController::class, 'index'])->name('warehouses.index');
+    Route::post('/warehouses', [WarehouseManagementController::class, 'storeWarehouse'])->name('warehouses.store');
+    Route::put('/warehouses/{warehouse}', [WarehouseManagementController::class, 'updateWarehouse'])->name('warehouses.update');
+    Route::post('/locations', [WarehouseManagementController::class, 'storeLocation'])->name('locations.store');
+    Route::post('/transfers', [WarehouseManagementController::class, 'storeTransfer'])->name('transfers.store');
+    Route::post('/transfers/{stockTransfer}/dispatch', [WarehouseManagementController::class, 'dispatchTransfer'])->name('transfers.dispatch');
+    Route::post('/transfers/{stockTransfer}/receive', [WarehouseManagementController::class, 'receiveTransfer'])->name('transfers.receive');
+
+    // 4. Inventory Transactions (Stock In & Stock Out)
+    Route::get('/transactions', [InventoryTransactionController::class, 'index'])->name('transactions.index');
+    Route::post('/transactions/stock-in', [InventoryTransactionController::class, 'storeStockIn'])->name('transactions.stock-in');
+    Route::post('/transactions/stock-out', [InventoryTransactionController::class, 'storeStockOut'])->name('transactions.stock-out');
+
+    // 5. Stock Card (Immutable Ledger & Moving Weighted Average Progression)
+    Route::get('/stock-card', [StockCardController::class, 'index'])->name('stock-card.index');
+
+    // 6. Sparepart Request Fulfillment (Picking, Full/Partial Issue, Backorder, Return)
+    Route::get('/fulfillment', [WarehouseSparepartFulfillmentController::class, 'index'])->name('fulfillment.index');
+    Route::post('/fulfillment/{sparepartRequest}/pick', [WarehouseSparepartFulfillmentController::class, 'pick'])->name('fulfillment.pick');
+    Route::post('/fulfillment/{sparepartRequest}/issue', [WarehouseSparepartFulfillmentController::class, 'issue'])->name('fulfillment.issue');
+    Route::post('/fulfillment/{sparepartRequest}/reject', [WarehouseSparepartFulfillmentController::class, 'reject'])->name('fulfillment.reject');
+    Route::post('/fulfillment/{sparepartRequest}/return', [WarehouseSparepartFulfillmentController::class, 'returnItem'])->name('fulfillment.return');
+
+    // 7. Stock Opname, Investigation & Adjustment Approval
+    Route::get('/opname', [StockOpnameController::class, 'index'])->name('opname.index');
+    Route::post('/opname', [StockOpnameController::class, 'storeOpname'])->name('opname.store');
+    Route::post('/opname/{stockOpname}/counts', [StockOpnameController::class, 'submitCounts'])->name('opname.counts');
+    Route::post('/adjustments', [StockOpnameController::class, 'storeAdjustment'])->name('adjustments.store');
+    Route::post('/adjustments/{stockAdjustment}/approve', [StockOpnameController::class, 'approveAdjustment'])->name('adjustments.approve');
+
+    // 8. Inventory Reports (9 Reports) & Procurement PR Proposals
+    Route::get('/reports', [InventoryReportController::class, 'index'])->name('reports.index');
+    Route::post('/purchase-requests', [InventoryReportController::class, 'storePurchaseRequestProposal'])->name('purchase-requests.store');
+});
+
+
 
