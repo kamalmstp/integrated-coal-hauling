@@ -42,6 +42,8 @@ import {
     ArrowLeftRight,
     BookOpen,
     PackageSearch,
+    ShoppingCart,
+    Receipt,
 } from 'lucide-react';
 import { useSidebarStore } from '../../stores/useSidebarStore';
 
@@ -326,6 +328,59 @@ export default function Sidebar() {
                     badge: '9 Reports',
                     badgeColor: 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300',
                     active: url.startsWith('/warehouse/reports'),
+                },
+            ],
+        },
+        {
+            title: 'Procurement Management (Phase 6)',
+            items: [
+                {
+                    name: 'Dashboard Procurement',
+                    href: '/procurement/dashboard',
+                    icon: ShoppingCart,
+                    badge: 'Phase 6',
+                    badgeColor: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300',
+                    active: url.startsWith('/procurement/dashboard') || url === '/procurement',
+                },
+                {
+                    name: 'Purchase Request (PR)',
+                    href: '/procurement/purchase-requests',
+                    icon: ClipboardList,
+                    badge: 'Approval',
+                    badgeColor: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300',
+                    active: url.startsWith('/procurement/purchase-requests'),
+                },
+                {
+                    name: 'RFQ & Komparasi Vendor',
+                    href: '/procurement/rfqs',
+                    icon: Scale,
+                    badge: 'Bidding',
+                    badgeColor: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300',
+                    active: url.startsWith('/procurement/rfqs'),
+                },
+                {
+                    name: 'Purchase Order (PO)',
+                    href: '/procurement/purchase-orders',
+                    icon: FileSpreadsheet,
+                    badge: 'Print/PDF',
+                    badgeColor: 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300',
+                    active: url.startsWith('/procurement/purchase-orders'),
+                },
+                {
+                    name: 'Goods Receipt (GRN)',
+                    href: '/procurement/goods-receipts',
+                    icon: PackageCheck,
+                    badge: 'Warehouse',
+                    badgeColor: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300',
+                    active: url.startsWith('/procurement/goods-receipts'),
+                },
+                {
+                    name: 'Invoice & 3-Way Match',
+                    href: '/procurement/invoices',
+                    icon: Receipt,
+                    badge: 'Finance Prep',
+                    badgeColor: 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300',
+                    active: url.startsWith('/procurement/invoices'),
                 },
             ],
         },

@@ -28,6 +28,13 @@ class Position extends Model
         'level' => 'integer',
     ];
 
+    protected $appends = ['name'];
+
+    public function getNameAttribute(): ?string
+    {
+        return $this->title;
+    }
+
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);

@@ -12,6 +12,8 @@ class PurchaseRequestItem extends Model
     protected $fillable = [
         'purchase_request_id',
         'inventory_item_id',
+        'item_name',
+        'specification',
         'current_stock',
         'minimum_stock',
         'reorder_point',
@@ -22,6 +24,7 @@ class PurchaseRequestItem extends Model
         'estimated_unit_price',
         'estimated_subtotal',
         'notes',
+        'purpose',
     ];
 
     protected $casts = [

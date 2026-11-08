@@ -1,6 +1,6 @@
 import React, { forwardRef, useEffect, useRef, useState } from "react";
 import * as Icons from "lucide-react";
-import { Activity, AlertCircle, AlertOctagon, AlertTriangle, ArrowDownRight, ArrowLeft, ArrowLeftRight, ArrowUpRight, Award, BarChart3, Barcode, Bell, BellRing, BookOpen, Boxes, Briefcase, Building2, Calculator, Calendar, CalendarCheck, CalendarClock, Camera, CheckCircle, CheckCircle2, CheckSquare, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ClipboardCheck, ClipboardList, Clock, Coins, Database, DollarSign, Download, Edit, Edit3, Eye, FileSpreadsheet, FileText, Filter, Gauge, Hash, HelpCircle, History, Info, Layers, LayoutDashboard, LogOut, MapPin, Menu, Minus, Moon, Network, Package, PackageCheck, PackageSearch, Phone, Plus, Printer, RefreshCw, RotateCcw, Route, Save, Scale, Search, Settings, Shield, ShieldAlert, ShieldCheck, ShoppingCart, Smartphone, Sparkles, Sun, Target, Ticket, Trash2, TrendingUp, Truck, UploadCloud, User, UserCheck, UserPlus, Users, Warehouse, Wrench, X, XCircle } from "lucide-react";
+import { Activity, AlertCircle, AlertOctagon, AlertTriangle, ArrowDownRight, ArrowLeft, ArrowLeftRight, ArrowUpRight, Award, BarChart3, Barcode, Bell, BellRing, BookOpen, Boxes, Briefcase, Building2, Calculator, Calendar, CalendarCheck, CalendarClock, Camera, CheckCircle, CheckCircle2, CheckSquare, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ClipboardCheck, ClipboardList, Clock, Coins, Database, DollarSign, Download, Edit, Edit3, Eye, FileSpreadsheet, FileText, Filter, Gauge, Hash, HelpCircle, History, Info, Layers, LayoutDashboard, LogOut, MapPin, Menu, Minus, Moon, Network, Package, PackageCheck, PackageSearch, Phone, Plus, Printer, Receipt, RefreshCw, RotateCcw, Route, Save, Scale, Search, Settings, Shield, ShieldAlert, ShieldCheck, ShoppingCart, Smartphone, Sparkles, Sun, Target, Ticket, Trash2, TrendingUp, Truck, UploadCloud, User, UserCheck, UserPlus, Users, Warehouse, Wrench, X, XCircle } from "lucide-react";
 import { Head, Link, createInertiaApp, router, useForm, usePage } from "@inertiajs/react";
 import { create } from "zustand";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
@@ -305,6 +305,59 @@ function Sidebar() {
 					badge: "9 Reports",
 					badgeColor: "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300",
 					active: url.startsWith("/warehouse/reports")
+				}
+			]
+		},
+		{
+			title: "Procurement Management (Phase 6)",
+			items: [
+				{
+					name: "Dashboard Procurement",
+					href: "/procurement/dashboard",
+					icon: ShoppingCart,
+					badge: "Phase 6",
+					badgeColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
+					active: url.startsWith("/procurement/dashboard") || url === "/procurement"
+				},
+				{
+					name: "Purchase Request (PR)",
+					href: "/procurement/purchase-requests",
+					icon: ClipboardList,
+					badge: "Approval",
+					badgeColor: "bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300",
+					active: url.startsWith("/procurement/purchase-requests")
+				},
+				{
+					name: "RFQ & Komparasi Vendor",
+					href: "/procurement/rfqs",
+					icon: Scale,
+					badge: "Bidding",
+					badgeColor: "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
+					active: url.startsWith("/procurement/rfqs")
+				},
+				{
+					name: "Purchase Order (PO)",
+					href: "/procurement/purchase-orders",
+					icon: FileSpreadsheet,
+					badge: "Print/PDF",
+					badgeColor: "bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300",
+					active: url.startsWith("/procurement/purchase-orders")
+				},
+				{
+					name: "Goods Receipt (GRN)",
+					href: "/procurement/goods-receipts",
+					icon: PackageCheck,
+					badge: "Warehouse",
+					badgeColor: "bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300",
+					active: url.startsWith("/procurement/goods-receipts")
+				},
+				{
+					name: "Invoice & 3-Way Match",
+					href: "/procurement/invoices",
+					icon: Receipt,
+					badge: "Finance Prep",
+					badgeColor: "bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300",
+					active: url.startsWith("/procurement/invoices")
 				}
 			]
 		},
@@ -1089,7 +1142,7 @@ function DashboardLayout({ children, title = "Dashboard", breadcrumbs = [] }) {
 	});
 }
 // resources/js/Pages/Analytics/Index.jsx
-var Index_exports$43 = /* @__PURE__ */ __exportAll({ default: () => AnalyticsIndex });
+var Index_exports$49 = /* @__PURE__ */ __exportAll({ default: () => AnalyticsIndex });
 function AnalyticsIndex() {
 	return /* @__PURE__ */ jsx(DashboardLayout, {
 		title: "Arsitektur & Analytics",
@@ -1399,7 +1452,7 @@ function PaginationControls({ links = [], from = 0, to = 0, total = 0, className
 	});
 }
 // resources/js/Pages/Customers/Index.jsx
-var Index_exports$42 = /* @__PURE__ */ __exportAll({ default: () => CustomersIndex });
+var Index_exports$48 = /* @__PURE__ */ __exportAll({ default: () => CustomersIndex });
 function CustomersIndex({ customers, filters = {}, sites = [] }) {
 	const { confirm } = useAlertStore();
 	const [search, setSearch] = useState(filters.search || "");
@@ -1976,7 +2029,7 @@ function QuickActionPanel() {
 	});
 }
 // resources/js/Pages/Dashboard/Index.jsx
-var Index_exports$41 = /* @__PURE__ */ __exportAll({ default: () => DashboardIndex });
+var Index_exports$47 = /* @__PURE__ */ __exportAll({ default: () => DashboardIndex });
 function DashboardIndex({ metrics = [], recentUnits = [], recentDrivers = [], chartData = [], unitStatusCounts = {}, driverStatusCounts = {} }) {
 	const getUnitStatusBadge = (status) => {
 		switch (status) {
@@ -2366,7 +2419,7 @@ function DashboardIndex({ metrics = [], recentUnits = [], recentDrivers = [], ch
 	});
 }
 // resources/js/Pages/Drivers/Index.jsx
-var Index_exports$40 = /* @__PURE__ */ __exportAll({ default: () => DriversIndex });
+var Index_exports$46 = /* @__PURE__ */ __exportAll({ default: () => DriversIndex });
 function DriversIndex({ drivers, filters = {}, availableEmployees = [], statistics = {} }) {
 	const { confirm } = useAlertStore();
 	const [search, setSearch] = useState(filters.search || "");
@@ -2927,7 +2980,7 @@ function DriversIndex({ drivers, filters = {}, availableEmployees = [], statisti
 	});
 }
 // resources/js/Pages/Employees/Index.jsx
-var Index_exports$39 = /* @__PURE__ */ __exportAll({ default: () => EmployeesIndex });
+var Index_exports$45 = /* @__PURE__ */ __exportAll({ default: () => EmployeesIndex });
 function EmployeesIndex({ employees, filters = {}, companies = [], sites = [], departments = [], positions = [] }) {
 	const { confirm } = useAlertStore();
 	const [search, setSearch] = useState(filters.search || "");
@@ -3578,7 +3631,7 @@ function Pagination({ links = [] }) {
 	return /* @__PURE__ */ jsx(PaginationControls, { links });
 }
 // resources/js/Pages/Fleet/HMKM/Index.jsx
-var Index_exports$38 = /* @__PURE__ */ __exportAll({ default: () => HmKmMonitoringIndex });
+var Index_exports$44 = /* @__PURE__ */ __exportAll({ default: () => HmKmMonitoringIndex });
 function HmKmMonitoringIndex({ logs = {
 	data: [],
 	links: []
@@ -4336,7 +4389,7 @@ function HmKmMonitoringIndex({ logs = {
 	] });
 }
 // resources/js/Pages/Fleet/KPI/Index.jsx
-var Index_exports$37 = /* @__PURE__ */ __exportAll({ default: () => FleetKpiIndex });
+var Index_exports$43 = /* @__PURE__ */ __exportAll({ default: () => FleetKpiIndex });
 function FleetKpiIndex({ metrics = {}, formulas = {}, dailyTrends = [], unitBreakdown = [], filters = {}, master = {} }) {
 	const [dateFrom, setDateFrom] = useState(filters.date_from || "");
 	const [dateTo, setDateTo] = useState(filters.date_to || "");
@@ -5042,7 +5095,7 @@ function FleetKpiIndex({ metrics = {}, formulas = {}, dailyTrends = [], unitBrea
 	})] });
 }
 // resources/js/Pages/Fleet/P2H/Index.jsx
-var Index_exports$36 = /* @__PURE__ */ __exportAll({ default: () => DigitalP2hIndex });
+var Index_exports$42 = /* @__PURE__ */ __exportAll({ default: () => DigitalP2hIndex });
 var STANDARD_P2H_ITEMS = [
 	{
 		name: "Engine (Suara & Getaran Mesin)",
@@ -5950,7 +6003,7 @@ function DigitalP2hIndex({ inspections = {
 	] });
 }
 // resources/js/Pages/Fleet/Registry/Index.jsx
-var Index_exports$35 = /* @__PURE__ */ __exportAll({ default: () => FleetRegistryIndex });
+var Index_exports$41 = /* @__PURE__ */ __exportAll({ default: () => FleetRegistryIndex });
 function FleetRegistryIndex({ units = {
 	data: [],
 	links: []
@@ -7014,7 +7067,7 @@ function FleetRegistryIndex({ units = {
 	] });
 }
 // resources/js/Pages/Fleet/WorkOrders/Index.jsx
-var Index_exports$34 = /* @__PURE__ */ __exportAll({ default: () => WorkOrdersIndex });
+var Index_exports$40 = /* @__PURE__ */ __exportAll({ default: () => WorkOrdersIndex });
 function WorkOrdersIndex({ workOrders = {
 	data: [],
 	links: []
@@ -7795,7 +7848,7 @@ function WorkOrdersIndex({ workOrders = {
 	] });
 }
 // resources/js/Pages/Locations/Index.jsx
-var Index_exports$33 = /* @__PURE__ */ __exportAll({ default: () => LocationsIndex });
+var Index_exports$39 = /* @__PURE__ */ __exportAll({ default: () => LocationsIndex });
 function LocationsIndex({ locations, filters = {}, sites = [] }) {
 	const { confirm } = useAlertStore();
 	const [search, setSearch] = useState(filters.search || "");
@@ -8225,7 +8278,7 @@ function LocationsIndex({ locations, filters = {}, sites = [] }) {
 	});
 }
 // resources/js/Pages/Maintenance/Breakdown/Index.jsx
-var Index_exports$32 = /* @__PURE__ */ __exportAll({ default: () => BreakdownIndex });
+var Index_exports$38 = /* @__PURE__ */ __exportAll({ default: () => BreakdownIndex });
 function BreakdownIndex({ reports = {
 	data: [],
 	links: []
@@ -9320,7 +9373,7 @@ function BreakdownIndex({ reports = {
 	] });
 }
 // resources/js/Pages/Maintenance/Corrective/Index.jsx
-var Index_exports$31 = /* @__PURE__ */ __exportAll({ default: () => CorrectiveMaintenanceIndex });
+var Index_exports$37 = /* @__PURE__ */ __exportAll({ default: () => CorrectiveMaintenanceIndex });
 function CorrectiveMaintenanceIndex({ orders = {
 	data: [],
 	links: []
@@ -9753,7 +9806,7 @@ function CorrectiveMaintenanceIndex({ orders = {
 	})] });
 }
 // resources/js/Pages/Maintenance/Costs/Index.jsx
-var Index_exports$30 = /* @__PURE__ */ __exportAll({ default: () => MaintenanceCostIndex });
+var Index_exports$36 = /* @__PURE__ */ __exportAll({ default: () => MaintenanceCostIndex });
 function MaintenanceCostIndex({ costs = {
 	data: [],
 	links: []
@@ -10453,7 +10506,7 @@ function MaintenanceCostIndex({ costs = {
 	})] });
 }
 // resources/js/Pages/Maintenance/Dashboard/Index.jsx
-var Index_exports$29 = /* @__PURE__ */ __exportAll({ default: () => MaintenanceDashboardIndex });
+var Index_exports$35 = /* @__PURE__ */ __exportAll({ default: () => MaintenanceDashboardIndex });
 function MaintenanceDashboardIndex({ metrics = {}, topBreakdownUnits = [], recentWorkOrders = [], filters = {}, master = {} }) {
 	const [siteId, setSiteId] = useState(filters.site_id || "");
 	const [unitId, setUnitId] = useState(filters.unit_id || "");
@@ -11093,7 +11146,7 @@ function MaintenanceDashboardIndex({ metrics = {}, topBreakdownUnits = [], recen
 	})] });
 }
 // resources/js/Pages/Maintenance/JobCards/Index.jsx
-var Index_exports$28 = /* @__PURE__ */ __exportAll({ default: () => JobCardIndex });
+var Index_exports$34 = /* @__PURE__ */ __exportAll({ default: () => JobCardIndex });
 function JobCardIndex({ jobCards = {
 	data: [],
 	links: []
@@ -11429,7 +11482,7 @@ function JobCardIndex({ jobCards = {
 	})] });
 }
 // resources/js/Pages/Maintenance/JobCards/Print.jsx
-var Print_exports = /* @__PURE__ */ __exportAll({ default: () => JobCardPrint });
+var Print_exports$1 = /* @__PURE__ */ __exportAll({ default: () => JobCardPrint });
 function JobCardPrint({ jobCard }) {
 	const handlePrint = () => {
 		window.print();
@@ -11911,7 +11964,7 @@ function JobCardPrint({ jobCard }) {
 	});
 }
 // resources/js/Pages/Maintenance/Mechanics/Index.jsx
-var Index_exports$27 = /* @__PURE__ */ __exportAll({ default: () => MechanicIndex });
+var Index_exports$33 = /* @__PURE__ */ __exportAll({ default: () => MechanicIndex });
 function MechanicIndex({ mechanics = [], metrics = {}, recentLogs = [], filters = {}, master = {} }) {
 	const [search, setSearch] = useState(filters.search || "");
 	const [siteId, setSiteId] = useState(filters.site_id || "");
@@ -12674,7 +12727,7 @@ function MobilePortal({ selectedMechanicId = 1, mechanicsList = [], assignedOrde
 	});
 }
 // resources/js/Pages/Maintenance/Preventive/Index.jsx
-var Index_exports$26 = /* @__PURE__ */ __exportAll({ default: () => PreventiveMaintenanceIndex });
+var Index_exports$32 = /* @__PURE__ */ __exportAll({ default: () => PreventiveMaintenanceIndex });
 function PreventiveMaintenanceIndex({ schedules = {
 	data: [],
 	links: []
@@ -13387,7 +13440,7 @@ function PreventiveMaintenanceIndex({ schedules = {
 	})] });
 }
 // resources/js/Pages/Maintenance/RFU/Index.jsx
-var Index_exports$25 = /* @__PURE__ */ __exportAll({ default: () => RfuIndex });
+var Index_exports$31 = /* @__PURE__ */ __exportAll({ default: () => RfuIndex });
 function RfuIndex({ orders = {
 	data: [],
 	links: []
@@ -14003,7 +14056,7 @@ function RfuIndex({ orders = {
 	})] });
 }
 // resources/js/Pages/Maintenance/Requests/Index.jsx
-var Index_exports$24 = /* @__PURE__ */ __exportAll({ default: () => MaintenanceRequestsIndex });
+var Index_exports$30 = /* @__PURE__ */ __exportAll({ default: () => MaintenanceRequestsIndex });
 function MaintenanceRequestsIndex({ requests = {
 	data: [],
 	links: []
@@ -14901,7 +14954,7 @@ function MaintenanceRequestsIndex({ requests = {
 	] });
 }
 // resources/js/Pages/Maintenance/Spareparts/Index.jsx
-var Index_exports$23 = /* @__PURE__ */ __exportAll({ default: () => SparepartRequestIndex });
+var Index_exports$29 = /* @__PURE__ */ __exportAll({ default: () => SparepartRequestIndex });
 function SparepartRequestIndex({ requests = {
 	data: [],
 	links: []
@@ -15597,7 +15650,7 @@ function SparepartRequestIndex({ requests = {
 	})] });
 }
 // resources/js/Pages/Maintenance/WorkOrders/Index.jsx
-var Index_exports$22 = /* @__PURE__ */ __exportAll({ default: () => WorkOrderIndex });
+var Index_exports$28 = /* @__PURE__ */ __exportAll({ default: () => WorkOrderIndex });
 function WorkOrderIndex({ workOrders = {
 	data: [],
 	links: []
@@ -16947,7 +17000,7 @@ function WorkOrderIndex({ workOrders = {
 	})] });
 }
 // resources/js/Pages/Materials/Index.jsx
-var Index_exports$21 = /* @__PURE__ */ __exportAll({ default: () => MaterialsIndex });
+var Index_exports$27 = /* @__PURE__ */ __exportAll({ default: () => MaterialsIndex });
 function MaterialsIndex({ materials }) {
 	const { confirm } = useAlertStore();
 	const [modal, setModal] = useState(false);
@@ -17214,7 +17267,7 @@ function MaterialsIndex({ materials }) {
 	});
 }
 // resources/js/Pages/Organization/Index.jsx
-var Index_exports$20 = /* @__PURE__ */ __exportAll({ default: () => OrganizationIndex });
+var Index_exports$26 = /* @__PURE__ */ __exportAll({ default: () => OrganizationIndex });
 function OrganizationIndex({ tab = "sites", companies = [], sites, departments, positions, filters = {} }) {
 	const { confirm } = useAlertStore();
 	const [currentTab, setCurrentTab] = useState(tab);
@@ -18122,6 +18175,3445 @@ function OrganizationIndex({ tab = "sites", companies = [], sites, departments, 
 						})]
 					})
 				})]
+			})
+		]
+	});
+}
+// resources/js/Pages/Procurement/Dashboard/Index.jsx
+var Index_exports$25 = /* @__PURE__ */ __exportAll({ default: () => ProcurementDashboardIndex });
+var formatIDR$11 = (val) => new Intl.NumberFormat("id-ID", {
+	style: "currency",
+	currency: "IDR",
+	maximumFractionDigits: 0
+}).format(Number(val || 0));
+function ProcurementDashboardIndex({ metrics = {}, purchaseBySite = [], vendorPerformance = [], approvalRules = [], recentPos = [], filters = {}, master = {} }) {
+	const [siteId, setSiteId] = useState(filters.site_id || "");
+	const [showRuleModal, setShowRuleModal] = useState(false);
+	const ruleForm = useForm({
+		rule_code: "",
+		rule_name: "",
+		document_type: "ALL",
+		site_id: "",
+		department_id: "",
+		purchase_category: "",
+		min_amount: 0,
+		max_amount: "",
+		step_order: 1,
+		approver_position_id: master.positions?.[0]?.id ?? "",
+		approver_role_label: master.positions?.[0]?.name ?? "Site Manager"
+	});
+	const applyFilter = (newSite) => {
+		setSiteId(newSite);
+		router.get("/procurement/dashboard", { site_id: newSite || void 0 }, {
+			preserveState: true,
+			preserveScroll: true
+		});
+	};
+	const submitRule = (e) => {
+		e.preventDefault();
+		ruleForm.post("/procurement/approval-rules", { onSuccess: () => {
+			setShowRuleModal(false);
+			ruleForm.reset();
+		} });
+	};
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Dashboard Procurement Management",
+		children: [
+			/* @__PURE__ */ jsx(Head, { title: "Procurement Dashboard - TAP" }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "space-y-6",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4",
+						children: [/* @__PURE__ */ jsxs("div", { children: [
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex items-center gap-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 rounded-md",
+									children: "Phase 6 — Procurement Management"
+								}), /* @__PURE__ */ jsx("span", {
+									className: "text-xs text-slate-500",
+									children: "PR → Approval → RFQ → Comparison → PO → GRN → 3-Way Match Invoice"
+								})]
+							}),
+							/* @__PURE__ */ jsx("h1", {
+								className: "text-xl font-extrabold text-slate-900 dark:text-white mt-1",
+								children: "Procurement & Supply Chain Control Tower"
+							}),
+							/* @__PURE__ */ jsx("p", {
+								className: "text-xs text-slate-500 mt-0.5",
+								children: "Terintegrasi penuh dengan Warehouse, Maintenance, Vendor Master, dan Persiapan Kewajiban Pembayaran Finance."
+							})
+						] }), /* @__PURE__ */ jsxs("div", {
+							className: "flex flex-wrap items-center gap-2.5",
+							children: [/* @__PURE__ */ jsxs("select", {
+								value: siteId,
+								onChange: (e) => applyFilter(e.target.value),
+								className: "px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								children: [/* @__PURE__ */ jsx("option", {
+									value: "",
+									children: "Semua Site Operasional"
+								}), (master.sites || []).map((s) => /* @__PURE__ */ jsxs("option", {
+									value: s.id,
+									children: [
+										s.code,
+										" — ",
+										s.name
+									]
+								}, s.id))]
+							}), /* @__PURE__ */ jsxs("button", {
+								type: "button",
+								onClick: () => setShowRuleModal(true),
+								className: "inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold",
+								children: [/* @__PURE__ */ jsx(ShieldCheck, { className: "w-3.5 h-3.5" }), " Konfigurasi Matriks Approval"]
+							})]
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-2 lg:grid-cols-6 gap-3.5",
+						children: [
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+								children: [
+									/* @__PURE__ */ jsx("span", {
+										className: "text-[11px] font-semibold text-amber-600",
+										children: "PR Pending Approval"
+									}),
+									/* @__PURE__ */ jsx("p", {
+										className: "text-2xl font-extrabold text-amber-600 mt-1",
+										children: metrics.pr_pending_approval || 0
+									}),
+									/* @__PURE__ */ jsx(Link, {
+										href: "/procurement/purchase-requests",
+										className: "text-[10px] text-indigo-600 font-bold hover:underline",
+										children: "Otorisasi PR →"
+									})
+								]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+								children: [
+									/* @__PURE__ */ jsx("span", {
+										className: "text-[11px] font-semibold text-emerald-600",
+										children: "PR Approved"
+									}),
+									/* @__PURE__ */ jsx("p", {
+										className: "text-2xl font-extrabold text-emerald-600 mt-1",
+										children: metrics.pr_approved || 0
+									}),
+									/* @__PURE__ */ jsx(Link, {
+										href: "/procurement/rfqs",
+										className: "text-[10px] text-indigo-600 font-bold hover:underline",
+										children: "Proses RFQ →"
+									})
+								]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+								children: [
+									/* @__PURE__ */ jsx("span", {
+										className: "text-[11px] font-semibold text-blue-600",
+										children: "PO Outstanding"
+									}),
+									/* @__PURE__ */ jsx("p", {
+										className: "text-2xl font-extrabold text-blue-600 mt-1",
+										children: metrics.po_outstanding || 0
+									}),
+									/* @__PURE__ */ jsx(Link, {
+										href: "/procurement/purchase-orders",
+										className: "text-[10px] text-indigo-600 font-bold hover:underline",
+										children: "Monitor PO →"
+									})
+								]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+								children: [
+									/* @__PURE__ */ jsx("span", {
+										className: "text-[11px] font-semibold text-purple-600",
+										children: "Partial Delivery"
+									}),
+									/* @__PURE__ */ jsx("p", {
+										className: "text-2xl font-extrabold text-purple-600 mt-1",
+										children: metrics.partial_delivery || 0
+									}),
+									/* @__PURE__ */ jsx(Link, {
+										href: "/procurement/goods-receipts",
+										className: "text-[10px] text-indigo-600 font-bold hover:underline",
+										children: "Goods Receipt →"
+									})
+								]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+								children: [
+									/* @__PURE__ */ jsx("span", {
+										className: "text-[11px] font-semibold text-rose-600",
+										children: "Overdue Delivery"
+									}),
+									/* @__PURE__ */ jsx("p", {
+										className: "text-2xl font-extrabold text-rose-600 mt-1",
+										children: metrics.overdue_delivery || 0
+									}),
+									/* @__PURE__ */ jsx("span", {
+										className: "text-[10px] text-slate-400",
+										children: "Melewati Target Kirim"
+									})
+								]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+								children: [
+									/* @__PURE__ */ jsx("span", {
+										className: "text-[11px] font-semibold text-slate-500",
+										children: "Total Purchase Value"
+									}),
+									/* @__PURE__ */ jsx("p", {
+										className: "text-base font-extrabold text-slate-900 dark:text-white mt-1.5",
+										children: formatIDR$11(metrics.total_purchase_value)
+									}),
+									/* @__PURE__ */ jsxs("span", {
+										className: "text-[10px] text-emerald-600 font-bold",
+										children: [metrics.pending_invoices_count || 0, " Invoice Tercatat"]
+									})
+								]
+							})
+						]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-1 lg:grid-cols-3 gap-6",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden",
+							children: [/* @__PURE__ */ jsxs("div", {
+								className: "p-4 border-b border-slate-200/80 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsxs("h2", {
+									className: "text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2",
+									children: [/* @__PURE__ */ jsx(Award, { className: "w-4 h-4 text-amber-500" }), "Evaluasi Kinerja Vendor (Vendor Performance Scorecard)"]
+								}), /* @__PURE__ */ jsx("p", {
+									className: "text-[11px] text-slate-500",
+									children: "Diukur otomatis berdasarkan ketepatan waktu pengiriman (On-Time Delivery) dan kualitas barang diterima (Quality Acceptance vs Damaged/Rejected)."
+								})]
+							}), /* @__PURE__ */ jsx("div", {
+								className: "overflow-x-auto",
+								children: /* @__PURE__ */ jsxs("table", {
+									className: "w-full text-left border-collapse text-xs",
+									children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", {
+										className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500 border-b border-slate-200 dark:border-slate-800",
+										children: [
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2.5 px-3",
+												children: "Vendor"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2.5 px-3 text-right",
+												children: "Total PO"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2.5 px-3 text-right",
+												children: "Nilai Kontrak PO"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2.5 px-3 text-right",
+												children: "On-Time Delivery"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2.5 px-3 text-right",
+												children: "Quality Acceptance"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2.5 px-3 text-right",
+												children: "Damaged / Retur"
+											})
+										]
+									}) }), /* @__PURE__ */ jsx("tbody", {
+										className: "divide-y divide-slate-200/60 dark:divide-slate-800",
+										children: vendorPerformance.map((vp) => /* @__PURE__ */ jsxs("tr", {
+											className: "hover:bg-slate-50/80 dark:hover:bg-slate-800/40",
+											children: [
+												/* @__PURE__ */ jsxs("td", {
+													className: "py-2.5 px-3",
+													children: [/* @__PURE__ */ jsxs("div", {
+														className: "font-bold text-slate-900 dark:text-white",
+														children: [
+															vp.vendor_code,
+															" — ",
+															vp.vendor_name
+														]
+													}), /* @__PURE__ */ jsx("div", {
+														className: "text-[10px] text-slate-500",
+														children: vp.vendor_type
+													})]
+												}),
+												/* @__PURE__ */ jsxs("td", {
+													className: "py-2.5 px-3 text-right font-bold",
+													children: [vp.po_count, " PO"]
+												}),
+												/* @__PURE__ */ jsx("td", {
+													className: "py-2.5 px-3 text-right font-bold text-indigo-600",
+													children: formatIDR$11(vp.total_po_value)
+												}),
+												/* @__PURE__ */ jsx("td", {
+													className: "py-2.5 px-3 text-right",
+													children: /* @__PURE__ */ jsxs("span", {
+														className: "px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]",
+														children: [vp.on_time_delivery_rate, "%"]
+													})
+												}),
+												/* @__PURE__ */ jsx("td", {
+													className: "py-2.5 px-3 text-right",
+													children: /* @__PURE__ */ jsxs("span", {
+														className: "px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-bold text-[10px]",
+														children: [vp.quality_acceptance_rate, "%"]
+													})
+												}),
+												/* @__PURE__ */ jsxs("td", {
+													className: "py-2.5 px-3 text-right font-bold text-rose-600",
+													children: [vp.damaged_or_rejected_qty, " Unit"]
+												})
+											]
+										}, vp.vendor_id))
+									})]
+								})
+							})]
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden",
+							children: [/* @__PURE__ */ jsx("div", {
+								className: "p-4 border-b border-slate-200/80 dark:border-slate-800",
+								children: /* @__PURE__ */ jsxs("h2", {
+									className: "text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2",
+									children: [/* @__PURE__ */ jsx(Building2, { className: "w-4 h-4 text-indigo-600" }), "Rekapitulasi Pembelian per Site (Purchase by Site)"]
+								})
+							}), /* @__PURE__ */ jsx("div", {
+								className: "p-4 space-y-3",
+								children: purchaseBySite.map((st) => /* @__PURE__ */ jsxs("div", {
+									className: "p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/50 space-y-1.5",
+									children: [/* @__PURE__ */ jsxs("div", {
+										className: "flex items-center justify-between",
+										children: [/* @__PURE__ */ jsxs("span", {
+											className: "text-xs font-extrabold text-slate-900 dark:text-white",
+											children: [
+												st.site_code,
+												" — ",
+												st.site_name
+											]
+										}), /* @__PURE__ */ jsx("span", {
+											className: "text-xs font-extrabold text-indigo-600",
+											children: formatIDR$11(st.total_value)
+										})]
+									}), /* @__PURE__ */ jsxs("div", {
+										className: "flex items-center justify-between text-[11px] text-slate-500",
+										children: [
+											/* @__PURE__ */ jsxs("span", { children: ["Total PR: ", st.pr_count] }),
+											/* @__PURE__ */ jsxs("span", { children: ["Total PO: ", st.po_count] }),
+											/* @__PURE__ */ jsxs("span", {
+												className: "text-amber-600 font-semibold",
+												children: [
+													"Outstanding: ",
+													st.outstanding_po,
+													" PO"
+												]
+											})
+										]
+									})]
+								}, st.site_id))
+							})]
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden",
+						children: [/* @__PURE__ */ jsx("div", {
+							className: "p-4 border-b border-slate-200/80 dark:border-slate-800 flex items-center justify-between",
+							children: /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsxs("h2", {
+								className: "text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2",
+								children: [/* @__PURE__ */ jsx(ShieldCheck, { className: "w-4 h-4 text-emerald-600" }), "Matriks Otorisasi & Approval Dinamis (Configurable Approval Rules)"]
+							}), /* @__PURE__ */ jsx("p", {
+								className: "text-[11px] text-slate-500",
+								children: "Berdasarkan Jabatan, Site, Departemen, Nilai Transaksi, dan Kategori Pembelian (Nominal tidak di-hardcode di dalam kode sumber)."
+							})] })
+						}), /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left border-collapse text-xs",
+								children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500 border-b border-slate-200 dark:border-slate-800",
+									children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3",
+											children: "Step"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3",
+											children: "Kode & Nama Aturan"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3",
+											children: "Dokumen"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3",
+											children: "Site / Dept / Kategori"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3 text-right",
+											children: "Batas Nilai Transaksi (Min - Max)"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3",
+											children: "Jabatan Otorisator"
+										})
+									]
+								}) }), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-200/60 dark:divide-slate-800",
+									children: approvalRules.map((r) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2.5 px-3 font-extrabold text-indigo-600",
+											children: ["Step ", r.step_order]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2.5 px-3",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-bold text-slate-900 dark:text-white",
+												children: r.rule_code
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-[11px] text-slate-500",
+												children: r.rule_name
+											})]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2.5 px-3 font-semibold",
+											children: r.document_type
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2.5 px-3 text-[11px]",
+											children: [
+												"Site: ",
+												r.site?.code || "ALL",
+												" • Dept: ",
+												r.department?.name || "ALL",
+												" • Kat:",
+												" ",
+												r.purchase_category || "ALL"
+											]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2.5 px-3 text-right font-mono",
+											children: [
+												formatIDR$11(r.min_amount),
+												" s/d ",
+												r.max_amount ? formatIDR$11(r.max_amount) : "Tak Terbatas"
+											]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2.5 px-3 font-bold text-emerald-700 dark:text-emerald-400",
+											children: [
+												r.approver_role_label,
+												" (",
+												r.approver_position?.name || "Position",
+												")"
+											]
+										})
+									] }, r.id))
+								})]
+							})
+						})]
+					})
+				]
+			}),
+			showRuleModal && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg overflow-hidden shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between",
+						children: [/* @__PURE__ */ jsx("h3", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: "Tambah Konfigurasi Aturan Approval Procurement"
+						}), /* @__PURE__ */ jsx("button", {
+							onClick: () => setShowRuleModal(false),
+							className: "text-slate-400",
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitRule,
+						className: "p-4 space-y-3 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-2 gap-3",
+								children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Kode Rule *"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "text",
+									value: ruleForm.data.rule_code,
+									onChange: (e) => ruleForm.setData("rule_code", e.target.value),
+									placeholder: "APR-STEP2-FIN",
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+									required: true
+								})] }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Urutan Step *"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									min: "1",
+									max: "10",
+									value: ruleForm.data.step_order,
+									onChange: (e) => ruleForm.setData("step_order", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+									required: true
+								})] })]
+							}),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Nama Tahap Approval *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: ruleForm.data.rule_name,
+								onChange: (e) => ruleForm.setData("rule_name", e.target.value),
+								placeholder: "Otorisasi Kepala Site / Manager",
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-2 gap-3",
+								children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Min Nilai Transaksi (IDR) *"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									min: "0",
+									value: ruleForm.data.min_amount,
+									onChange: (e) => ruleForm.setData("min_amount", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+									required: true
+								})] }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Max Nilai (Kosong = Tanpa Batas)"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									min: "0",
+									value: ruleForm.data.max_amount,
+									onChange: (e) => ruleForm.setData("max_amount", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+								})] })]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-2 gap-3",
+								children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Jabatan (Position)"
+								}), /* @__PURE__ */ jsx("select", {
+									value: ruleForm.data.approver_position_id,
+									onChange: (e) => {
+										const pos = (master.positions || []).find((p) => String(p.id) === String(e.target.value));
+										ruleForm.setData({
+											...ruleForm.data,
+											approver_position_id: e.target.value,
+											approver_role_label: pos ? pos.name : ruleForm.data.approver_role_label
+										});
+									},
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+									children: (master.positions || []).map((p) => /* @__PURE__ */ jsx("option", {
+										value: p.id,
+										children: p.name
+									}, p.id))
+								})] }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Tipe Dokumen"
+								}), /* @__PURE__ */ jsxs("select", {
+									value: ruleForm.data.document_type,
+									onChange: (e) => ruleForm.setData("document_type", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+									children: [
+										/* @__PURE__ */ jsx("option", {
+											value: "ALL",
+											children: "ALL (PR & PO)"
+										}),
+										/* @__PURE__ */ jsx("option", {
+											value: "PR",
+											children: "PR Only"
+										}),
+										/* @__PURE__ */ jsx("option", {
+											value: "PO",
+											children: "PO Only"
+										})
+									]
+								})] })]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-end gap-2 pt-2",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setShowRuleModal(false),
+									className: "px-4 py-2 rounded-xl border border-slate-200",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									className: "px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold",
+									children: "Simpan Aturan Approval"
+								})]
+							})
+						]
+					})]
+				})
+			})
+		]
+	});
+}
+// resources/js/Pages/Procurement/GoodsReceipts/Index.jsx
+var Index_exports$24 = /* @__PURE__ */ __exportAll({ default: () => GoodsReceiptsIndex });
+function GoodsReceiptsIndex({ receipts, openPos, metrics, filters, master }) {
+	const [showCreateModal, setShowCreateModal] = useState(false);
+	const form = useForm({
+		purchase_order_id: "",
+		site_id: "",
+		warehouse_id: "",
+		receipt_date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10),
+		delivery_note_number: "",
+		received_by: "",
+		inspected_by: "",
+		confirm_over_delivery: false,
+		remarks: "",
+		items: []
+	});
+	const formatIDR = (val) => new Intl.NumberFormat("id-ID", {
+		style: "currency",
+		currency: "IDR",
+		maximumFractionDigits: 0
+	}).format(Number(val || 0));
+	const handleSelectPo = (poId) => {
+		const po = (openPos || []).find((p) => String(p.id) === String(poId));
+		if (!po) {
+			form.setData({
+				...form.data,
+				purchase_order_id: poId,
+				items: []
+			});
+			return;
+		}
+		const mappedItems = (po.items || []).map((item) => {
+			const outstanding = Math.max(0, Number(item.quantity_ordered) - Number(item.quantity_received));
+			return {
+				purchase_order_item_id: item.id,
+				item_name: item.item_name,
+				unit: item.unit,
+				qty_ordered: Number(item.quantity_ordered),
+				qty_outstanding: outstanding,
+				warehouse_location_id: "",
+				qty_delivered: outstanding,
+				qty_accepted: outstanding,
+				qty_damaged: 0,
+				qty_rejected: 0,
+				condition_notes: "Good Condition"
+			};
+		});
+		form.setData({
+			...form.data,
+			purchase_order_id: po.id,
+			site_id: po.site_id,
+			warehouse_id: po.warehouse_id || "",
+			items: mappedItems
+		});
+	};
+	const updateGrnItem = (index, field, value) => {
+		const next = [...form.data.items];
+		next[index][field] = value;
+		form.setData("items", next);
+	};
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		form.post("/procurement/goods-receipts", { onSuccess: () => {
+			setShowCreateModal(false);
+			form.reset();
+		} });
+	};
+	const handleConfirmOverDelivery = (grnId) => {
+		router.post(`/procurement/goods-receipts/${grnId}/confirm-over-delivery`);
+	};
+	const applyFilter = (key, val) => {
+		router.get("/procurement/goods-receipts", {
+			...filters,
+			[key]: val
+		}, {
+			preserveState: true,
+			replace: true
+		});
+	};
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Goods Receipt (GRN) & Warehouse Integration",
+		children: [
+			/* @__PURE__ */ jsx(Head, { title: "Goods Receipts - Procurement Management" }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "space-y-6",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex flex-wrap items-center gap-2 text-xs font-bold",
+							children: [
+								/* @__PURE__ */ jsx(Link, {
+									href: "/procurement/dashboard",
+									className: "px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "Dashboard"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/procurement/purchase-requests",
+									className: "px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "1. Purchase Requests"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/procurement/rfqs",
+									className: "px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "2. RFQ & Comparison"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/procurement/purchase-orders",
+									className: "px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "3. Purchase Orders"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/procurement/goods-receipts",
+									className: "px-3 py-1.5 rounded-lg bg-indigo-600 text-white",
+									children: "4. Goods Receipt (GRN)"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/procurement/invoices",
+									className: "px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "5. Vendor Invoices (3-Way Match)"
+								})
+							]
+						}), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setShowCreateModal(true),
+							className: "px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-sm transition",
+							children: "+ Catat Penerimaan Barang (GRN)"
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4",
+						children: [
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[11px] font-bold uppercase text-slate-400",
+									children: "Total Dokumen GRN"
+								}), /* @__PURE__ */ jsx("div", {
+									className: "text-2xl font-black text-slate-900 dark:text-white mt-1",
+									children: metrics?.total_grn || 0
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[11px] font-bold uppercase text-emerald-500",
+									children: "Full Receiving"
+								}), /* @__PURE__ */ jsx("div", {
+									className: "text-2xl font-black text-emerald-600 mt-1",
+									children: metrics?.full_receiving || 0
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[11px] font-bold uppercase text-amber-500",
+									children: "Partial / Under Delivery"
+								}), /* @__PURE__ */ jsx("div", {
+									className: "text-2xl font-black text-amber-600 mt-1",
+									children: metrics?.partial_receiving || 0
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[11px] font-bold uppercase text-rose-500",
+									children: "Over-Delivery Review"
+								}), /* @__PURE__ */ jsx("div", {
+									className: "text-2xl font-black text-rose-600 mt-1",
+									children: metrics?.over_delivery_review || 0
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[11px] font-bold uppercase text-indigo-500",
+									children: "Nilai Masuk Gudang (Confirmed)"
+								}), /* @__PURE__ */ jsx("div", {
+									className: "text-lg font-black text-indigo-600 mt-1",
+									children: formatIDR(metrics?.total_received_value)
+								})]
+							})
+						]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-wrap gap-3 items-center",
+						children: [
+							/* @__PURE__ */ jsxs("select", {
+								value: filters?.site_id || "",
+								onChange: (e) => applyFilter("site_id", e.target.value),
+								className: "rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs",
+								children: [/* @__PURE__ */ jsx("option", {
+									value: "",
+									children: "Semua Site"
+								}), (master?.sites || []).map((s) => /* @__PURE__ */ jsxs("option", {
+									value: s.id,
+									children: [
+										s.name,
+										" (",
+										s.code,
+										")"
+									]
+								}, s.id))]
+							}),
+							/* @__PURE__ */ jsxs("select", {
+								value: filters?.receipt_type || "",
+								onChange: (e) => applyFilter("receipt_type", e.target.value),
+								className: "rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs",
+								children: [
+									/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "Semua Tipe Penerimaan"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "full_receiving",
+										children: "Full Receiving"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "partial_receiving",
+										children: "Partial Receiving"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "under_delivery",
+										children: "Under Delivery"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "over_delivery_review",
+										children: "Over Delivery Review"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "rejected_delivery",
+										children: "Rejected Delivery"
+									})
+								]
+							}),
+							/* @__PURE__ */ jsxs("select", {
+								value: filters?.status || "",
+								onChange: (e) => applyFilter("status", e.target.value),
+								className: "rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs",
+								children: [
+									/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "Semua Status"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "confirmed",
+										children: "Confirmed (Added to Stock)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "pending_over_delivery_review",
+										children: "Pending Over-Delivery Review"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "rejected",
+										children: "Rejected (No Stock Added)"
+									})
+								]
+							})
+						]
+					}),
+					/* @__PURE__ */ jsx("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm",
+						children: /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase text-[10px]",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-left",
+											children: "Nomor GRN & Tanggal"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-left",
+											children: "Referensi PO & Vendor"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-left",
+											children: "Site & Gudang Tujuan"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-left",
+											children: "Tipe & Detail QC Barang"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-right",
+											children: "Nilai Diterima (Good)"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-left",
+											children: "Integrasi Stok Gudang"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-center",
+											children: "Aksi"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-200 dark:divide-slate-800",
+									children: (receipts?.data || []).map((grn) => /* @__PURE__ */ jsxs("tr", {
+										className: "hover:bg-slate-50/60 dark:hover:bg-slate-800/30",
+										children: [
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-3.5 px-4",
+												children: [/* @__PURE__ */ jsx("div", {
+													className: "font-black text-slate-900 dark:text-white",
+													children: grn.grn_number
+												}), /* @__PURE__ */ jsxs("div", {
+													className: "text-[11px] text-slate-500",
+													children: [
+														"Tgl: ",
+														grn.receipt_date?.slice(0, 10),
+														" • SJ: ",
+														grn.delivery_note_number || "-"
+													]
+												})]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-3.5 px-4",
+												children: [/* @__PURE__ */ jsx("div", {
+													className: "font-bold text-indigo-600 dark:text-indigo-400",
+													children: grn.purchase_order?.po_number
+												}), /* @__PURE__ */ jsx("div", {
+													className: "text-[11px] text-slate-600 dark:text-slate-400",
+													children: grn.vendor?.name
+												})]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-3.5 px-4",
+												children: [/* @__PURE__ */ jsxs("div", {
+													className: "font-semibold text-slate-800 dark:text-slate-200",
+													children: [
+														grn.warehouse?.name,
+														" (",
+														grn.warehouse?.code,
+														")"
+													]
+												}), /* @__PURE__ */ jsx("div", {
+													className: "text-[11px] text-slate-500",
+													children: grn.site?.name
+												})]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-3.5 px-4",
+												children: [/* @__PURE__ */ jsx("span", {
+													className: "inline-block px-2 py-0.5 rounded text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 mb-1",
+													children: grn.receipt_type?.replace(/_/g, " ")
+												}), /* @__PURE__ */ jsx("div", {
+													className: "space-y-0.5 text-[11px]",
+													children: (grn.items || []).map((it) => /* @__PURE__ */ jsxs("div", {
+														className: "text-slate-600 dark:text-slate-400",
+														children: [
+															"• ",
+															/* @__PURE__ */ jsx("span", {
+																className: "font-semibold",
+																children: it.po_item?.item_name || it.inventory_item?.item_name
+															}),
+															":",
+															" ",
+															/* @__PURE__ */ jsxs("span", {
+																className: "text-emerald-600 font-bold",
+																children: ["Good ", Number(it.qty_accepted)]
+															}),
+															Number(it.qty_damaged) > 0 && /* @__PURE__ */ jsxs("span", {
+																className: "text-rose-600 ml-1",
+																children: ["| Rusak ", Number(it.qty_damaged)]
+															}),
+															Number(it.qty_rejected) > 0 && /* @__PURE__ */ jsxs("span", {
+																className: "text-amber-600 ml-1",
+																children: ["| Ditolak ", Number(it.qty_rejected)]
+															})
+														]
+													}, it.id))
+												})]
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-3.5 px-4 text-right font-black text-slate-900 dark:text-white",
+												children: formatIDR(grn.total_received_value)
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-3.5 px-4",
+												children: grn.status === "confirmed" && grn.inventory_transaction ? /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsxs("span", {
+													className: "px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-black",
+													children: ["STOCK IN: ", grn.inventory_transaction.document_number]
+												}), /* @__PURE__ */ jsx("div", {
+													className: "text-[10px] text-slate-500 mt-0.5",
+													children: "Hanya barang Good/Accepted masuk stok"
+												})] }) : grn.status === "pending_over_delivery_review" ? /* @__PURE__ */ jsx("span", {
+													className: "px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-black",
+													children: "HOLD: Menunggu Review Over-Delivery"
+												}) : /* @__PURE__ */ jsxs("span", {
+													className: "px-2 py-0.5 rounded bg-rose-100 text-rose-800 text-[10px] font-black",
+													children: [
+														"TIDAK MASUK STOK (",
+														grn.status,
+														")"
+													]
+												})
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-3.5 px-4 text-center",
+												children: grn.status === "pending_over_delivery_review" ? /* @__PURE__ */ jsx("button", {
+													type: "button",
+													onClick: () => handleConfirmOverDelivery(grn.id),
+													className: "px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-bold",
+													children: "Setujui Over-Delivery & Posting Stok"
+												}) : /* @__PURE__ */ jsx("span", {
+													className: "text-[11px] text-slate-400",
+													children: "Selesai"
+												})
+											})
+										]
+									}, grn.id))
+								})]
+							})
+						})
+					})
+				]
+			}),
+			showCreateModal && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto",
+				children: /* @__PURE__ */ jsxs("form", {
+					onSubmit: handleSubmit,
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-4xl w-full p-6 space-y-4 shadow-xl my-8",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3",
+							children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("h3", {
+								className: "text-base font-black text-slate-900 dark:text-white",
+								children: "Pencatatan Goods Receipt (GRN) terhadap Purchase Order"
+							}), /* @__PURE__ */ jsx("p", {
+								className: "text-xs text-slate-500",
+								children: "Barang rusak (Damaged) atau ditolak (Rejected) tidak akan menambah stok gudang."
+							})] }), /* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setShowCreateModal(false),
+								className: "text-slate-400 hover:text-slate-600 text-sm font-bold",
+								children: "✕"
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "grid grid-cols-1 md:grid-cols-3 gap-4 text-xs",
+							children: [
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold text-slate-700 dark:text-slate-300",
+									children: "Pilih Purchase Order (Approved)"
+								}), /* @__PURE__ */ jsxs("select", {
+									required: true,
+									value: form.data.purchase_order_id,
+									onChange: (e) => handleSelectPo(e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs",
+									children: [/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "-- Pilih PO --"
+									}), (openPos || []).map((po) => /* @__PURE__ */ jsxs("option", {
+										value: po.id,
+										children: [
+											po.po_number,
+											" - ",
+											po.vendor?.name,
+											" (",
+											po.site?.code,
+											")"
+										]
+									}, po.id))]
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold text-slate-700 dark:text-slate-300",
+									children: "Gudang Penerima"
+								}), /* @__PURE__ */ jsxs("select", {
+									required: true,
+									value: form.data.warehouse_id,
+									onChange: (e) => form.setData("warehouse_id", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs",
+									children: [/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "-- Pilih Gudang --"
+									}), (master?.warehouses || []).map((w) => /* @__PURE__ */ jsxs("option", {
+										value: w.id,
+										children: [
+											w.name,
+											" (",
+											w.code,
+											")"
+										]
+									}, w.id))]
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold text-slate-700 dark:text-slate-300",
+									children: "Tanggal Penerimaan"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "date",
+									required: true,
+									value: form.data.receipt_date,
+									onChange: (e) => form.setData("receipt_date", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs"
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold text-slate-700 dark:text-slate-300",
+									children: "Nomor Surat Jalan Vendor"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "text",
+									placeholder: "SJ-VENDOR-001",
+									value: form.data.delivery_note_number,
+									onChange: (e) => form.setData("delivery_note_number", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs"
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold text-slate-700 dark:text-slate-300",
+									children: "Storeman Penerima"
+								}), /* @__PURE__ */ jsxs("select", {
+									value: form.data.received_by,
+									onChange: (e) => form.setData("received_by", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs",
+									children: [/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "-- Pilih Karyawan --"
+									}), (master?.employees || []).map((emp) => /* @__PURE__ */ jsxs("option", {
+										value: emp.id,
+										children: [
+											emp.name,
+											" (",
+											emp.employee_code,
+											")"
+										]
+									}, emp.id))]
+								})] }),
+								/* @__PURE__ */ jsx("div", {
+									className: "flex items-center pt-5",
+									children: /* @__PURE__ */ jsxs("label", {
+										className: "inline-flex items-center gap-2 cursor-pointer",
+										children: [/* @__PURE__ */ jsx("input", {
+											type: "checkbox",
+											checked: form.data.confirm_over_delivery,
+											onChange: (e) => form.setData("confirm_over_delivery", e.target.checked),
+											className: "rounded border-slate-300"
+										}), /* @__PURE__ */ jsx("span", {
+											className: "font-semibold text-slate-700 dark:text-slate-300",
+											children: "Langsung Setujui jika Over-Delivery"
+										})]
+									})
+								})
+							]
+						}),
+						form.data.items.length > 0 && /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-100 dark:bg-slate-800 text-[10px] uppercase",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2 text-left",
+											children: "Item PO"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2 text-right",
+											children: "Sisa PO"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2 text-right",
+											children: "Qty Dikirim"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2 text-right text-emerald-700",
+											children: "Qty Good (Accepted)"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2 text-right text-rose-600",
+											children: "Qty Rusak"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2 text-right text-amber-600",
+											children: "Qty Ditolak"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2 text-left",
+											children: "Catatan Kondisi"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-200 dark:divide-slate-800",
+									children: form.data.items.map((it, idx) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("td", {
+											className: "p-2 font-bold",
+											children: it.item_name
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "p-2 text-right font-semibold",
+											children: [
+												it.qty_outstanding,
+												" ",
+												it.unit
+											]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "p-2",
+											children: /* @__PURE__ */ jsx("input", {
+												type: "number",
+												step: "0.01",
+												value: it.qty_delivered,
+												onChange: (e) => updateGrnItem(idx, "qty_delivered", e.target.value),
+												className: "w-20 rounded border-slate-300 dark:bg-slate-800 text-xs text-right"
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "p-2",
+											children: /* @__PURE__ */ jsx("input", {
+												type: "number",
+												step: "0.01",
+												value: it.qty_accepted,
+												onChange: (e) => updateGrnItem(idx, "qty_accepted", e.target.value),
+												className: "w-20 rounded border-emerald-400 dark:bg-slate-800 text-xs text-right font-bold text-emerald-700"
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "p-2",
+											children: /* @__PURE__ */ jsx("input", {
+												type: "number",
+												step: "0.01",
+												value: it.qty_damaged,
+												onChange: (e) => updateGrnItem(idx, "qty_damaged", e.target.value),
+												className: "w-16 rounded border-rose-300 dark:bg-slate-800 text-xs text-right text-rose-600"
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "p-2",
+											children: /* @__PURE__ */ jsx("input", {
+												type: "number",
+												step: "0.01",
+												value: it.qty_rejected,
+												onChange: (e) => updateGrnItem(idx, "qty_rejected", e.target.value),
+												className: "w-16 rounded border-amber-300 dark:bg-slate-800 text-xs text-right text-amber-600"
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "p-2",
+											children: /* @__PURE__ */ jsx("input", {
+												type: "text",
+												value: it.condition_notes,
+												onChange: (e) => updateGrnItem(idx, "condition_notes", e.target.value),
+												className: "w-full rounded border-slate-300 dark:bg-slate-800 text-xs"
+											})
+										})
+									] }, it.purchase_order_item_id))
+								})]
+							})
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setShowCreateModal(false),
+								className: "px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold",
+								children: "Batal"
+							}), /* @__PURE__ */ jsx("button", {
+								type: "submit",
+								disabled: form.processing,
+								className: "px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black",
+								children: "Simpan GRN & Sinkronisasi Stok Gudang"
+							})]
+						})
+					]
+				})
+			})
+		]
+	});
+}
+// resources/js/Pages/Procurement/Invoices/Index.jsx
+var Index_exports$23 = /* @__PURE__ */ __exportAll({ default: () => VendorInvoicesIndex });
+function VendorInvoicesIndex({ invoices, eligiblePos, metrics, filters, master }) {
+	const [showCreateModal, setShowCreateModal] = useState(false);
+	const form = useForm({
+		vendor_invoice_number: "",
+		invoice_date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10),
+		payment_due_date: new Date(Date.now() + 2592e6).toISOString().slice(0, 10),
+		site_id: "",
+		purchase_order_id: "",
+		goods_receipt_id: "",
+		subtotal_amount: 0,
+		tax_amount: 0,
+		total_invoice_amount: 0,
+		remarks: ""
+	});
+	const formatIDR = (val) => new Intl.NumberFormat("id-ID", {
+		style: "currency",
+		currency: "IDR",
+		maximumFractionDigits: 0
+	}).format(Number(val || 0));
+	const selectedPo = (eligiblePos || []).find((p) => String(p.id) === String(form.data.purchase_order_id));
+	const handleSelectPo = (poId) => {
+		const po = (eligiblePos || []).find((p) => String(p.id) === String(poId));
+		if (!po) {
+			form.setData("purchase_order_id", poId);
+			return;
+		}
+		const firstGrn = po.goods_receipts?.[0];
+		const baseAmount = firstGrn ? Number(firstGrn.total_received_value) : Number(po.grand_total);
+		const tax = Math.round(baseAmount * .11);
+		form.setData({
+			...form.data,
+			purchase_order_id: po.id,
+			site_id: po.site_id,
+			goods_receipt_id: firstGrn?.id || "",
+			subtotal_amount: baseAmount,
+			tax_amount: tax,
+			total_invoice_amount: baseAmount + tax
+		});
+	};
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		form.post("/procurement/invoices", { onSuccess: () => {
+			setShowCreateModal(false);
+			form.reset();
+		} });
+	};
+	const handleVerify = (invId, status) => {
+		router.post(`/procurement/invoices/${invId}/verify`, {
+			verification_status: status,
+			remarks: `3-Way Matching Diverifikasi (${status}) — Siap diintegrasikan ke Finance AP.`
+		});
+	};
+	const applyFilter = (key, val) => {
+		router.get("/procurement/invoices", {
+			...filters,
+			[key]: val
+		}, {
+			preserveState: true,
+			replace: true
+		});
+	};
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Vendor Invoice Recording & 3-Way Matching",
+		children: [
+			/* @__PURE__ */ jsx(Head, { title: "Vendor Invoices - Procurement Management" }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "space-y-6",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex flex-wrap items-center gap-2 text-xs font-bold",
+							children: [
+								/* @__PURE__ */ jsx(Link, {
+									href: "/procurement/dashboard",
+									className: "px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "Dashboard"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/procurement/purchase-requests",
+									className: "px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "1. Purchase Requests"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/procurement/rfqs",
+									className: "px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "2. RFQ & Comparison"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/procurement/purchase-orders",
+									className: "px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "3. Purchase Orders"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/procurement/goods-receipts",
+									className: "px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "4. Goods Receipt (GRN)"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/procurement/invoices",
+									className: "px-3 py-1.5 rounded-lg bg-indigo-600 text-white",
+									children: "5. Vendor Invoices (3-Way Match)"
+								})
+							]
+						}), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setShowCreateModal(true),
+							className: "px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black shadow-sm transition",
+							children: "+ Catat Invoice Vendor"
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4",
+						children: [
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[11px] font-bold uppercase text-slate-400",
+									children: "Total Invoice Tercatat"
+								}), /* @__PURE__ */ jsx("div", {
+									className: "text-2xl font-black text-slate-900 dark:text-white mt-1",
+									children: metrics?.total_invoices || 0
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[11px] font-bold uppercase text-emerald-500",
+									children: "3-Way Matched (PO+GRN+INV)"
+								}), /* @__PURE__ */ jsx("div", {
+									className: "text-2xl font-black text-emerald-600 mt-1",
+									children: metrics?.three_way_matched || 0
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[11px] font-bold uppercase text-amber-500",
+									children: "Selisih / Discrepancy"
+								}), /* @__PURE__ */ jsx("div", {
+									className: "text-2xl font-black text-amber-600 mt-1",
+									children: metrics?.discrepancy || 0
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[11px] font-bold uppercase text-indigo-500",
+									children: "Ready for Finance AP"
+								}), /* @__PURE__ */ jsx("div", {
+									className: "text-2xl font-black text-indigo-600 mt-1",
+									children: metrics?.ready_for_finance || 0
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[11px] font-bold uppercase text-slate-500",
+									children: "Total Kewajiban Bayar"
+								}), /* @__PURE__ */ jsx("div", {
+									className: "text-lg font-black text-slate-900 dark:text-white mt-1",
+									children: formatIDR(metrics?.total_obligation_value)
+								})]
+							})
+						]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-wrap gap-3 items-center",
+						children: [
+							/* @__PURE__ */ jsxs("select", {
+								value: filters?.site_id || "",
+								onChange: (e) => applyFilter("site_id", e.target.value),
+								className: "rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs",
+								children: [/* @__PURE__ */ jsx("option", {
+									value: "",
+									children: "Semua Site"
+								}), (master?.sites || []).map((s) => /* @__PURE__ */ jsxs("option", {
+									value: s.id,
+									children: [
+										s.name,
+										" (",
+										s.code,
+										")"
+									]
+								}, s.id))]
+							}),
+							/* @__PURE__ */ jsxs("select", {
+								value: filters?.vendor_id || "",
+								onChange: (e) => applyFilter("vendor_id", e.target.value),
+								className: "rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs",
+								children: [/* @__PURE__ */ jsx("option", {
+									value: "",
+									children: "Semua Vendor"
+								}), (master?.vendors || []).map((v) => /* @__PURE__ */ jsxs("option", {
+									value: v.id,
+									children: [
+										v.name,
+										" (",
+										v.vendor_code,
+										")"
+									]
+								}, v.id))]
+							}),
+							/* @__PURE__ */ jsxs("select", {
+								value: filters?.verification_status || "",
+								onChange: (e) => applyFilter("verification_status", e.target.value),
+								className: "rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs",
+								children: [
+									/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "Semua Status Verifikasi"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "ready_for_finance",
+										children: "Ready for Finance (Purchase Completed)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "verified",
+										children: "Verified"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "discrepancy",
+										children: "Discrepancy (Selisih Nilai)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "draft",
+										children: "Draft"
+									})
+								]
+							})
+						]
+					}),
+					/* @__PURE__ */ jsx("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm",
+						children: /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase text-[10px]",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-left",
+											children: "No. Internal & Faktur Vendor"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-left",
+											children: "Vendor & Site"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-left",
+											children: "Referensi PO & GRN"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-right",
+											children: "Nilai PO / GRN"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-right",
+											children: "Total Tagihan (Invoice)"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-center",
+											children: "3-Way Matching"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-center",
+											children: "Aksi Verifikasi Finance"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-200 dark:divide-slate-800",
+									children: (invoices?.data || []).map((inv) => /* @__PURE__ */ jsxs("tr", {
+										className: "hover:bg-slate-50/60 dark:hover:bg-slate-800/30",
+										children: [
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-3.5 px-4",
+												children: [
+													/* @__PURE__ */ jsx("div", {
+														className: "font-black text-slate-900 dark:text-white",
+														children: inv.invoice_number
+													}),
+													/* @__PURE__ */ jsxs("div", {
+														className: "text-[11px] font-semibold text-indigo-600",
+														children: ["Faktur: ", inv.vendor_invoice_number]
+													}),
+													/* @__PURE__ */ jsxs("div", {
+														className: "text-[10px] text-slate-500",
+														children: [
+															"Tgl: ",
+															inv.invoice_date?.slice(0, 10),
+															" • Jatuh Tempo: ",
+															inv.payment_due_date?.slice(0, 10)
+														]
+													})
+												]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-3.5 px-4",
+												children: [/* @__PURE__ */ jsx("div", {
+													className: "font-bold text-slate-800 dark:text-slate-200",
+													children: inv.vendor?.name
+												}), /* @__PURE__ */ jsxs("div", {
+													className: "text-[11px] text-slate-500",
+													children: [
+														inv.site?.name,
+														" (",
+														inv.site?.code,
+														")"
+													]
+												})]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-3.5 px-4",
+												children: [/* @__PURE__ */ jsxs("div", {
+													className: "font-bold text-slate-800 dark:text-slate-200",
+													children: [
+														"PO: ",
+														inv.purchase_order?.po_number,
+														" (",
+														inv.purchase_order?.status,
+														")"
+													]
+												}), /* @__PURE__ */ jsxs("div", {
+													className: "text-[11px] text-emerald-600 font-semibold",
+													children: ["GRN: ", inv.goods_receipt?.grn_number || "Multiple / Direct PO"]
+												})]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-3.5 px-4 text-right",
+												children: [/* @__PURE__ */ jsxs("div", {
+													className: "text-slate-600 dark:text-slate-400",
+													children: ["PO: ", /* @__PURE__ */ jsx("span", {
+														className: "font-semibold",
+														children: formatIDR(inv.po_matched_amount)
+													})]
+												}), /* @__PURE__ */ jsxs("div", {
+													className: "text-slate-600 dark:text-slate-400",
+													children: ["GRN: ", /* @__PURE__ */ jsx("span", {
+														className: "font-semibold",
+														children: formatIDR(inv.grn_matched_amount)
+													})]
+												})]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-3.5 px-4 text-right",
+												children: [/* @__PURE__ */ jsx("div", {
+													className: "font-black text-slate-900 dark:text-white",
+													children: formatIDR(inv.total_invoice_amount)
+												}), /* @__PURE__ */ jsxs("div", {
+													className: "text-[10px] text-slate-500",
+													children: [
+														"DPP ",
+														formatIDR(inv.subtotal_amount),
+														" + PPN ",
+														formatIDR(inv.tax_amount)
+													]
+												})]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-3.5 px-4 text-center",
+												children: [inv.is_three_way_matched ? /* @__PURE__ */ jsx("span", {
+													className: "px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black",
+													children: "✓ 3-WAY MATCHED"
+												}) : /* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsxs("span", {
+													className: "px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 text-[10px] font-black",
+													children: ["SELISIH: ", formatIDR(inv.variance_amount)]
+												}) }), /* @__PURE__ */ jsxs("div", {
+													className: "mt-1 text-[10px] uppercase font-bold text-slate-500",
+													children: ["Status: ", inv.verification_status]
+												})]
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-3.5 px-4 text-center",
+												children: inv.verification_status !== "ready_for_finance" ? /* @__PURE__ */ jsx("button", {
+													type: "button",
+													onClick: () => handleVerify(inv.id, "ready_for_finance"),
+													className: "px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold",
+													children: "Setujui → Ready for Finance"
+												}) : /* @__PURE__ */ jsx("span", {
+													className: "px-2.5 py-1 rounded bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-[10px] font-black",
+													children: "PURCHASE COMPLETED (AP READY)"
+												})
+											})
+										]
+									}, inv.id))
+								})]
+							})
+						})
+					})
+				]
+			}),
+			showCreateModal && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4",
+				children: /* @__PURE__ */ jsxs("form", {
+					onSubmit: handleSubmit,
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-2xl w-full p-6 space-y-4 shadow-xl",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3",
+							children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("h3", {
+								className: "text-base font-black text-slate-900 dark:text-white",
+								children: "Catat Tagihan Vendor (Invoice Recording & 3-Way Matching)"
+							}), /* @__PURE__ */ jsx("p", {
+								className: "text-xs text-slate-500",
+								children: "Menyiapkan kewajiban pembayaran (AP Obligation) untuk Finance tanpa pembayaran bank otomatis."
+							})] }), /* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setShowCreateModal(false),
+								className: "text-slate-400 hover:text-slate-600 font-bold",
+								children: "✕"
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "grid grid-cols-1 md:grid-cols-2 gap-4 text-xs",
+							children: [
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Pilih Purchase Order"
+								}), /* @__PURE__ */ jsxs("select", {
+									required: true,
+									value: form.data.purchase_order_id,
+									onChange: (e) => handleSelectPo(e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs",
+									children: [/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "-- Pilih PO --"
+									}), (eligiblePos || []).map((po) => /* @__PURE__ */ jsxs("option", {
+										value: po.id,
+										children: [
+											po.po_number,
+											" - ",
+											po.vendor?.name
+										]
+									}, po.id))]
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Referensi Goods Receipt (GRN)"
+								}), /* @__PURE__ */ jsxs("select", {
+									value: form.data.goods_receipt_id,
+									onChange: (e) => form.setData("goods_receipt_id", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs",
+									children: [/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "-- Semua GRN Terkonfirmasi --"
+									}), (selectedPo?.goods_receipts || []).map((grn) => /* @__PURE__ */ jsxs("option", {
+										value: grn.id,
+										children: [
+											grn.grn_number,
+											" (",
+											formatIDR(grn.total_received_value),
+											")"
+										]
+									}, grn.id))]
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Nomor Faktur / Invoice Vendor"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "text",
+									required: true,
+									placeholder: "INV-VND-2026-0091",
+									value: form.data.vendor_invoice_number,
+									onChange: (e) => form.setData("vendor_invoice_number", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs"
+								})] }),
+								/* @__PURE__ */ jsxs("div", {
+									className: "grid grid-cols-2 gap-2",
+									children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+										className: "font-bold",
+										children: "Tgl Invoice"
+									}), /* @__PURE__ */ jsx("input", {
+										type: "date",
+										required: true,
+										value: form.data.invoice_date,
+										onChange: (e) => form.setData("invoice_date", e.target.value),
+										className: "w-full mt-1 rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs"
+									})] }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+										className: "font-bold",
+										children: "Jatuh Tempo"
+									}), /* @__PURE__ */ jsx("input", {
+										type: "date",
+										required: true,
+										value: form.data.payment_due_date,
+										onChange: (e) => form.setData("payment_due_date", e.target.value),
+										className: "w-full mt-1 rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs"
+									})] })]
+								}),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "DPP / Subtotal Invoice (Rp)"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									step: "0.01",
+									required: true,
+									value: form.data.subtotal_amount,
+									onChange: (e) => {
+										const sub = Number(e.target.value || 0);
+										const tax = Number(form.data.tax_amount || 0);
+										form.setData({
+											...form.data,
+											subtotal_amount: sub,
+											total_invoice_amount: sub + tax
+										});
+									},
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs"
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "PPN / Pajak (Rp)"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									step: "0.01",
+									required: true,
+									value: form.data.tax_amount,
+									onChange: (e) => {
+										const tax = Number(e.target.value || 0);
+										const sub = Number(form.data.subtotal_amount || 0);
+										form.setData({
+											...form.data,
+											tax_amount: tax,
+											total_invoice_amount: sub + tax
+										});
+									},
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs"
+								})] }),
+								/* @__PURE__ */ jsxs("div", {
+									className: "md:col-span-2",
+									children: [/* @__PURE__ */ jsx("label", {
+										className: "font-bold",
+										children: "Total Tagihan Invoice (Rp)"
+									}), /* @__PURE__ */ jsx("input", {
+										type: "number",
+										step: "0.01",
+										required: true,
+										value: form.data.total_invoice_amount,
+										onChange: (e) => form.setData("total_invoice_amount", e.target.value),
+										className: "w-full mt-1 rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs font-black text-indigo-600"
+									})]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setShowCreateModal(false),
+								className: "px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-bold",
+								children: "Batal"
+							}), /* @__PURE__ */ jsx("button", {
+								type: "submit",
+								disabled: form.processing,
+								className: "px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black",
+								children: "Simpan Invoice & Jalankan 3-Way Match"
+							})]
+						})
+					]
+				})
+			})
+		]
+	});
+}
+// resources/js/Pages/Procurement/PurchaseOrders/Index.jsx
+var Index_exports$22 = /* @__PURE__ */ __exportAll({ default: () => PurchaseOrdersIndex });
+var formatIDR$10 = (val) => new Intl.NumberFormat("id-ID", {
+	style: "currency",
+	currency: "IDR",
+	maximumFractionDigits: 0
+}).format(Number(val || 0));
+function PurchaseOrdersIndex({ purchaseOrders, metrics = {}, filters = {}, master = {} }) {
+	const [showCreateModal, setShowCreateModal] = useState(false);
+	const firstSite = master.sites?.[0]?.id ?? "";
+	const firstItem = master.items?.[0];
+	const form = useForm({
+		site_id: firstSite,
+		warehouse_id: (master.warehouses || []).find((w) => String(w.site_id) === String(firstSite))?.id ?? "",
+		department_id: master.departments?.[0]?.id ?? "",
+		vendor_id: master.vendors?.[0]?.id ?? "",
+		po_date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10),
+		expected_delivery_date: new Date(Date.now() + 6048e5).toISOString().slice(0, 10),
+		delivery_location: "Gudang Utama Site Operasional TAP",
+		payment_terms: "TOP 30 Days",
+		purchase_category: "sparepart",
+		discount_amount: 0,
+		tax_percent: 11,
+		items: [{
+			inventory_item_id: firstItem?.id ?? "",
+			item_name: firstItem?.item_name ?? "Oil Filter",
+			specification: firstItem?.specification ?? "OEM",
+			quantity_ordered: 10,
+			unit: firstItem?.unit_of_measurement ?? "PCS",
+			unit_price: firstItem?.standard_cost ?? 425e3,
+			discount_amount: 0
+		}]
+	});
+	const submitPo = (e) => {
+		e.preventDefault();
+		form.post("/procurement/purchase-orders", { onSuccess: () => setShowCreateModal(false) });
+	};
+	const rows = purchaseOrders?.data || [];
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Purchase Order (PO), Otorisasi & Cetak PDF",
+		children: [
+			/* @__PURE__ */ jsx(Head, { title: "Purchase Orders (PO) - TAP" }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "space-y-6",
+				children: [/* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4",
+					children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsxs("h1", {
+						className: "text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2",
+						children: [/* @__PURE__ */ jsx(FileSpreadsheet, { className: "w-5 h-5 text-indigo-600" }), "Manajemen Purchase Order (PO), Otorisasi & Cetak Dokumen Resmi"]
+					}), /* @__PURE__ */ jsx("p", {
+						className: "text-xs text-slate-500 mt-1",
+						children: "Lengkap dengan kalkulasi Subtotal, Diskon, PPN, Grand Total, Lokasi Pengiriman, Termin Pembayaran, dan fasilitas Print / Save PDF."
+					})] }), /* @__PURE__ */ jsxs("button", {
+						type: "button",
+						onClick: () => setShowCreateModal(true),
+						className: "inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold",
+						children: [/* @__PURE__ */ jsx(Plus, { className: "w-4 h-4" }), " Buat Purchase Order (PO)"]
+					})]
+				}), /* @__PURE__ */ jsx("div", {
+					className: "space-y-4",
+					children: rows.map((po) => /* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-3",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex flex-col md:flex-row md:items-center md:justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-3",
+							children: [/* @__PURE__ */ jsxs("div", { children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "flex flex-wrap items-center gap-2",
+									children: [
+										/* @__PURE__ */ jsx("span", {
+											className: "text-sm font-extrabold text-slate-900 dark:text-white",
+											children: po.po_number
+										}),
+										/* @__PURE__ */ jsxs("span", {
+											className: "px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-indigo-100 text-indigo-800",
+											children: ["Status: ", po.status]
+										}),
+										/* @__PURE__ */ jsxs("span", {
+											className: "px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-emerald-100 text-emerald-800",
+											children: ["Approval: ", po.approval_status]
+										})
+									]
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "text-xs font-semibold text-slate-700 dark:text-slate-300 mt-1",
+									children: [
+										"Vendor: ",
+										po.vendor?.name,
+										" (",
+										po.vendor?.vendor_code,
+										") • Site: ",
+										po.site?.code
+									]
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "text-[11px] text-slate-500",
+									children: [
+										"Tgl PO: ",
+										po.po_date,
+										" • Target Kirim: ",
+										po.expected_delivery_date,
+										" • Termin:",
+										" ",
+										po.payment_terms,
+										" • Lokasi: ",
+										po.delivery_location
+									]
+								})
+							] }), /* @__PURE__ */ jsxs("div", {
+								className: "flex flex-col items-end gap-2",
+								children: [/* @__PURE__ */ jsxs("div", {
+									className: "text-base font-extrabold text-indigo-600",
+									children: ["Grand Total: ", formatIDR$10(po.grand_total)]
+								}), /* @__PURE__ */ jsxs("div", {
+									className: "flex flex-wrap gap-2",
+									children: [po.approval_status === "pending_approval" && /* @__PURE__ */ jsxs("button", {
+										type: "button",
+										onClick: () => router.post(`/procurement/purchase-orders/${po.id}/approve`, { approve_all: true }),
+										className: "inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-bold",
+										children: [/* @__PURE__ */ jsx(CheckCircle2, { className: "w-3.5 h-3.5" }), " Approve PO"]
+									}), /* @__PURE__ */ jsxs(Link, {
+										href: `/procurement/purchase-orders/${po.id}/print`,
+										className: "inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-slate-800 text-white text-xs font-bold",
+										children: [/* @__PURE__ */ jsx(Printer, { className: "w-3.5 h-3.5" }), " Print / PDF"]
+									})]
+								})]
+							})]
+						}), /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", {
+									className: "text-slate-400 border-b border-slate-100 dark:border-slate-800",
+									children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "py-1.5 px-2",
+											children: "Item & Spesifikasi"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-1.5 px-2 text-right",
+											children: "Ordered"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-1.5 px-2 text-right",
+											children: "Received"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-1.5 px-2 text-right",
+											children: "Outstanding"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-1.5 px-2 text-right",
+											children: "Harga Satuan"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-1.5 px-2 text-right",
+											children: "Total (+PPN)"
+										})
+									]
+								}) }), /* @__PURE__ */ jsx("tbody", { children: (po.items || []).map((it) => /* @__PURE__ */ jsxs("tr", {
+									className: "border-b border-slate-50 dark:border-slate-800/50",
+									children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-1.5 px-2 font-semibold",
+											children: [it.inventory_item?.item_code ? `${it.inventory_item.item_code} — ` : "", it.item_name]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-1.5 px-2 text-right font-bold",
+											children: [
+												it.quantity_ordered,
+												" ",
+												it.unit
+											]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-1.5 px-2 text-right text-emerald-600 font-bold",
+											children: it.quantity_received
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-1.5 px-2 text-right text-amber-600 font-bold",
+											children: it.quantity_outstanding
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-1.5 px-2 text-right",
+											children: formatIDR$10(it.unit_price)
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-1.5 px-2 text-right font-bold",
+											children: formatIDR$10(it.total_price)
+										})
+									]
+								}, it.id)) })]
+							})
+						})]
+					}, po.id))
+				})]
+			}),
+			showCreateModal && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-xl overflow-hidden shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between",
+						children: [/* @__PURE__ */ jsx("h3", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: "Buat Purchase Order (PO) Baru"
+						}), /* @__PURE__ */ jsx("button", {
+							onClick: () => setShowCreateModal(false),
+							className: "text-slate-400",
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitPo,
+						className: "p-4 space-y-3 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-2 gap-3",
+								children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Site *"
+								}), /* @__PURE__ */ jsx("select", {
+									value: form.data.site_id,
+									onChange: (e) => form.setData("site_id", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+									children: (master.sites || []).map((s) => /* @__PURE__ */ jsxs("option", {
+										value: s.id,
+										children: [
+											s.code,
+											" — ",
+											s.name
+										]
+									}, s.id))
+								})] }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Vendor *"
+								}), /* @__PURE__ */ jsx("select", {
+									value: form.data.vendor_id,
+									onChange: (e) => form.setData("vendor_id", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+									children: (master.vendors || []).map((v) => /* @__PURE__ */ jsxs("option", {
+										value: v.id,
+										children: [
+											v.vendor_code,
+											" — ",
+											v.name
+										]
+									}, v.id))
+								})] })]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-2 gap-3",
+								children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Target Tanggal Pengiriman *"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "date",
+									value: form.data.expected_delivery_date,
+									onChange: (e) => form.setData("expected_delivery_date", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+									required: true
+								})] }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Termin Pembayaran *"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "text",
+									value: form.data.payment_terms,
+									onChange: (e) => form.setData("payment_terms", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+									required: true
+								})] })]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-end gap-2 pt-2",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setShowCreateModal(false),
+									className: "px-4 py-2 rounded-xl border border-slate-200",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									className: "px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold",
+									children: "Terbitkan PO"
+								})]
+							})
+						]
+					})]
+				})
+			})
+		]
+	});
+}
+// resources/js/Pages/Procurement/PurchaseOrders/Print.jsx
+var Print_exports = /* @__PURE__ */ __exportAll({ default: () => PurchaseOrderPrint });
+function PurchaseOrderPrint({ purchaseOrder }) {
+	const po = purchaseOrder;
+	const formatIDR = (val) => new Intl.NumberFormat("id-ID", {
+		style: "currency",
+		currency: "IDR",
+		maximumFractionDigits: 0
+	}).format(Number(val || 0));
+	return /* @__PURE__ */ jsxs("div", {
+		className: "min-h-screen bg-slate-100 dark:bg-slate-950 py-8 px-4 print:bg-white print:p-0",
+		children: [
+			/* @__PURE__ */ jsx(Head, { title: `Print PO - ${po?.po_number || "Purchase Order"}` }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "max-w-4xl mx-auto mb-6 flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm print:hidden",
+				children: [/* @__PURE__ */ jsxs("div", {
+					className: "flex items-center gap-3",
+					children: [/* @__PURE__ */ jsx(Link, {
+						href: "/procurement/purchase-orders",
+						className: "px-3.5 py-2 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition",
+						children: "← Kembali ke Daftar PO"
+					}), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("div", {
+						className: "text-sm font-black text-slate-900 dark:text-white",
+						children: po.po_number
+					}), /* @__PURE__ */ jsx("div", {
+						className: "text-xs text-slate-500",
+						children: "Official Purchase Order Document • Print / Save as PDF"
+					})] })]
+				}), /* @__PURE__ */ jsx("div", {
+					className: "flex items-center gap-2",
+					children: /* @__PURE__ */ jsx("button", {
+						type: "button",
+						onClick: () => window.print(),
+						className: "px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black shadow-sm transition",
+						children: "Cetak / Simpan PDF (Ctrl+P)"
+					})
+				})]
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "max-w-4xl mx-auto bg-white text-slate-900 p-8 md:p-10 rounded-2xl shadow-lg border border-slate-200 print:shadow-none print:border-none print:rounded-none print:p-4",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-col md:flex-row justify-between items-start border-b-2 border-slate-900 pb-6 gap-4",
+						children: [/* @__PURE__ */ jsxs("div", { children: [
+							/* @__PURE__ */ jsx("div", {
+								className: "text-xs font-black tracking-widest uppercase text-indigo-700",
+								children: "TAP INTEGRATED COAL HAULING MANAGEMENT"
+							}),
+							/* @__PURE__ */ jsx("h1", {
+								className: "text-2xl font-black tracking-tight text-slate-900 mt-0.5",
+								children: "PT TEKNINDO ADHYA PANE"
+							}),
+							/* @__PURE__ */ jsx("p", {
+								className: "text-xs text-slate-600 mt-1",
+								children: "Coal Hauling Operations & Fleet Maintenance Division"
+							}),
+							/* @__PURE__ */ jsxs("p", {
+								className: "text-xs text-slate-600",
+								children: ["Site Project: ", /* @__PURE__ */ jsxs("span", {
+									className: "font-bold text-slate-900",
+									children: [
+										po.site?.name,
+										" (",
+										po.site?.code,
+										")"
+									]
+								})]
+							})
+						] }), /* @__PURE__ */ jsxs("div", {
+							className: "text-left md:text-right",
+							children: [
+								/* @__PURE__ */ jsx("div", {
+									className: "inline-block px-3 py-1 rounded bg-slate-900 text-white text-xs font-black uppercase tracking-widest",
+									children: "PURCHASE ORDER"
+								}),
+								/* @__PURE__ */ jsx("div", {
+									className: "mt-2 text-lg font-black text-slate-900",
+									children: po.po_number
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "text-xs text-slate-600",
+									children: ["Tanggal PO: ", /* @__PURE__ */ jsx("span", {
+										className: "font-bold text-slate-900",
+										children: po.po_date?.slice(0, 10)
+									})]
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "text-xs text-slate-600",
+									children: [
+										"Status Approval:",
+										" ",
+										/* @__PURE__ */ jsxs("span", {
+											className: "font-bold uppercase text-emerald-700",
+											children: [
+												po.approval_status,
+												" (",
+												po.status,
+												")"
+											]
+										})
+									]
+								})
+							]
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-1 md:grid-cols-2 gap-6 py-6 border-b border-slate-200 text-xs",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "bg-slate-50 p-4 rounded-xl border border-slate-200",
+							children: [
+								/* @__PURE__ */ jsx("div", {
+									className: "text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1",
+									children: "KEPADA VENDOR / SUPPLIER:"
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "text-sm font-black text-slate-900",
+									children: [
+										po.vendor?.name,
+										" (",
+										po.vendor?.vendor_code,
+										")"
+									]
+								}),
+								po.vendor?.address && /* @__PURE__ */ jsx("div", {
+									className: "text-slate-600 mt-1",
+									children: po.vendor.address
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "mt-2 space-y-0.5 text-slate-600",
+									children: [
+										po.vendor?.contact_person && /* @__PURE__ */ jsxs("div", { children: ["UP / PIC: ", /* @__PURE__ */ jsx("span", {
+											className: "font-semibold text-slate-800",
+											children: po.vendor.contact_person
+										})] }),
+										po.vendor?.phone && /* @__PURE__ */ jsxs("div", { children: ["Telp: ", po.vendor.phone] }),
+										po.vendor?.email && /* @__PURE__ */ jsxs("div", { children: ["Email: ", po.vendor.email] }),
+										po.vendor?.npwp && /* @__PURE__ */ jsxs("div", { children: ["NPWP: ", po.vendor.npwp] })
+									]
+								})
+							]
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "bg-slate-50 p-4 rounded-xl border border-slate-200",
+							children: [/* @__PURE__ */ jsx("div", {
+								className: "text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1",
+								children: "INSTRUKSI PENGIRIMAN & PEMBAYARAN:"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "space-y-1 text-slate-700",
+								children: [
+									/* @__PURE__ */ jsxs("div", { children: [
+										/* @__PURE__ */ jsx("span", {
+											className: "text-slate-500",
+											children: "Lokasi Pengiriman:"
+										}),
+										" ",
+										/* @__PURE__ */ jsx("span", {
+											className: "font-bold text-slate-900",
+											children: po.delivery_location || po.warehouse?.name || po.site?.name
+										})
+									] }),
+									/* @__PURE__ */ jsxs("div", { children: [
+										/* @__PURE__ */ jsx("span", {
+											className: "text-slate-500",
+											children: "Gudang Tujuan:"
+										}),
+										" ",
+										/* @__PURE__ */ jsx("span", {
+											className: "font-semibold text-slate-900",
+											children: po.warehouse ? `${po.warehouse.name} (${po.warehouse.code})` : "-"
+										})
+									] }),
+									/* @__PURE__ */ jsxs("div", { children: [
+										/* @__PURE__ */ jsx("span", {
+											className: "text-slate-500",
+											children: "Target Pengiriman:"
+										}),
+										" ",
+										/* @__PURE__ */ jsx("span", {
+											className: "font-bold text-slate-900",
+											children: po.expected_delivery_date?.slice(0, 10) || "-"
+										})
+									] }),
+									/* @__PURE__ */ jsxs("div", { children: [
+										/* @__PURE__ */ jsx("span", {
+											className: "text-slate-500",
+											children: "Termin Pembayaran:"
+										}),
+										" ",
+										/* @__PURE__ */ jsx("span", {
+											className: "font-bold text-indigo-700",
+											children: po.payment_terms
+										})
+									] }),
+									/* @__PURE__ */ jsxs("div", { children: [
+										/* @__PURE__ */ jsx("span", {
+											className: "text-slate-500",
+											children: "Referensi PR:"
+										}),
+										" ",
+										/* @__PURE__ */ jsx("span", {
+											className: "font-semibold",
+											children: po.purchase_request?.pr_number || "-"
+										})
+									] })
+								]
+							})]
+						})]
+					}),
+					/* @__PURE__ */ jsx("div", {
+						className: "my-6",
+						children: /* @__PURE__ */ jsxs("table", {
+							className: "w-full text-xs border-collapse",
+							children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", {
+								className: "bg-slate-900 text-white uppercase text-[10px] tracking-wider",
+								children: [
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2.5 px-3 text-left",
+										children: "No"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2.5 px-3 text-left",
+										children: "Kode / Deskripsi Barang"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2.5 px-3 text-left",
+										children: "Spesifikasi"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2.5 px-3 text-right",
+										children: "Qty"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2.5 px-3 text-center",
+										children: "UOM"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2.5 px-3 text-right",
+										children: "Harga Satuan"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2.5 px-3 text-right",
+										children: "Diskon"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2.5 px-3 text-right",
+										children: "PPN"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2.5 px-3 text-right",
+										children: "Subtotal"
+									})
+								]
+							}) }), /* @__PURE__ */ jsx("tbody", {
+								className: "divide-y divide-slate-200 border-b border-slate-300",
+								children: (po.items || []).map((item, idx) => /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-3 font-semibold text-slate-700",
+										children: idx + 1
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "py-3 px-3",
+										children: [/* @__PURE__ */ jsx("div", {
+											className: "font-bold text-slate-900",
+											children: item.item_name
+										}), item.inventory_item && /* @__PURE__ */ jsxs("div", {
+											className: "text-[11px] text-slate-500",
+											children: [
+												item.inventory_item.item_code,
+												" • PN: ",
+												item.inventory_item.part_number || "-"
+											]
+										})]
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-3 text-slate-600",
+										children: item.specification || "-"
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-3 text-right font-bold text-slate-900",
+										children: Number(item.quantity_ordered).toLocaleString("id-ID")
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-3 text-center text-slate-600",
+										children: item.unit
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-3 text-right text-slate-800",
+										children: formatIDR(item.unit_price)
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-3 text-right text-slate-600",
+										children: formatIDR(item.discount_amount)
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-3 text-right text-slate-600",
+										children: formatIDR(item.tax_amount)
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-3 px-3 text-right font-bold text-slate-900",
+										children: formatIDR(item.total_price)
+									})
+								] }, item.id || idx))
+							})]
+						})
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-1 md:grid-cols-12 gap-6 items-start",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "md:col-span-7 space-y-3 text-xs",
+							children: [/* @__PURE__ */ jsxs("div", {
+								className: "p-3.5 rounded-xl bg-slate-50 border border-slate-200",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[10px] font-black uppercase text-slate-500 mb-1",
+									children: "SYARAT & KETENTUAN (TERMS & CONDITIONS):"
+								}), /* @__PURE__ */ jsx("p", {
+									className: "text-slate-700 whitespace-pre-line leading-relaxed",
+									children: po.terms_and_conditions || "1. Barang harus sesuai spesifikasi PO dan disertai Surat Jalan resmi.\n2. Barang rusak atau tidak sesuai spesifikasi akan ditolak pada saat Goods Receipt.\n3. Tagihan (Invoice) wajib melampirkan PO asli dan Berita Acara Penerimaan Barang (GRN)."
+								})]
+							}), po.notes && /* @__PURE__ */ jsxs("div", {
+								className: "p-3 rounded-xl border border-slate-200 text-slate-600",
+								children: [
+									/* @__PURE__ */ jsx("span", {
+										className: "font-bold text-slate-800",
+										children: "Catatan PO:"
+									}),
+									" ",
+									po.notes
+								]
+							})]
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "md:col-span-5 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs space-y-2",
+							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "flex justify-between text-slate-600",
+									children: [/* @__PURE__ */ jsx("span", { children: "Subtotal" }), /* @__PURE__ */ jsx("span", {
+										className: "font-semibold text-slate-900",
+										children: formatIDR(po.subtotal)
+									})]
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "flex justify-between text-slate-600",
+									children: [/* @__PURE__ */ jsx("span", { children: "Total Diskon" }), /* @__PURE__ */ jsxs("span", {
+										className: "font-semibold text-rose-600",
+										children: ["- ", formatIDR(po.discount_amount)]
+									})]
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "flex justify-between text-slate-600",
+									children: [/* @__PURE__ */ jsxs("span", { children: [
+										"PPN (",
+										Number(po.tax_percent || 0),
+										"%)"
+									] }), /* @__PURE__ */ jsx("span", {
+										className: "font-semibold text-slate-900",
+										children: formatIDR(po.tax_amount)
+									})]
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "border-t border-slate-300 pt-2 flex justify-between items-center text-sm font-black text-slate-900",
+									children: [/* @__PURE__ */ jsx("span", { children: "GRAND TOTAL" }), /* @__PURE__ */ jsx("span", {
+										className: "text-base text-indigo-700",
+										children: formatIDR(po.grand_total)
+									})]
+								})
+							]
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "mt-8 pt-6 border-t border-slate-200",
+						children: [/* @__PURE__ */ jsx("div", {
+							className: "text-[10px] font-black uppercase tracking-wider text-slate-400 mb-3",
+							children: "HISTORI OTORISASI & TANDA TANGAN PEJABAT BERWENANG"
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "grid grid-cols-1 md:grid-cols-3 gap-4 text-xs",
+							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "border border-slate-200 rounded-xl p-4 text-center",
+									children: [
+										/* @__PURE__ */ jsx("div", {
+											className: "text-slate-500 font-semibold",
+											children: "Dibuat Oleh (Procurement)"
+										}),
+										/* @__PURE__ */ jsx("div", {
+											className: "h-14 flex items-center justify-center",
+											children: /* @__PURE__ */ jsx("span", {
+												className: "px-2 py-0.5 rounded bg-slate-100 text-[10px] font-bold text-slate-600",
+												children: "DIGITALLY ISSUED"
+											})
+										}),
+										/* @__PURE__ */ jsx("div", {
+											className: "font-bold text-slate-900 border-t border-slate-200 pt-2",
+											children: po.creator?.name || "Procurement Officer"
+										})
+									]
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "border border-slate-200 rounded-xl p-4 text-center",
+									children: [
+										/* @__PURE__ */ jsx("div", {
+											className: "text-slate-500 font-semibold",
+											children: "Disetujui Oleh (Management)"
+										}),
+										/* @__PURE__ */ jsxs("div", {
+											className: "h-14 flex flex-col items-center justify-center",
+											children: [/* @__PURE__ */ jsx("span", {
+												className: "px-2.5 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase",
+												children: po.approval_status
+											}), po.approved_at && /* @__PURE__ */ jsx("span", {
+												className: "text-[10px] text-slate-500 mt-1",
+												children: po.approved_at.slice(0, 16)
+											})]
+										}),
+										/* @__PURE__ */ jsx("div", {
+											className: "font-bold text-slate-900 border-t border-slate-200 pt-2",
+											children: po.approver?.name || "Authorized Approver"
+										})
+									]
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "border border-slate-200 rounded-xl p-4 text-center",
+									children: [
+										/* @__PURE__ */ jsx("div", {
+											className: "text-slate-500 font-semibold",
+											children: "Konfirmasi Penerimaan Vendor"
+										}),
+										/* @__PURE__ */ jsx("div", {
+											className: "h-14 flex items-center justify-center text-[11px] text-slate-400 italic",
+											children: "Cap & Tanda Tangan Vendor"
+										}),
+										/* @__PURE__ */ jsx("div", {
+											className: "font-bold text-slate-900 border-t border-slate-200 pt-2",
+											children: po.vendor?.name
+										})
+									]
+								})
+							]
+						})]
+					})
+				]
+			})
+		]
+	});
+}
+// resources/js/Pages/Procurement/PurchaseRequests/Index.jsx
+var Index_exports$21 = /* @__PURE__ */ __exportAll({ default: () => PurchaseRequestsIndex });
+var formatIDR$9 = (val) => new Intl.NumberFormat("id-ID", {
+	style: "currency",
+	currency: "IDR",
+	maximumFractionDigits: 0
+}).format(Number(val || 0));
+function PurchaseRequestsIndex({ requests, metrics = {}, filters = {}, master = {} }) {
+	const [showCreateModal, setShowCreateModal] = useState(false);
+	const firstSite = master.sites?.[0]?.id ?? "";
+	const firstItem = master.items?.[0];
+	const form = useForm({
+		site_id: firstSite,
+		warehouse_id: (master.warehouses || []).find((w) => String(w.site_id) === String(firstSite))?.id ?? "",
+		department_id: master.departments?.[0]?.id ?? "",
+		request_date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10),
+		required_date: new Date(Date.now() + 6048e5).toISOString().slice(0, 10),
+		source: "warehouse_reorder",
+		purchase_category: "sparepart",
+		priority: "high",
+		purpose: "Pengadaan suku cadang operasional armada coal hauling",
+		requested_by: master.employees?.[0]?.id ?? "",
+		notes: "",
+		items: [{
+			inventory_item_id: firstItem?.id ?? "",
+			item_name: firstItem?.item_name ?? "Oil Filter",
+			specification: firstItem?.specification ?? "OEM Standard",
+			requested_qty: 10,
+			unit: firstItem?.unit_of_measurement ?? "PCS",
+			estimated_unit_price: firstItem?.standard_cost ?? 425e3,
+			purpose: "Stok cadangan workshop"
+		}]
+	});
+	const submitPr = (e) => {
+		e.preventDefault();
+		form.post("/procurement/purchase-requests", { onSuccess: () => setShowCreateModal(false) });
+	};
+	const rows = requests?.data || [];
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Purchase Request (PR) & Multi-Level Approval",
+		children: [
+			/* @__PURE__ */ jsx(Head, { title: "Purchase Requests (PR) - TAP" }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "space-y-6",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4",
+						children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsxs("h1", {
+							className: "text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2",
+							children: [/* @__PURE__ */ jsx(ClipboardList, { className: "w-5 h-5 text-indigo-600" }), "Purchase Request (PR) & Histori Otorisasi Multi-Level"]
+						}), /* @__PURE__ */ jsx("p", {
+							className: "text-xs text-slate-500 mt-1",
+							children: "Sumber PR: Warehouse Reorder, Maintenance Request, Operational Requirement, dan General Purchase."
+						})] }), /* @__PURE__ */ jsxs("button", {
+							type: "button",
+							onClick: () => setShowCreateModal(true),
+							className: "inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold",
+							children: [/* @__PURE__ */ jsx(Plus, { className: "w-4 h-4" }), " Buat Purchase Request (PR)"]
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-2 lg:grid-cols-4 gap-4",
+						children: [
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-xs text-slate-500",
+									children: "Total Dokumen PR"
+								}), /* @__PURE__ */ jsx("p", {
+									className: "text-2xl font-extrabold mt-1",
+									children: metrics.total || 0
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-xs text-amber-600 font-bold",
+									children: "Menunggu Approval"
+								}), /* @__PURE__ */ jsx("p", {
+									className: "text-2xl font-extrabold text-amber-600 mt-1",
+									children: metrics.pending_approval || 0
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-xs text-emerald-600 font-bold",
+									children: "Telah Disetujui (Approved)"
+								}), /* @__PURE__ */ jsx("p", {
+									className: "text-2xl font-extrabold text-emerald-600 mt-1",
+									children: metrics.approved || 0
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "text-xs text-indigo-600 font-bold",
+									children: "Total Estimasi Nilai PR"
+								}), /* @__PURE__ */ jsx("p", {
+									className: "text-xl font-extrabold text-indigo-600 mt-1",
+									children: formatIDR$9(metrics.total_estimated)
+								})]
+							})
+						]
+					}),
+					/* @__PURE__ */ jsx("div", {
+						className: "space-y-4",
+						children: rows.map((pr) => /* @__PURE__ */ jsxs("div", {
+							className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-3",
+							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3",
+									children: [/* @__PURE__ */ jsxs("div", { children: [
+										/* @__PURE__ */ jsxs("div", {
+											className: "flex flex-wrap items-center gap-2",
+											children: [
+												/* @__PURE__ */ jsx("span", {
+													className: "text-sm font-extrabold text-slate-900 dark:text-white",
+													children: pr.pr_number
+												}),
+												/* @__PURE__ */ jsx("span", {
+													className: "px-2 py-0.5 text-[10px] font-bold uppercase rounded-full bg-indigo-100 text-indigo-800",
+													children: pr.status
+												}),
+												/* @__PURE__ */ jsxs("span", {
+													className: "px-2 py-0.5 text-[10px] font-semibold rounded bg-slate-100 dark:bg-slate-800",
+													children: ["Sumber: ", pr.source]
+												}),
+												/* @__PURE__ */ jsxs("span", {
+													className: "px-2 py-0.5 text-[10px] font-semibold rounded bg-amber-50 text-amber-700",
+													children: ["Prioritas: ", pr.priority]
+												})
+											]
+										}),
+										/* @__PURE__ */ jsxs("p", {
+											className: "text-xs text-slate-600 dark:text-slate-400 mt-1",
+											children: [
+												/* @__PURE__ */ jsx("strong", { children: "Tujuan:" }),
+												" ",
+												pr.purpose || pr.notes || "-"
+											]
+										}),
+										/* @__PURE__ */ jsxs("div", {
+											className: "text-[11px] text-slate-500 mt-0.5",
+											children: [
+												"Site: ",
+												pr.site?.code,
+												" • Dept: ",
+												pr.department?.name || "-",
+												" • Pemohon:",
+												" ",
+												pr.requester?.name || "-",
+												" • Tgl Request: ",
+												pr.request_date,
+												" • Required:",
+												" ",
+												pr.required_date || "-"
+											]
+										})
+									] }), /* @__PURE__ */ jsxs("div", {
+										className: "flex flex-col items-end gap-2",
+										children: [/* @__PURE__ */ jsxs("div", {
+											className: "text-sm font-extrabold text-indigo-600",
+											children: ["Estimasi: ", formatIDR$9(pr.estimated_total)]
+										}), ["submitted", "pending_approval"].includes(pr.status) && /* @__PURE__ */ jsxs("div", {
+											className: "flex gap-2",
+											children: [/* @__PURE__ */ jsxs("button", {
+												type: "button",
+												onClick: () => router.post(`/procurement/purchase-requests/${pr.id}/approve`, { approve_all: true }),
+												className: "inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 text-white text-xs font-bold",
+												children: [/* @__PURE__ */ jsx(CheckCircle2, { className: "w-3.5 h-3.5" }), " Approve PR"]
+											}), /* @__PURE__ */ jsxs("button", {
+												type: "button",
+												onClick: () => router.post(`/procurement/purchase-requests/${pr.id}/reject`, { rejection_reason: "Anggaran ditunda ke periode berikutnya" }),
+												className: "inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-rose-600 text-white text-xs font-bold",
+												children: [/* @__PURE__ */ jsx(XCircle, { className: "w-3.5 h-3.5" }), " Reject"]
+											})]
+										})]
+									})]
+								}),
+								/* @__PURE__ */ jsx("div", {
+									className: "overflow-x-auto",
+									children: /* @__PURE__ */ jsxs("table", {
+										className: "w-full text-left text-xs",
+										children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", {
+											className: "text-slate-400 border-b border-slate-100 dark:border-slate-800",
+											children: [
+												/* @__PURE__ */ jsx("th", {
+													className: "py-1.5 px-2",
+													children: "Item & Spesifikasi"
+												}),
+												/* @__PURE__ */ jsx("th", {
+													className: "py-1.5 px-2 text-right",
+													children: "Qty Diminta"
+												}),
+												/* @__PURE__ */ jsx("th", {
+													className: "py-1.5 px-2 text-right",
+													children: "Est. Harga Satuan"
+												}),
+												/* @__PURE__ */ jsx("th", {
+													className: "py-1.5 px-2 text-right",
+													children: "Subtotal"
+												})
+											]
+										}) }), /* @__PURE__ */ jsx("tbody", { children: (pr.items || []).map((it) => /* @__PURE__ */ jsxs("tr", {
+											className: "border-b border-slate-50 dark:border-slate-800/50",
+											children: [
+												/* @__PURE__ */ jsxs("td", {
+													className: "py-1.5 px-2",
+													children: [/* @__PURE__ */ jsxs("span", {
+														className: "font-bold",
+														children: [it.item?.item_code ? `${it.item.item_code} — ` : "", it.item_name || it.item?.item_name]
+													}), it.specification && /* @__PURE__ */ jsxs("span", {
+														className: "text-[10px] text-slate-400 ml-2",
+														children: [
+															"(",
+															it.specification,
+															")"
+														]
+													})]
+												}),
+												/* @__PURE__ */ jsxs("td", {
+													className: "py-1.5 px-2 text-right font-bold",
+													children: [
+														it.requested_qty,
+														" ",
+														it.unit
+													]
+												}),
+												/* @__PURE__ */ jsx("td", {
+													className: "py-1.5 px-2 text-right",
+													children: formatIDR$9(it.estimated_unit_price)
+												}),
+												/* @__PURE__ */ jsx("td", {
+													className: "py-1.5 px-2 text-right font-semibold",
+													children: formatIDR$9(it.estimated_subtotal)
+												})
+											]
+										}, it.id)) })]
+									})
+								}),
+								(pr.approvals || []).length > 0 && /* @__PURE__ */ jsxs("div", {
+									className: "pt-2 flex flex-wrap items-center gap-2 text-[11px]",
+									children: [/* @__PURE__ */ jsxs("span", {
+										className: "text-slate-400 font-semibold flex items-center gap-1",
+										children: [/* @__PURE__ */ jsx(ShieldCheck, { className: "w-3.5 h-3.5 text-indigo-500" }), " Histori Approval:"]
+									}), (pr.approvals || []).map((ap) => /* @__PURE__ */ jsxs("span", {
+										className: `px-2 py-0.5 rounded-lg border ${ap.status === "approved" ? "bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-300" : "bg-amber-50 border-amber-200 text-amber-800 dark:bg-amber-950/50 dark:text-amber-300"}`,
+										children: [
+											"Step ",
+											ap.step_order,
+											": ",
+											ap.step_name,
+											" — ",
+											/* @__PURE__ */ jsx("strong", { children: ap.status.toUpperCase() })
+										]
+									}, ap.id))]
+								})
+							]
+						}, pr.id))
+					})
+				]
+			}),
+			showCreateModal && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl overflow-hidden shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between",
+						children: [/* @__PURE__ */ jsx("h3", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: "Buat Purchase Request (PR) Baru"
+						}), /* @__PURE__ */ jsx("button", {
+							onClick: () => setShowCreateModal(false),
+							className: "text-slate-400",
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitPr,
+						className: "p-4 space-y-3 text-xs max-h-[80vh] overflow-y-auto",
+						children: [
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-1 md:grid-cols-3 gap-3",
+								children: [
+									/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+										className: "block font-semibold mb-1",
+										children: "Site *"
+									}), /* @__PURE__ */ jsx("select", {
+										value: form.data.site_id,
+										onChange: (e) => form.setData("site_id", e.target.value),
+										className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+										children: (master.sites || []).map((s) => /* @__PURE__ */ jsxs("option", {
+											value: s.id,
+											children: [
+												s.code,
+												" — ",
+												s.name
+											]
+										}, s.id))
+									})] }),
+									/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+										className: "block font-semibold mb-1",
+										children: "Departemen *"
+									}), /* @__PURE__ */ jsx("select", {
+										value: form.data.department_id,
+										onChange: (e) => form.setData("department_id", e.target.value),
+										className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+										children: (master.departments || []).map((d) => /* @__PURE__ */ jsx("option", {
+											value: d.id,
+											children: d.name
+										}, d.id))
+									})] }),
+									/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+										className: "block font-semibold mb-1",
+										children: "Sumber PR *"
+									}), /* @__PURE__ */ jsxs("select", {
+										value: form.data.source,
+										onChange: (e) => form.setData("source", e.target.value),
+										className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+										children: [
+											/* @__PURE__ */ jsx("option", {
+												value: "warehouse_reorder",
+												children: "Warehouse Reorder"
+											}),
+											/* @__PURE__ */ jsx("option", {
+												value: "maintenance_request",
+												children: "Maintenance Request"
+											}),
+											/* @__PURE__ */ jsx("option", {
+												value: "operational_requirement",
+												children: "Operational Requirement"
+											}),
+											/* @__PURE__ */ jsx("option", {
+												value: "general_purchase",
+												children: "General Purchase"
+											})
+										]
+									})] })
+								]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-1 md:grid-cols-3 gap-3",
+								children: [
+									/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+										className: "block font-semibold mb-1",
+										children: "Kategori Pembelian *"
+									}), /* @__PURE__ */ jsxs("select", {
+										value: form.data.purchase_category,
+										onChange: (e) => form.setData("purchase_category", e.target.value),
+										className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+										children: [
+											/* @__PURE__ */ jsx("option", {
+												value: "sparepart",
+												children: "Sparepart"
+											}),
+											/* @__PURE__ */ jsx("option", {
+												value: "tire_tyre",
+												children: "Tire & Tyre"
+											}),
+											/* @__PURE__ */ jsx("option", {
+												value: "lubricant",
+												children: "Lubricant"
+											}),
+											/* @__PURE__ */ jsx("option", {
+												value: "operational",
+												children: "Operational"
+											}),
+											/* @__PURE__ */ jsx("option", {
+												value: "general",
+												children: "General Supplies"
+											})
+										]
+									})] }),
+									/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+										className: "block font-semibold mb-1",
+										children: "Prioritas *"
+									}), /* @__PURE__ */ jsxs("select", {
+										value: form.data.priority,
+										onChange: (e) => form.setData("priority", e.target.value),
+										className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+										children: [
+											/* @__PURE__ */ jsx("option", {
+												value: "normal",
+												children: "Normal"
+											}),
+											/* @__PURE__ */ jsx("option", {
+												value: "high",
+												children: "High"
+											}),
+											/* @__PURE__ */ jsx("option", {
+												value: "critical",
+												children: "Critical"
+											}),
+											/* @__PURE__ */ jsx("option", {
+												value: "low",
+												children: "Low"
+											})
+										]
+									})] }),
+									/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+										className: "block font-semibold mb-1",
+										children: "Tanggal Dibutuhkan *"
+									}), /* @__PURE__ */ jsx("input", {
+										type: "date",
+										value: form.data.required_date,
+										onChange: (e) => form.setData("required_date", e.target.value),
+										className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+										required: true
+									})] })
+								]
+							}),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Tujuan Pembelian (Purpose) *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: form.data.purpose,
+								onChange: (e) => form.setData("purpose", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "p-3 rounded-xl bg-slate-50 dark:bg-slate-800 space-y-2",
+								children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-bold",
+									children: "Item yang Diminta"
+								}), /* @__PURE__ */ jsxs("div", {
+									className: "grid grid-cols-1 md:grid-cols-3 gap-2",
+									children: [
+										/* @__PURE__ */ jsx("select", {
+											value: form.data.items[0].inventory_item_id,
+											onChange: (e) => {
+												const it = (master.items || []).find((x) => String(x.id) === String(e.target.value));
+												form.setData("items", [{
+													...form.data.items[0],
+													inventory_item_id: e.target.value,
+													item_name: it ? it.item_name : form.data.items[0].item_name,
+													specification: it ? it.specification : "",
+													unit: it ? it.unit_of_measurement : "PCS",
+													estimated_unit_price: it ? it.standard_cost : 0
+												}]);
+											},
+											className: "px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900",
+											children: (master.items || []).map((i) => /* @__PURE__ */ jsxs("option", {
+												value: i.id,
+												children: [
+													i.item_code,
+													" — ",
+													i.item_name
+												]
+											}, i.id))
+										}),
+										/* @__PURE__ */ jsx("input", {
+											type: "number",
+											min: "0.01",
+											step: "0.01",
+											value: form.data.items[0].requested_qty,
+											onChange: (e) => form.setData("items", [{
+												...form.data.items[0],
+												requested_qty: e.target.value
+											}]),
+											placeholder: "Qty",
+											className: "px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
+										}),
+										/* @__PURE__ */ jsx("input", {
+											type: "number",
+											min: "0",
+											value: form.data.items[0].estimated_unit_price,
+											onChange: (e) => form.setData("items", [{
+												...form.data.items[0],
+												estimated_unit_price: e.target.value
+											}]),
+											placeholder: "Est. Harga Satuan",
+											className: "px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900"
+										})
+									]
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-end gap-2 pt-2",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setShowCreateModal(false),
+									className: "px-4 py-2 rounded-xl border border-slate-200",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									className: "px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold",
+									children: "Ajukan Purchase Request"
+								})]
+							})
+						]
+					})]
+				})
+			})
+		]
+	});
+}
+// resources/js/Pages/Procurement/Rfqs/Index.jsx
+var Index_exports$20 = /* @__PURE__ */ __exportAll({ default: () => RfqComparisonIndex });
+var formatIDR$8 = (val) => new Intl.NumberFormat("id-ID", {
+	style: "currency",
+	currency: "IDR",
+	maximumFractionDigits: 0
+}).format(Number(val || 0));
+function RfqComparisonIndex({ rfqs = [], comparisons = [], approvedPrs = [], master = {} }) {
+	const [showRfqModal, setShowRfqModal] = useState(false);
+	const [quoteModalRfq, setQuoteModalRfq] = useState(null);
+	const rfqForm = useForm({
+		purchase_request_id: approvedPrs?.[0]?.id ?? "",
+		issue_date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10),
+		closing_date: new Date(Date.now() + 432e6).toISOString().slice(0, 10),
+		title: "Tender Pengadaan Sparepart & Ban Operasional Hauling",
+		vendor_ids: (master.vendors || []).slice(0, 2).map((v) => v.id),
+		notes: "Harap melampirkan garansi keaslian part dan estimasi waktu pengiriman ke site."
+	});
+	const qtnForm = useForm({
+		vendor_id: master.vendors?.[0]?.id ?? "",
+		quotation_date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10),
+		delivery_lead_time_days: 5,
+		payment_terms: "TOP 30 Days",
+		remarks: "Harga termasuk pengiriman sampai gudang site.",
+		items: []
+	});
+	const openQuoteModal = (rfq) => {
+		const prItems = rfq.purchase_request?.items || [];
+		qtnForm.setData({
+			vendor_id: master.vendors?.[0]?.id ?? "",
+			quotation_date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10),
+			delivery_lead_time_days: 5,
+			payment_terms: "TOP 30 Days",
+			remarks: "Penawaran resmi vendor",
+			items: prItems.map((pi) => ({
+				purchase_request_item_id: pi.id,
+				inventory_item_id: pi.inventory_item_id,
+				item_name: pi.item_name || pi.item?.item_name || "Sparepart",
+				quantity: pi.requested_qty,
+				unit: pi.unit,
+				unit_price: pi.estimated_unit_price,
+				discount_amount: 0,
+				tax_rate: 11,
+				brand_offered: "OEM Genuine"
+			}))
+		});
+		setQuoteModalRfq(rfq);
+	};
+	const submitRfq = (e) => {
+		e.preventDefault();
+		rfqForm.post("/procurement/rfqs", { onSuccess: () => setShowRfqModal(false) });
+	};
+	const submitQuotation = (e) => {
+		e.preventDefault();
+		if (!quoteModalRfq) return;
+		qtnForm.post(`/procurement/rfqs/${quoteModalRfq.id}/quotations`, { onSuccess: () => setQuoteModalRfq(null) });
+	};
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Request for Quotation (RFQ) & Vendor Comparison Matrix",
+		children: [
+			/* @__PURE__ */ jsx(Head, { title: "RFQ & Komparasi Vendor - TAP" }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "space-y-6",
+				children: [/* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4",
+					children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsxs("h1", {
+						className: "text-xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2",
+						children: [/* @__PURE__ */ jsx(Scale, { className: "w-5 h-5 text-indigo-600" }), "Request for Quotation (RFQ), Penawaran Vendor & Komparasi Pemenang"]
+					}), /* @__PURE__ */ jsx("p", {
+						className: "text-xs text-slate-500 mt-1",
+						children: "Bandingkan penawaran antar-vendor berdasarkan Harga (Price), Waktu Kirim (Delivery Lead Time), dan Termin Pembayaran (Payment Terms)."
+					})] }), /* @__PURE__ */ jsxs("button", {
+						type: "button",
+						onClick: () => setShowRfqModal(true),
+						className: "inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold",
+						children: [/* @__PURE__ */ jsx(Plus, { className: "w-4 h-4" }), " Buat RFQ & Undang Vendor"]
+					})]
+				}), /* @__PURE__ */ jsx("div", {
+					className: "space-y-4",
+					children: rfqs.map((rfq) => /* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-4",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex flex-col md:flex-row md:items-center md:justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3",
+							children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsxs("div", {
+								className: "flex items-center gap-2",
+								children: [
+									/* @__PURE__ */ jsx("span", {
+										className: "text-sm font-extrabold text-slate-900 dark:text-white",
+										children: rfq.rfq_number
+									}),
+									/* @__PURE__ */ jsx("span", {
+										className: "px-2.5 py-0.5 text-[10px] font-bold uppercase rounded-full bg-indigo-100 text-indigo-800",
+										children: rfq.status
+									}),
+									/* @__PURE__ */ jsxs("span", {
+										className: "text-xs text-slate-500",
+										children: [
+											"Ref PR: ",
+											/* @__PURE__ */ jsx("strong", { children: rfq.purchase_request?.pr_number }),
+											" (",
+											rfq.site?.code,
+											")"
+										]
+									})
+								]
+							}), /* @__PURE__ */ jsx("p", {
+								className: "text-xs font-semibold text-slate-700 dark:text-slate-300 mt-1",
+								children: rfq.title
+							})] }), /* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => openQuoteModal(rfq),
+								className: "px-3 py-1.5 rounded-xl bg-slate-900 dark:bg-slate-800 text-white text-xs font-bold",
+								children: "+ Input Quotation Vendor"
+							})]
+						}), /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left border-collapse text-xs",
+								children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3",
+											children: "No. Quotation & Vendor"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3 text-right",
+											children: "Harga Total (Termasuk PPN)"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3 text-center",
+											children: "Delivery Time"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3 text-center",
+											children: "Payment Terms"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3",
+											children: "Status"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3 text-right",
+											children: "Aksi Penunjukan Pemenang"
+										})
+									]
+								}) }), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: (rfq.quotations || []).map((q) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2.5 px-3",
+											children: [/* @__PURE__ */ jsxs("div", {
+												className: "font-bold text-slate-900 dark:text-white",
+												children: [
+													q.quotation_number,
+													" — ",
+													q.vendor?.name
+												]
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-[10px] text-slate-500",
+												children: q.remarks || "-"
+											})]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2.5 px-3 text-right font-extrabold text-indigo-600",
+											children: formatIDR$8(q.total_amount)
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2.5 px-3 text-center font-bold",
+											children: [q.delivery_lead_time_days, " Hari Kerja"]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2.5 px-3 text-center font-semibold",
+											children: q.payment_terms
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2.5 px-3",
+											children: /* @__PURE__ */ jsx("span", {
+												className: `px-2 py-0.5 text-[10px] font-bold uppercase rounded-full ${q.status === "selected" ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-700"}`,
+												children: q.status
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2.5 px-3 text-right",
+											children: rfq.status !== "awarded" ? /* @__PURE__ */ jsxs("button", {
+												type: "button",
+												onClick: () => router.post(`/procurement/rfqs/${rfq.id}/select-vendor`, {
+													selected_quotation_id: q.id,
+													selection_remarks: `Vendor ${q.vendor?.name} dipilih berdasarkan evaluasi harga, waktu pengiriman (${q.delivery_lead_time_days} hari), dan termin ${q.payment_terms}.`
+												}),
+												className: "inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-emerald-600 text-white text-[11px] font-bold",
+												children: [/* @__PURE__ */ jsx(Award, { className: "w-3 h-3" }), " Pilih sebagai Pemenang"]
+											}) : q.status === "selected" && /* @__PURE__ */ jsx("span", {
+												className: "text-emerald-600 font-extrabold text-[11px]",
+												children: "★ Pemenang Tender"
+											})
+										})
+									] }, q.id))
+								})]
+							})
+						})]
+					}, rfq.id))
+				})]
+			}),
+			showRfqModal && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg overflow-hidden shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between",
+						children: [/* @__PURE__ */ jsx("h3", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: "Buat Request for Quotation (RFQ) dari PR Approved"
+						}), /* @__PURE__ */ jsx("button", {
+							onClick: () => setShowRfqModal(false),
+							className: "text-slate-400",
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitRfq,
+						className: "p-4 space-y-3 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Pilih Purchase Request (Approved) *"
+							}), /* @__PURE__ */ jsx("select", {
+								value: rfqForm.data.purchase_request_id,
+								onChange: (e) => rfqForm.setData("purchase_request_id", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+								required: true,
+								children: approvedPrs.map((pr) => /* @__PURE__ */ jsxs("option", {
+									value: pr.id,
+									children: [
+										pr.pr_number,
+										" — ",
+										pr.purpose || pr.purchase_category
+									]
+								}, pr.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Judul RFQ *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: rfqForm.data.title,
+								onChange: (e) => rfqForm.setData("title", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-end gap-2 pt-2",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setShowRfqModal(false),
+									className: "px-4 py-2 rounded-xl border border-slate-200",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									className: "px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold",
+									children: "Terbitkan RFQ"
+								})]
+							})
+						]
+					})]
+				})
+			}),
+			quoteModalRfq && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-xl overflow-hidden shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between",
+						children: [/* @__PURE__ */ jsxs("h3", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: [
+								"Catat Penawaran Vendor (",
+								quoteModalRfq.rfq_number,
+								")"
+							]
+						}), /* @__PURE__ */ jsx("button", {
+							onClick: () => setQuoteModalRfq(null),
+							className: "text-slate-400",
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitQuotation,
+						className: "p-4 space-y-3 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-3 gap-3",
+								children: [
+									/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+										className: "block font-semibold mb-1",
+										children: "Vendor"
+									}), /* @__PURE__ */ jsx("select", {
+										value: qtnForm.data.vendor_id,
+										onChange: (e) => qtnForm.setData("vendor_id", e.target.value),
+										className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+										children: (master.vendors || []).map((v) => /* @__PURE__ */ jsx("option", {
+											value: v.id,
+											children: v.name
+										}, v.id))
+									})] }),
+									/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+										className: "block font-semibold mb-1",
+										children: "Waktu Kirim (Hari)"
+									}), /* @__PURE__ */ jsx("input", {
+										type: "number",
+										min: "1",
+										value: qtnForm.data.delivery_lead_time_days,
+										onChange: (e) => qtnForm.setData("delivery_lead_time_days", e.target.value),
+										className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
+									})] }),
+									/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+										className: "block font-semibold mb-1",
+										children: "Termin Pembayaran"
+									}), /* @__PURE__ */ jsxs("select", {
+										value: qtnForm.data.payment_terms,
+										onChange: (e) => qtnForm.setData("payment_terms", e.target.value),
+										className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800",
+										children: [
+											/* @__PURE__ */ jsx("option", {
+												value: "TOP 30 Days",
+												children: "TOP 30 Days"
+											}),
+											/* @__PURE__ */ jsx("option", {
+												value: "TOP 45 Days",
+												children: "TOP 45 Days"
+											}),
+											/* @__PURE__ */ jsx("option", {
+												value: "TOP 60 Days",
+												children: "TOP 60 Days"
+											}),
+											/* @__PURE__ */ jsx("option", {
+												value: "TOP 14 Days",
+												children: "TOP 14 Days"
+											}),
+											/* @__PURE__ */ jsx("option", {
+												value: "COD",
+												children: "COD"
+											}),
+											/* @__PURE__ */ jsx("option", {
+												value: "CBD",
+												children: "CBD"
+											})
+										]
+									})] })
+								]
+							}),
+							/* @__PURE__ */ jsx("div", {
+								className: "space-y-2",
+								children: qtnForm.data.items.map((it, idx) => /* @__PURE__ */ jsxs("div", {
+									className: "p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-between gap-2",
+									children: [/* @__PURE__ */ jsxs("span", {
+										className: "font-semibold",
+										children: [
+											it.item_name,
+											" (",
+											it.quantity,
+											" ",
+											it.unit,
+											")"
+										]
+									}), /* @__PURE__ */ jsx("input", {
+										type: "number",
+										value: it.unit_price,
+										onChange: (e) => {
+											const copy = [...qtnForm.data.items];
+											copy[idx].unit_price = e.target.value;
+											qtnForm.setData("items", copy);
+										},
+										className: "w-36 px-2.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-right font-bold"
+									})]
+								}, idx))
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-end gap-2 pt-2",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setQuoteModalRfq(null),
+									className: "px-4 py-2 rounded-xl border border-slate-200",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									className: "px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold",
+									children: "Simpan Quotation Vendor"
+								})]
+							})
+						]
+					})]
+				})
 			})
 		]
 	});
@@ -30717,32 +34209,39 @@ createServer((page) => createInertiaApp({
 	title: (title) => title ? `${title} - ${appName}` : appName,
 	resolve: (name) => {
 		return (/* @__PURE__ */ Object.assign({
-			"./Pages/Analytics/Index.jsx": Index_exports$43,
-			"./Pages/Customers/Index.jsx": Index_exports$42,
-			"./Pages/Dashboard/Index.jsx": Index_exports$41,
-			"./Pages/Drivers/Index.jsx": Index_exports$40,
-			"./Pages/Employees/Index.jsx": Index_exports$39,
-			"./Pages/Fleet/HMKM/Index.jsx": Index_exports$38,
-			"./Pages/Fleet/KPI/Index.jsx": Index_exports$37,
-			"./Pages/Fleet/P2H/Index.jsx": Index_exports$36,
-			"./Pages/Fleet/Registry/Index.jsx": Index_exports$35,
-			"./Pages/Fleet/WorkOrders/Index.jsx": Index_exports$34,
-			"./Pages/Locations/Index.jsx": Index_exports$33,
-			"./Pages/Maintenance/Breakdown/Index.jsx": Index_exports$32,
-			"./Pages/Maintenance/Corrective/Index.jsx": Index_exports$31,
-			"./Pages/Maintenance/Costs/Index.jsx": Index_exports$30,
-			"./Pages/Maintenance/Dashboard/Index.jsx": Index_exports$29,
-			"./Pages/Maintenance/JobCards/Index.jsx": Index_exports$28,
-			"./Pages/Maintenance/JobCards/Print.jsx": Print_exports,
-			"./Pages/Maintenance/Mechanics/Index.jsx": Index_exports$27,
+			"./Pages/Analytics/Index.jsx": Index_exports$49,
+			"./Pages/Customers/Index.jsx": Index_exports$48,
+			"./Pages/Dashboard/Index.jsx": Index_exports$47,
+			"./Pages/Drivers/Index.jsx": Index_exports$46,
+			"./Pages/Employees/Index.jsx": Index_exports$45,
+			"./Pages/Fleet/HMKM/Index.jsx": Index_exports$44,
+			"./Pages/Fleet/KPI/Index.jsx": Index_exports$43,
+			"./Pages/Fleet/P2H/Index.jsx": Index_exports$42,
+			"./Pages/Fleet/Registry/Index.jsx": Index_exports$41,
+			"./Pages/Fleet/WorkOrders/Index.jsx": Index_exports$40,
+			"./Pages/Locations/Index.jsx": Index_exports$39,
+			"./Pages/Maintenance/Breakdown/Index.jsx": Index_exports$38,
+			"./Pages/Maintenance/Corrective/Index.jsx": Index_exports$37,
+			"./Pages/Maintenance/Costs/Index.jsx": Index_exports$36,
+			"./Pages/Maintenance/Dashboard/Index.jsx": Index_exports$35,
+			"./Pages/Maintenance/JobCards/Index.jsx": Index_exports$34,
+			"./Pages/Maintenance/JobCards/Print.jsx": Print_exports$1,
+			"./Pages/Maintenance/Mechanics/Index.jsx": Index_exports$33,
 			"./Pages/Maintenance/Mechanics/MobilePortal.jsx": MobilePortal_exports,
-			"./Pages/Maintenance/Preventive/Index.jsx": Index_exports$26,
-			"./Pages/Maintenance/RFU/Index.jsx": Index_exports$25,
-			"./Pages/Maintenance/Requests/Index.jsx": Index_exports$24,
-			"./Pages/Maintenance/Spareparts/Index.jsx": Index_exports$23,
-			"./Pages/Maintenance/WorkOrders/Index.jsx": Index_exports$22,
-			"./Pages/Materials/Index.jsx": Index_exports$21,
-			"./Pages/Organization/Index.jsx": Index_exports$20,
+			"./Pages/Maintenance/Preventive/Index.jsx": Index_exports$32,
+			"./Pages/Maintenance/RFU/Index.jsx": Index_exports$31,
+			"./Pages/Maintenance/Requests/Index.jsx": Index_exports$30,
+			"./Pages/Maintenance/Spareparts/Index.jsx": Index_exports$29,
+			"./Pages/Maintenance/WorkOrders/Index.jsx": Index_exports$28,
+			"./Pages/Materials/Index.jsx": Index_exports$27,
+			"./Pages/Organization/Index.jsx": Index_exports$26,
+			"./Pages/Procurement/Dashboard/Index.jsx": Index_exports$25,
+			"./Pages/Procurement/GoodsReceipts/Index.jsx": Index_exports$24,
+			"./Pages/Procurement/Invoices/Index.jsx": Index_exports$23,
+			"./Pages/Procurement/PurchaseOrders/Index.jsx": Index_exports$22,
+			"./Pages/Procurement/PurchaseOrders/Print.jsx": Print_exports,
+			"./Pages/Procurement/PurchaseRequests/Index.jsx": Index_exports$21,
+			"./Pages/Procurement/Rfqs/Index.jsx": Index_exports$20,
 			"./Pages/Production/Dashboard.jsx": Dashboard_exports,
 			"./Pages/Production/Dispatch/Index.jsx": Index_exports$19,
 			"./Pages/Production/Hauling/Index.jsx": Index_exports$18,

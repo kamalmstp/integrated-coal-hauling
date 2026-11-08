@@ -12,6 +12,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FleetKpiController;
 use App\Http\Controllers\FleetRegistryController;
 use App\Http\Controllers\HaulingActivityController;
+use App\Http\Controllers\GoodsReceiptController;
 use App\Http\Controllers\HmKmMonitoringController;
 use App\Http\Controllers\InventoryItemController;
 use App\Http\Controllers\InventoryReportController;
@@ -23,10 +24,15 @@ use App\Http\Controllers\MaintenanceDashboardController;
 use App\Http\Controllers\MaintenanceRequestController;
 use App\Http\Controllers\MechanicManagementController;
 use App\Http\Controllers\PreventiveMaintenanceController;
+use App\Http\Controllers\ProcurementDashboardController;
+use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\PurchaseRequestController;
+use App\Http\Controllers\RfqComparisonController;
 use App\Http\Controllers\RfuManagementController;
 use App\Http\Controllers\SparepartRequestController;
 use App\Http\Controllers\StockCardController;
 use App\Http\Controllers\StockOpnameController;
+use App\Http\Controllers\VendorInvoiceController;
 use App\Http\Controllers\WarehouseDashboardController;
 use App\Http\Controllers\WarehouseManagementController;
 use App\Http\Controllers\WarehouseSparepartFulfillmentController;
@@ -349,6 +355,43 @@ Route::prefix('warehouse')->name('warehouse.')->group(function () {
     Route::get('/reports', [InventoryReportController::class, 'index'])->name('reports.index');
     Route::post('/purchase-requests', [InventoryReportController::class, 'storePurchaseRequestProposal'])->name('purchase-requests.store');
 });
+
+// 12. Phase 6: Procurement Management
+Route::prefix('procurement')->name('procurement.')->group(function () {
+    // 1. Procurement Dashboard & Configurable Approval Matrix
+    Route::get('/', [ProcurementDashboardController::class, 'index'])->name('index');
+    Route::get('/dashboard', [ProcurementDashboardController::class, 'index'])->name('dashboard');
+    Route::post('/approval-rules', [ProcurementDashboardController::class, 'storeApprovalRule'])->name('approval-rules.store');
+
+    // 2. Purchase Requests (PR) & Multi-Step Approval
+    Route::get('/purchase-requests', [PurchaseRequestController::class, 'index'])->name('purchase-requests.index');
+    Route::post('/purchase-requests', [PurchaseRequestController::class, 'store'])->name('purchase-requests.store');
+    Route::post('/purchase-requests/{purchaseRequest}/approve', [PurchaseRequestController::class, 'approve'])->name('purchase-requests.approve');
+    Route::post('/purchase-requests/{purchaseRequest}/reject', [PurchaseRequestController::class, 'reject'])->name('purchase-requests.reject');
+
+    // 3. RFQ, Vendor Quotations & Vendor Comparison Matrix
+    Route::get('/rfqs', [RfqComparisonController::class, 'index'])->name('rfqs.index');
+    Route::post('/rfqs', [RfqComparisonController::class, 'storeRfq'])->name('rfqs.store');
+    Route::post('/rfqs/{rfq}/quotations', [RfqComparisonController::class, 'storeQuotation'])->name('rfqs.quotations.store');
+    Route::post('/rfqs/{rfq}/select-vendor', [RfqComparisonController::class, 'selectVendor'])->name('rfqs.select-vendor');
+
+    // 4. Purchase Orders (PO), Approval & Print/PDF View
+    Route::get('/purchase-orders', [PurchaseOrderController::class, 'index'])->name('purchase-orders.index');
+    Route::post('/purchase-orders', [PurchaseOrderController::class, 'store'])->name('purchase-orders.store');
+    Route::post('/purchase-orders/{purchaseOrder}/approve', [PurchaseOrderController::class, 'approve'])->name('purchase-orders.approve');
+    Route::get('/purchase-orders/{purchaseOrder}/print', [PurchaseOrderController::class, 'print'])->name('purchase-orders.print');
+
+    // 5. Goods Receipts (GRN) & Warehouse Stock Integration
+    Route::get('/goods-receipts', [GoodsReceiptController::class, 'index'])->name('goods-receipts.index');
+    Route::post('/goods-receipts', [GoodsReceiptController::class, 'store'])->name('goods-receipts.store');
+    Route::post('/goods-receipts/{goodsReceipt}/confirm-over-delivery', [GoodsReceiptController::class, 'confirmOverDelivery'])->name('goods-receipts.confirm-over-delivery');
+
+    // 6. Vendor Invoices & 3-Way Matching (Finance Obligation Preparation)
+    Route::get('/invoices', [VendorInvoiceController::class, 'index'])->name('invoices.index');
+    Route::post('/invoices', [VendorInvoiceController::class, 'store'])->name('invoices.store');
+    Route::post('/invoices/{vendorInvoice}/verify', [VendorInvoiceController::class, 'verify'])->name('invoices.verify');
+});
+
 
 
 

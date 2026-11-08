@@ -14,7 +14,11 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             TapMasterDataSeeder::class,
+            TapProductionDataSeeder::class,
+            TapFleetDataSeeder::class,
+            TapMaintenanceDataSeeder::class,
             TapWarehouseInventorySeeder::class,
+            TapProcurementManagementSeeder::class,
         ]);
     }
 }
