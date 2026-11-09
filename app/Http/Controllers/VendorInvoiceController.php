@@ -79,7 +79,7 @@ class VendorInvoiceController extends Controller
             'subtotal_amount' => 'required|numeric|min:0',
             'tax_amount' => 'required|numeric|min:0',
             'total_invoice_amount' => 'required|numeric|min:0',
-            'invoice_file' => 'nullable|file|max:5120',
+            'invoice_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx|max:5120',
             'remarks' => 'nullable|string',
         ]);
 

@@ -63,18 +63,31 @@ class WorkOrderManagementController extends Controller
 
         $workOrders = $query->orderBy('breakdown_time', 'desc')->paginate(12)->withQueryString();
 
-        // Metrics
-        $allOrders = WorkOrder::all();
+        // Metrics (Aggregated SQL query)
+        $statsRow = WorkOrder::when($siteId, fn ($q) => $q->where('site_id', $siteId))
+            ->selectRaw("
+                COUNT(*) as total,
+                SUM(CASE WHEN status IN ('open', 'submitted', 'approved', 'assigned') THEN 1 ELSE 0 END) as open_count,
+                SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress,
+                SUM(CASE WHEN status = 'waiting_sparepart' THEN 1 ELSE 0 END) as waiting_spareparts,
+                SUM(CASE WHEN status = 'waiting_inspection' THEN 1 ELSE 0 END) as waiting_inspection,
+                SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed,
+                SUM(CASE WHEN status = 'closed' THEN 1 ELSE 0 END) as closed,
+                COALESCE(SUM(downtime_minutes), 0) as total_downtime_minutes,
+                COALESCE(SUM(actual_cost), 0) as total_actual_cost
+            ")
+            ->first();
+
         $metrics = [
-            'total' => $allOrders->count(),
-            'open' => $allOrders->whereIn('status', ['open', 'submitted', 'approved', 'assigned'])->count(),
-            'in_progress' => $allOrders->where('status', 'in_progress')->count(),
-            'waiting_spareparts' => $allOrders->where('status', 'waiting_sparepart')->count(),
-            'waiting_inspection' => $allOrders->where('status', 'waiting_inspection')->count(),
-            'completed' => $allOrders->where('status', 'completed')->count(),
-            'closed' => $allOrders->where('status', 'closed')->count(),
-            'total_downtime_hours' => round($allOrders->sum('downtime_minutes') / 60, 1),
-            'total_actual_cost' => (float) $allOrders->sum('actual_cost'),
+            'total' => (int) ($statsRow->total ?? 0),
+            'open' => (int) ($statsRow->open_count ?? 0),
+            'in_progress' => (int) ($statsRow->in_progress ?? 0),
+            'waiting_spareparts' => (int) ($statsRow->waiting_spareparts ?? 0),
+            'waiting_inspection' => (int) ($statsRow->waiting_inspection ?? 0),
+            'completed' => (int) ($statsRow->completed ?? 0),
+            'closed' => (int) ($statsRow->closed ?? 0),
+            'total_downtime_hours' => round(((float) ($statsRow->total_downtime_minutes ?? 0)) / 60, 1),
+            'total_actual_cost' => (float) ($statsRow->total_actual_cost ?? 0),
         ];
 
         $sites = Site::where('is_active', true)->select('id', 'name', 'code')->get();
@@ -140,7 +153,10 @@ class WorkOrderManagementController extends Controller
 
         return DB::transaction(function () use ($validated) {
             $unit = Unit::findOrFail($validated['unit_id']);
-            $woNumber = 'WO-' . Carbon::now()->format('Ym') . '-' . rand(100, 999);
+            $prefix = 'WO-' . Carbon::now()->format('Ym') . '-';
+            do {
+                $woNumber = $prefix . rand(1000, 99999);
+            } while (WorkOrder::where('wo_number', $woNumber)->exists());
 
             $wo = WorkOrder::create([
                 'wo_number' => $woNumber,
@@ -243,10 +259,11 @@ class WorkOrderManagementController extends Controller
                 $downtimeMin = (int) abs($now->diffInMinutes($startTime));
                 $updates['downtime_minutes'] = max(1, $downtimeMin);
 
-                // Note: RFU approval is required to restore unit to RFU Standby
-                // If it is closed without prior RFU, we restore unit to standby
-                if ($workOrder->rfu_status === 'approved_rfu' || $validated['status'] === 'closed') {
+                // STRICT RULE: Unit is ONLY restored to RFU Standby if it has officially received approved_rfu!
+                if ($workOrder->rfu_status === 'approved_rfu') {
                     $workOrder->unit->update(['status' => 'standby']);
+                } else {
+                    $updates['rfu_status'] = 'waiting_inspection';
                 }
             }
 

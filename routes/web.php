@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BreakdownManagementController;
 use App\Http\Controllers\CorrectiveMaintenanceController;
 use App\Http\Controllers\CustomerController;
@@ -11,6 +12,16 @@ use App\Http\Controllers\DumpingTicketController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\FleetKpiController;
 use App\Http\Controllers\FleetRegistryController;
+use App\Http\Controllers\FuelConsumptionAnalysisController;
+use App\Http\Controllers\FuelDashboardController;
+use App\Http\Controllers\FuelDispensingController;
+use App\Http\Controllers\FuelInventoryController;
+use App\Http\Controllers\FuelSoundingController;
+use App\Http\Controllers\HrAttendanceLeaveController;
+use App\Http\Controllers\HrDashboardController;
+use App\Http\Controllers\HrDocumentController;
+use App\Http\Controllers\HrDriverManagementController;
+use App\Http\Controllers\HrEmployeeContractController;
 use App\Http\Controllers\HaulingActivityController;
 use App\Http\Controllers\GoodsReceiptController;
 use App\Http\Controllers\HmKmMonitoringController;
@@ -27,6 +38,7 @@ use App\Http\Controllers\PreventiveMaintenanceController;
 use App\Http\Controllers\ProcurementDashboardController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\PurchaseRequestController;
+use App\Http\Controllers\ReportingAnalyticsController;
 use App\Http\Controllers\RfqComparisonController;
 use App\Http\Controllers\RfuManagementController;
 use App\Http\Controllers\SparepartRequestController;
@@ -52,17 +64,38 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WorkOrderController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// Root redirect to Dashboard
-Route::get('/', function () {
-    return redirect()->route('dashboard');
+// Authentication & Guest Routes
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 });
 
-// 1. Dashboard
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::post('/dashboard/notify-test', [DashboardController::class, 'triggerNotify'])->name('notify.test');
+// Root route: redirect authenticated users to dashboard; unauthenticated to login
+Route::get('/', function () {
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
+    return redirect()->route('login');
+});
+
+// Protected Operational & Administrative Routes (Auth, Active User, Site Access)
+Route::middleware(['auth', 'active_user', 'site_access'])->group(function () {
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/switch-site', [AuthController::class, 'switchSite'])->name('site.switch');
+    Route::put('/profile/password', [AuthController::class, 'updatePassword'])->name('profile.password');
+
+    // User Management Enhancements
+    Route::post('/users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+    Route::put('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+    Route::get('/security/login-logs', [RolePermissionController::class, 'loginLogs'])->name('security.login-logs');
+
+    // 1. Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/dashboard/notify-test', [DashboardController::class, 'triggerNotify'])->name('notify.test');
 
 // 2. Organization Management
 Route::prefix('organization')->name('organization.')->group(function () {
@@ -391,6 +424,103 @@ Route::prefix('procurement')->name('procurement.')->group(function () {
     Route::post('/invoices', [VendorInvoiceController::class, 'store'])->name('invoices.store');
     Route::post('/invoices/{vendorInvoice}/verify', [VendorInvoiceController::class, 'verify'])->name('invoices.verify');
 });
+
+// 13. Phase 7: Fuel Management
+Route::prefix('fuel')->name('fuel.')->group(function () {
+    // 1. Fuel Dashboard & Configurable Estimation Factor (0.0475)
+    Route::get('/', [FuelDashboardController::class, 'index'])->name('index');
+    Route::get('/dashboard', [FuelDashboardController::class, 'index'])->name('dashboard');
+    Route::post('/parameters', [FuelDashboardController::class, 'updateParameter'])->name('parameters.update');
+
+    // 2. Fuel Inventory (Suppliers, Tanks, Calibrations, Receiving, Invoices, Opening Stock, Transfers)
+    Route::get('/inventory', [FuelInventoryController::class, 'index'])->name('inventory.index');
+    Route::post('/suppliers', [FuelInventoryController::class, 'storeSupplier'])->name('suppliers.store');
+    Route::post('/tanks', [FuelInventoryController::class, 'storeTank'])->name('tanks.store');
+    Route::post('/receipts', [FuelInventoryController::class, 'storeReceipt'])->name('receipts.store');
+    Route::post('/transfers', [FuelInventoryController::class, 'storeTransfer'])->name('transfers.store');
+
+    // 3. Daily Tank Sounding, Reconciliation & Official Adjustments
+    Route::get('/soundings', [FuelSoundingController::class, 'index'])->name('soundings.index');
+    Route::post('/soundings', [FuelSoundingController::class, 'storeSounding'])->name('soundings.store');
+    Route::post('/reconciliations', [FuelSoundingController::class, 'storeReconciliation'])->name('reconciliations.store');
+    Route::post('/adjustments', [FuelSoundingController::class, 'storeAdjustment'])->name('adjustments.store');
+
+    // 4. Fuel Dispensing & Digital Fuel Ticket
+    Route::get('/dispensing', [FuelDispensingController::class, 'index'])->name('dispensing.index');
+    Route::post('/dispensing', [FuelDispensingController::class, 'store'])->name('dispensing.store');
+    Route::get('/dispensing/{fuelTransaction}/ticket', [FuelDispensingController::class, 'ticket'])->name('dispensing.ticket');
+
+    // 5. Fuel Consumption Analysis (Actual vs Estimated, L/Ton, L/KM, L/HM, Unit/Shift/Month)
+    Route::get('/analytics', [FuelConsumptionAnalysisController::class, 'index'])->name('analytics.index');
+});
+
+// 14. Phase 8: HR & Employee Management
+Route::prefix('hr')->name('hr.')->group(function () {
+    // 1. HR Dashboard & Site Time/Reminder Configuration
+    Route::get('/', [HrDashboardController::class, 'index'])->name('index');
+    Route::get('/dashboard', [HrDashboardController::class, 'index'])->name('dashboard');
+    Route::put('/site-settings/{hrSiteSetting}', [HrDashboardController::class, 'updateSiteSetting'])->name('site-settings.update');
+
+    // 2. Employee Master & Employment Management (PKWT, PKWTT, Extension, Separation, Transfer, Status History)
+    Route::get('/employees', [HrEmployeeContractController::class, 'index'])->name('employees.index');
+    Route::post('/employees', [HrEmployeeContractController::class, 'storeEmployee'])->name('employees.store');
+    Route::put('/employees/{employee}', [HrEmployeeContractController::class, 'updateEmployee'])->name('employees.update');
+    Route::post('/contracts', [HrEmployeeContractController::class, 'storeContract'])->name('contracts.store');
+    Route::post('/contracts/{employmentContract}/extend', [HrEmployeeContractController::class, 'extendContract'])->name('contracts.extend');
+    Route::post('/employees/{employee}/separation', [HrEmployeeContractController::class, 'recordSeparation'])->name('employees.separation');
+    Route::post('/transfers', [HrEmployeeContractController::class, 'storeTransfer'])->name('transfers.store');
+
+    // 3. Driver Management Integration (SIM, SIMPER, MCU, Training, Unit Assignment, Site History, Eligibility)
+    Route::get('/drivers', [HrDriverManagementController::class, 'index'])->name('drivers.index');
+    Route::put('/drivers/{driver}/credentials', [HrDriverManagementController::class, 'updateCredentials'])->name('drivers.credentials.update');
+    Route::post('/drivers/{driver}/trainings', [HrDriverManagementController::class, 'storeTraining'])->name('drivers.trainings.store');
+
+    // 4. Attendance, Shift Assignment, Overtime, Corrections & Leave Approval
+    Route::get('/attendance', [HrAttendanceLeaveController::class, 'index'])->name('attendance.index');
+    Route::post('/shift-assignments', [HrAttendanceLeaveController::class, 'storeShiftAssignment'])->name('shift-assignments.store');
+    Route::post('/attendance', [HrAttendanceLeaveController::class, 'storeAttendance'])->name('attendance.store');
+    Route::post('/attendance/{attendance}/corrections', [HrAttendanceLeaveController::class, 'storeCorrection'])->name('attendance.corrections.store');
+    Route::post('/attendance-corrections/{attendanceCorrection}/approve', [HrAttendanceLeaveController::class, 'approveCorrection'])->name('attendance.corrections.approve');
+    Route::post('/leaves', [HrAttendanceLeaveController::class, 'storeLeave'])->name('leaves.store');
+    Route::post('/leaves/{leaveRequest}/approve', [HrAttendanceLeaveController::class, 'approveLeave'])->name('leaves.approve');
+
+    // 5. Employee Documents & Sensitive Document Access Control
+    Route::get('/documents', [HrDocumentController::class, 'index'])->name('documents.index');
+    Route::post('/documents', [HrDocumentController::class, 'store'])->name('documents.store');
+    Route::get('/documents/{employeeDocument}/access', [HrDocumentController::class, 'access'])->name('documents.access');
+});
+
+// 15. Phase 11: Reporting & Management Analytics
+Route::prefix('analytics')->name('analytics.')->group(function () {
+    // 1. Executive Dashboard
+    Route::get('/', [ReportingAnalyticsController::class, 'dashboard'])->name('index');
+    Route::get('/dashboard', [ReportingAnalyticsController::class, 'dashboard'])->name('dashboard');
+    Route::get('/executive', [ReportingAnalyticsController::class, 'dashboard'])->name('executive');
+
+    // 2. Production Report
+    Route::get('/production', [ReportingAnalyticsController::class, 'production'])->name('production');
+
+    // 3. Fleet Report
+    Route::get('/fleet', [ReportingAnalyticsController::class, 'fleet'])->name('fleet');
+
+    // 4. Maintenance Report
+    Route::get('/maintenance', [ReportingAnalyticsController::class, 'maintenance'])->name('maintenance');
+
+    // 5. Warehouse & Procurement Report
+    Route::get('/warehouse-procurement', [ReportingAnalyticsController::class, 'warehouseProcurement'])->name('warehouse-procurement');
+
+    // 6. Fuel Report
+    Route::get('/fuel', [ReportingAnalyticsController::class, 'fuel'])->name('fuel');
+
+    // 7. Export (Excel, PDF, Printable & Background Job Queue)
+    Route::match(['get', 'post'], '/export', [ReportingAnalyticsController::class, 'export'])->name('export');
+    Route::get('/print', [ReportingAnalyticsController::class, 'print'])->name('print');
+});
+
+}); // End of auth, active_user, site_access group
+
+
+
 
 
 

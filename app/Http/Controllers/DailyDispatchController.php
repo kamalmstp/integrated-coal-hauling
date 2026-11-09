@@ -106,6 +106,29 @@ class DailyDispatchController extends Controller
         ]);
     }
 
+    protected function validateDispatchUnitAndDriver(int $siteId, int $unitId, int $driverId, string $errorKey = 'unit_id'): void
+    {
+        $unit = Unit::findOrFail($unitId);
+        if (!$unit->isRfu()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                $errorKey => "Unit {$unit->unit_code} tidak dapat ditugaskan karena status operasional tidak memenuhi syarat (Status: {$unit->status}, Not RFU / Perlu Perbaikan).",
+            ]);
+        }
+
+        if ($unit->site_id && (int) $unit->site_id !== $siteId) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                $errorKey => "Site isolation violation: Unit {$unit->unit_code} tidak terdaftar pada site operasional dispatch ini.",
+            ]);
+        }
+
+        $driver = Driver::with('employee')->findOrFail($driverId);
+        if ($driver->administrative_eligibility_status === 'ineligible' || $driver->mcu_status === 'unfit') {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'driver_id' => "Driver {$driver->driver_code} tidak memenuhi syarat kelayakan administrasi/MCU (Status: {$driver->administrative_eligibility_status}, MCU: {$driver->mcu_status}).",
+            ]);
+        }
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -124,6 +147,8 @@ class DailyDispatchController extends Controller
             'assignments.*.remarks' => 'nullable|string',
         ]);
 
+        $this->authorizeSiteAccess((int) $validated['site_id']);
+
         return DB::transaction(function () use ($validated, $request) {
             $dispatchNumber = 'DSP-' . Carbon::parse($validated['date'])->format('Ymd') . '-S' . $validated['shift_id'] . '-' . rand(10, 99);
 
@@ -140,12 +165,12 @@ class DailyDispatchController extends Controller
 
             if (!empty($validated['assignments'])) {
                 foreach ($validated['assignments'] as $asg) {
-                    $unit = Unit::findOrFail($asg['unit_id']);
-                    if (!$unit->isRfu()) {
-                        throw \Illuminate\Validation\ValidationException::withMessages([
-                            'assignments' => "Unit {$unit->unit_code} tidak dapat ditugaskan karena status operasional tidak memenuhi syarat (Status: {$unit->status}, Not RFU / Perlu Perbaikan)."
-                        ]);
-                    }
+                    $this->validateDispatchUnitAndDriver(
+                        (int) $dispatch->site_id,
+                        (int) $asg['unit_id'],
+                        (int) $asg['driver_id'],
+                        'assignments'
+                    );
 
                     $assignment = DispatchAssignment::create([
                         'daily_dispatch_id' => $dispatch->id,
@@ -179,6 +204,8 @@ class DailyDispatchController extends Controller
 
     public function addAssignment(Request $request, DailyDispatch $dispatch)
     {
+        $this->authorizeSiteAccess((int) $dispatch->site_id);
+
         $validated = $request->validate([
             'unit_id' => 'required|exists:units,id',
             'driver_id' => 'required|exists:drivers,id',
@@ -190,12 +217,12 @@ class DailyDispatchController extends Controller
         ]);
 
         return DB::transaction(function () use ($dispatch, $validated) {
-            $unit = Unit::findOrFail($validated['unit_id']);
-            if (!$unit->isRfu()) {
-                throw \Illuminate\Validation\ValidationException::withMessages([
-                    'unit_id' => "Unit {$unit->unit_code} tidak dapat ditugaskan karena status operasional tidak memenuhi syarat (Status: {$unit->status}, Not RFU / Perlu Perbaikan)."
-                ]);
-            }
+            $this->validateDispatchUnitAndDriver(
+                (int) $dispatch->site_id,
+                (int) $validated['unit_id'],
+                (int) $validated['driver_id'],
+                'unit_id'
+            );
 
             $assignment = DispatchAssignment::create([
                 'daily_dispatch_id' => $dispatch->id,
@@ -226,6 +253,8 @@ class DailyDispatchController extends Controller
 
     public function updateAssignmentStatus(Request $request, DispatchAssignment $assignment)
     {
+        $this->authorizeSiteAccess((int) $assignment->dispatch?->site_id);
+
         $validated = $request->validate([
             'status' => 'required|in:assigned,operating,standby,breakdown,completed,cancelled',
             'reason' => 'required|string|min:3',
@@ -253,13 +282,23 @@ class DailyDispatchController extends Controller
 
     public function swapUnitOrDriver(Request $request, DispatchAssignment $assignment)
     {
+        $dispatchSiteId = (int) ($assignment->dispatch?->site_id ?? Unit::find($assignment->unit_id)?->site_id);
+        $this->authorizeSiteAccess($dispatchSiteId);
+
         $validated = $request->validate([
             'unit_id' => 'required|exists:units,id',
             'driver_id' => 'required|exists:drivers,id',
             'reason' => 'required|string|min:5',
         ]);
 
-        return DB::transaction(function () use ($assignment, $validated) {
+        return DB::transaction(function () use ($assignment, $validated, $dispatchSiteId) {
+            $this->validateDispatchUnitAndDriver(
+                $dispatchSiteId,
+                (int) $validated['unit_id'],
+                (int) $validated['driver_id'],
+                'unit_id'
+            );
+
             $oldValues = [
                 'unit_id' => $assignment->unit_id,
                 'driver_id' => $assignment->driver_id,

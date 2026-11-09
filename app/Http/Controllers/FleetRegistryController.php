@@ -166,9 +166,24 @@ class FleetRegistryController extends Controller
 
     public function updateStatus(Request $request, Unit $unit)
     {
+        $this->authorizeSiteAccess((int) $unit->site_id);
+
         $validated = $request->validate([
             'status' => 'required|in:operating,standby,breakdown,maintenance',
         ]);
+
+        if (in_array($validated['status'], ['operating', 'standby'], true)) {
+            $hasUnapprovedWo = $unit->workOrders()
+                ->whereIn('status', ['open', 'submitted', 'approved', 'assigned', 'in_progress', 'waiting_sparepart', 'waiting_inspection'])
+                ->where('rfu_status', '!=', 'approved_rfu')
+                ->exists();
+
+            if ($hasUnapprovedWo) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'status' => "Unit {$unit->unit_code} masih memiliki Work Order aktif yang belum lulus inspeksi & otorisasi RFU. Perubahan status ke {$validated['status']} ditolak.",
+                ]);
+            }
+        }
 
         $unit->update([
             'status' => $validated['status'],

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ActivityLog;
+use App\Models\LoginLog;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
@@ -136,6 +137,45 @@ class RolePermissionController extends Controller
                 'module' => $module ?? 'all',
             ],
             'modules' => ActivityLog::select('module')->distinct()->pluck('module'),
+        ]);
+    }
+
+    /**
+     * Login Activity Audit Logs
+     */
+    public function loginLogs(Request $request): Response
+    {
+        $search = $request->input('search');
+        $status = $request->input('status');
+
+        $query = LoginLog::with(['user', 'activeSite'])->latest('login_at');
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('login_input', 'like', "%{$search}%")
+                  ->orWhere('ip_address', 'like', "%{$search}%")
+                  ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%"));
+            });
+        }
+
+        if (!empty($status) && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $logs = $query->paginate(20)->withQueryString();
+
+        return Inertia::render('Security/LoginLogs', [
+            'logs' => $logs,
+            'filters' => [
+                'search' => $search ?? '',
+                'status' => $status ?? 'all',
+            ],
+            'statistics' => [
+                'total' => LoginLog::count(),
+                'success' => LoginLog::where('status', 'success')->count(),
+                'failed' => LoginLog::where('status', 'failed')->count(),
+                'locked' => LoginLog::whereIn('status', ['locked', 'inactive_blocked'])->count(),
+            ],
         ]);
     }
 }

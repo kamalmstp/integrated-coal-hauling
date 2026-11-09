@@ -156,21 +156,52 @@ class MaintenanceCostController extends Controller
         ]);
 
         $wo = WorkOrder::findOrFail($validated['work_order_id']);
+        $this->authorizeSiteAccess($wo->site_id);
 
-        MaintenanceCost::create([
-            'work_order_id' => $wo->id,
-            'site_id' => $wo->site_id,
-            'unit_id' => $wo->unit_id,
-            'cost_date' => $validated['cost_date'],
-            'cost_type' => $validated['cost_type'],
-            'description' => $validated['description'],
-            'reference_number' => $validated['reference_number'] ?? null,
-            'estimated_amount' => $validated['estimated_amount'] ?? $validated['actual_amount'],
-            'actual_amount' => $validated['actual_amount'],
-            'created_by' => Auth::id(),
-        ]);
+        if (!empty($validated['reference_number'])) {
+            $dupRef = MaintenanceCost::where('work_order_id', $wo->id)
+                ->where('cost_type', $validated['cost_type'])
+                ->where('reference_number', trim($validated['reference_number']))
+                ->exists();
 
-        $wo->increment('actual_cost', $validated['actual_amount']);
+            if ($dupRef) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'reference_number' => "Double cost recording dicegah: Biaya dengan nomor referensi {$validated['reference_number']} sudah tercatat pada Work Order {$wo->wo_number}.",
+                ]);
+            }
+        }
+
+        $dupExact = MaintenanceCost::where('work_order_id', $wo->id)
+            ->where('cost_type', $validated['cost_type'])
+            ->whereDate('cost_date', $validated['cost_date'])
+            ->where('description', trim($validated['description']))
+            ->where('actual_amount', round((float) $validated['actual_amount'], 2))
+            ->exists();
+
+        if ($dupExact) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'actual_amount' => "Double cost recording dicegah: Biaya '{$validated['description']}' sebesar Rp " . number_format((float) $validated['actual_amount'], 0, ',', '.') . " sudah tercatat pada Work Order {$wo->wo_number}.",
+            ]);
+        }
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($wo, $validated) {
+            MaintenanceCost::create([
+                'work_order_id' => $wo->id,
+                'site_id' => $wo->site_id,
+                'unit_id' => $wo->unit_id,
+                'cost_date' => $validated['cost_date'],
+                'cost_type' => $validated['cost_type'],
+                'description' => trim($validated['description']),
+                'reference_number' => !empty($validated['reference_number']) ? trim($validated['reference_number']) : null,
+                'estimated_amount' => $validated['estimated_amount'] ?? $validated['actual_amount'],
+                'actual_amount' => $validated['actual_amount'],
+                'created_by' => Auth::id(),
+            ]);
+
+            $wo->update([
+                'actual_cost' => MaintenanceCost::where('work_order_id', $wo->id)->sum('actual_amount'),
+            ]);
+        });
 
         return redirect()->back()->with('success', "Biaya perbaikan {$validated['description']} berhasil dicatat.");
     }

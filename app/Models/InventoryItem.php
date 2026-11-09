@@ -38,6 +38,23 @@ class InventoryItem extends Model
         'is_active' => 'boolean',
     ];
 
+    protected $appends = ['name', 'uom', 'category'];
+
+    public function getNameAttribute(): ?string
+    {
+        return $this->item_name;
+    }
+
+    public function getUomAttribute(): ?string
+    {
+        return $this->unit_of_measurement;
+    }
+
+    public function getCategoryAttribute(): ?string
+    {
+        return $this->category_code;
+    }
+
     public function site()
     {
         return $this->belongsTo(Site::class);

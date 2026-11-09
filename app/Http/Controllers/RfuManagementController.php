@@ -43,15 +43,25 @@ class RfuManagementController extends Controller
 
         $orders = $query->orderBy('breakdown_time', 'desc')->paginate(12)->withQueryString();
 
-        // Metrics
-        $allOrders = WorkOrder::all();
+        // Metrics (Aggregated SQL query instead of loading all WorkOrders into memory)
+        $statsRow = WorkOrder::when($siteId, fn ($q) => $q->where('site_id', $siteId))
+            ->selectRaw("
+                SUM(CASE WHEN rfu_status = 'waiting_repair' THEN 1 ELSE 0 END) as waiting_repair,
+                SUM(CASE WHEN rfu_status = 'repair_in_progress' THEN 1 ELSE 0 END) as repair_in_progress,
+                SUM(CASE WHEN rfu_status = 'waiting_inspection' THEN 1 ELSE 0 END) as waiting_inspection,
+                SUM(CASE WHEN rfu_status = 'inspection_failed' THEN 1 ELSE 0 END) as inspection_failed,
+                SUM(CASE WHEN rfu_status = 'approved_rfu' THEN 1 ELSE 0 END) as approved_rfu,
+                SUM(CASE WHEN rfu_status = 'rejected_rfu' THEN 1 ELSE 0 END) as rejected_rfu
+            ")
+            ->first();
+
         $metrics = [
-            'waiting_repair' => $allOrders->where('rfu_status', 'waiting_repair')->count(),
-            'repair_in_progress' => $allOrders->where('rfu_status', 'repair_in_progress')->count(),
-            'waiting_inspection' => $allOrders->where('rfu_status', 'waiting_inspection')->count(),
-            'inspection_failed' => $allOrders->where('rfu_status', 'inspection_failed')->count(),
-            'approved_rfu' => $allOrders->where('rfu_status', 'approved_rfu')->count(),
-            'rejected_rfu' => $allOrders->where('rfu_status', 'rejected_rfu')->count(),
+            'waiting_repair' => (int) ($statsRow->waiting_repair ?? 0),
+            'repair_in_progress' => (int) ($statsRow->repair_in_progress ?? 0),
+            'waiting_inspection' => (int) ($statsRow->waiting_inspection ?? 0),
+            'inspection_failed' => (int) ($statsRow->inspection_failed ?? 0),
+            'approved_rfu' => (int) ($statsRow->approved_rfu ?? 0),
+            'rejected_rfu' => (int) ($statsRow->rejected_rfu ?? 0),
         ];
 
         // Recent RFU Approvals
@@ -172,7 +182,10 @@ class RfuManagementController extends Controller
         ]);
 
         // STRICT BUSINESS RULE 1: Mechanic cannot approve their own work order!
-        if ($workOrder->assigned_mechanic_id && (int) $workOrder->assigned_mechanic_id === (int) $validated['approver_id']) {
+        $isAssignedMechanic = ($workOrder->assigned_mechanic_id && (int) $workOrder->assigned_mechanic_id === (int) $validated['approver_id'])
+            || $workOrder->assignments()->where('mechanic_id', $validated['approver_id'])->exists();
+
+        if ($isAssignedMechanic) {
             return redirect()->back()->with('error', 'Pelanggaran SOP: Mekanik pelaksana dilarang menyetujui RFU atas pekerjaannya sendiri! Approval harus dilakukan oleh Maintenance Planner, Supervisor, atau Pejabat berwenang.');
         }
 
@@ -180,6 +193,11 @@ class RfuManagementController extends Controller
         $latestPassedInspection = $workOrder->inspections()->where('result', 'passed')->latest()->first();
         if (!$latestPassedInspection && $validated['decision'] === 'approved_rfu') {
             return redirect()->back()->with('error', 'Gagal: Unit tidak boleh dinyatakan RFU tanpa lolos pemeriksaan/inspeksi QC fisik terlebih dahulu!');
+        }
+
+        // STRICT BUSINESS RULE 3: Prevent duplicate RFU approval on already approved WorkOrder
+        if ($workOrder->rfu_status === 'approved_rfu' && $validated['decision'] === 'approved_rfu') {
+            return redirect()->back()->with('error', 'Work Order ini sudah mendapatkan persetujuan RFU sebelumnya.');
         }
 
         return DB::transaction(function () use ($workOrder, $validated, $latestPassedInspection) {

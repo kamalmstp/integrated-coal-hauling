@@ -19,6 +19,9 @@ class DatabaseSeeder extends Seeder
             TapMaintenanceDataSeeder::class,
             TapWarehouseInventorySeeder::class,
             TapProcurementManagementSeeder::class,
+            TapFuelManagementSeeder::class,
+            TapHrEmployeeManagementSeeder::class,
+            TapRbacSeeder::class,
         ]);
     }
 }

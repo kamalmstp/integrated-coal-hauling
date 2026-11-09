@@ -30,6 +30,13 @@ class Vendor extends Model
         'is_active' => 'boolean',
     ];
 
+    protected $appends = ['code'];
+
+    public function getCodeAttribute(): ?string
+    {
+        return $this->vendor_code;
+    }
+
     public function units(): HasMany
     {
         return $this->hasMany(Unit::class);

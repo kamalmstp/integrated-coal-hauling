@@ -37,11 +37,12 @@ class UserController extends Controller
             $sortBy = 'created_at';
         }
 
-        $query = User::with(['roles', 'employee', 'site', 'company']);
+        $query = User::with(['roles', 'employee', 'site', 'company', 'sites']);
 
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('username', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
                   ->orWhere('phone', 'like', "%{$search}%");
             });
@@ -97,6 +98,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'username' => 'nullable|string|max:50|unique:users,username',
             'email' => 'required|email|unique:users,email',
             'role' => 'required|string',
             'status' => 'required|in:active,inactive,suspended',
@@ -106,6 +108,8 @@ class UserController extends Controller
             'company_id' => 'nullable|exists:companies,id',
             'role_ids' => 'nullable|array',
             'role_ids.*' => 'exists:roles,id',
+            'site_ids' => 'nullable|array',
+            'site_ids.*' => 'exists:sites,id',
             'password' => 'required|string|min:6',
         ]);
 
@@ -118,6 +122,14 @@ class UserController extends Controller
             $user->roles()->sync($validated['role_ids']);
         } elseif ($matchedRole = Role::where('name', $validated['role'])->first()) {
             $user->roles()->sync([$matchedRole->id]);
+        }
+
+        if (!empty($validated['site_ids'])) {
+            $syncData = [];
+            foreach ($validated['site_ids'] as $sId) {
+                $syncData[$sId] = ['is_default' => ($sId == $user->site_id)];
+            }
+            $user->sites()->sync($syncData);
         }
 
         ActivityLog::log('create', 'user', "Mendaftarkan pengguna baru: {$user->name} ({$user->email})");
@@ -133,6 +145,7 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'username' => "nullable|string|max:50|unique:users,username,{$user->id}",
             'email' => "required|email|unique:users,email,{$user->id}",
             'role' => 'required|string',
             'status' => 'required|in:active,inactive,suspended',
@@ -142,6 +155,8 @@ class UserController extends Controller
             'company_id' => 'nullable|exists:companies,id',
             'role_ids' => 'nullable|array',
             'role_ids.*' => 'exists:roles,id',
+            'site_ids' => 'nullable|array',
+            'site_ids.*' => 'exists:sites,id',
         ]);
 
         if ($request->filled('password')) {
@@ -155,9 +170,58 @@ class UserController extends Controller
             $user->roles()->sync($validated['role_ids']);
         }
 
+        if (isset($validated['site_ids'])) {
+            $syncData = [];
+            foreach ($validated['site_ids'] as $sId) {
+                $syncData[$sId] = ['is_default' => ($sId == $user->site_id)];
+            }
+            $user->sites()->sync($syncData);
+        }
+
         ActivityLog::log('update', 'user', "Memperbarui profil pengguna: {$user->name}");
 
         notify()->success('Pengguna Diperbarui!', "Data pengguna {$user->name} berhasil diperbarui.");
+        return redirect()->back();
+    }
+
+    /**
+     * Reset user password (admin assisted)
+     */
+    public function resetPassword(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'new_password' => 'required|string|min:6',
+        ]);
+
+        $user->update([
+            'password' => Hash::make($validated['new_password']),
+        ]);
+
+        ActivityLog::log('update', 'user', "Reset password pengguna: {$user->name} ({$user->email})");
+
+        notify()->success('Password Berhasil Direset!', "Password baru telah disimpan untuk {$user->name}.");
+        return redirect()->back();
+    }
+
+    /**
+     * Toggle status (activate / deactivate / lock)
+     */
+    public function toggleStatus(Request $request, User $user)
+    {
+        if ($user->id === auth()->id()) {
+            notify()->error('Dilarang!', 'Anda tidak dapat mengubah status akun Anda sendiri.');
+            return redirect()->back();
+        }
+
+        $validated = $request->validate([
+            'status' => 'required|in:active,inactive,suspended',
+        ]);
+
+        $user->update(['status' => $validated['status']]);
+
+        ActivityLog::log('status_change', 'user', "Mengubah status pengguna {$user->name} menjadi {$validated['status']}");
+
+        notify()->success('Status Diperbarui!', "Status akun {$user->name} kini: {$validated['status']}.");
         return redirect()->back();
     }
 

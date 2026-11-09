@@ -170,6 +170,7 @@ class DigitalP2hController extends Controller
                 $woNumber = 'WO-' . Carbon::now()->format('Ym') . '-' . rand(100, 999);
                 WorkOrder::create([
                     'wo_number' => $woNumber,
+                    'site_id' => $unit->site_id,
                     'unit_id' => $unit->id,
                     'p2h_inspection_id' => $p2h->id,
                     'source' => 'p2h_defect',
@@ -177,6 +178,7 @@ class DigitalP2hController extends Controller
                     'breakdown_time' => Carbon::now(),
                     'defect_summary' => "Kerusakan Kritis Hasil P2H Digital: " . implode('; ', $defectSummary),
                     'status' => 'open',
+                    'rfu_status' => 'waiting_repair',
                     'created_by' => Auth::id(),
                 ]);
 

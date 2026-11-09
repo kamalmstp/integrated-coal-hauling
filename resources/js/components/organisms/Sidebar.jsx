@@ -44,12 +44,32 @@ import {
     PackageSearch,
     ShoppingCart,
     Receipt,
+    Fuel,
+    Droplets,
 } from 'lucide-react';
 import { useSidebarStore } from '../../stores/useSidebarStore';
 
 export default function Sidebar() {
-    const { url } = usePage();
+    const { url, props } = usePage();
     const { isCollapsed, toggleCollapse, isMobileOpen, closeMobile } = useSidebarStore();
+
+    const auth = props?.auth;
+    const permissions = auth?.user?.permissions || [];
+    const roles = auth?.user?.roles || [];
+    const isSuperAdmin = auth?.user?.is_super_admin || roles.includes('super_admin') || auth?.user?.role === 'admin';
+
+    const hasAccess = (item) => {
+        if (!auth?.user) return false;
+        if (isSuperAdmin) return true;
+        if (item.roles && item.roles.some((r) => roles.includes(r))) return true;
+        if (item.permission) {
+            return permissions.includes(item.permission);
+        }
+        if (item.permissions) {
+            return item.permissions.some((p) => permissions.includes(p));
+        }
+        return true;
+    };
 
     const menuGroups = [
         {
@@ -68,11 +88,13 @@ export default function Sidebar() {
                     badge: 'Phase 2',
                     badgeColor: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300',
                     active: url.startsWith('/production/dashboard'),
+                    permission: 'view_production',
                 },
             ],
         },
         {
             title: 'Manajemen Produksi Hauling',
+            permission: 'view_production',
             items: [
                 {
                     name: 'Daily Dispatch',
@@ -136,6 +158,7 @@ export default function Sidebar() {
         },
         {
             title: 'Manajemen Fleet & Alat Berat',
+            permission: 'view_fleet',
             items: [
                 {
                     name: 'Unit Registry & Status',
@@ -181,6 +204,7 @@ export default function Sidebar() {
         },
         {
             title: 'Maintenance & Workshop (Phase 4)',
+            permission: 'view_maintenance',
             items: [
                 {
                     name: 'Dashboard Workshop',
@@ -266,6 +290,7 @@ export default function Sidebar() {
         },
         {
             title: 'Warehouse & Sparepart (Phase 5)',
+            permission: 'view_warehouse',
             items: [
                 {
                     name: 'Dashboard Gudang',
@@ -333,6 +358,7 @@ export default function Sidebar() {
         },
         {
             title: 'Procurement Management (Phase 6)',
+            permission: 'view_procurement',
             items: [
                 {
                     name: 'Dashboard Procurement',
@@ -385,7 +411,154 @@ export default function Sidebar() {
             ],
         },
         {
+            title: 'Fuel Management (Phase 7)',
+            permission: 'view_fuel',
+            items: [
+                {
+                    name: 'Dashboard BBM & Rasio',
+                    href: '/fuel/dashboard',
+                    icon: Fuel,
+                    badge: 'Phase 7',
+                    badgeColor: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300',
+                    active: url.startsWith('/fuel/dashboard') || url === '/fuel',
+                },
+                {
+                    name: 'Inventori & Tangki Solar',
+                    href: '/fuel/inventory',
+                    icon: Droplets,
+                    badge: 'Multi-Tank',
+                    badgeColor: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300',
+                    active: url.startsWith('/fuel/inventory'),
+                },
+                {
+                    name: 'Daily Sounding & Rekon',
+                    href: '/fuel/soundings',
+                    icon: Scale,
+                    badge: 'Kalibrasi',
+                    badgeColor: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300',
+                    active: url.startsWith('/fuel/soundings'),
+                },
+                {
+                    name: 'Fuel Dispensing & Tiket',
+                    href: '/fuel/dispensing',
+                    icon: Ticket,
+                    badge: 'Digital Ticket',
+                    badgeColor: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300',
+                    active: url.startsWith('/fuel/dispensing'),
+                },
+                {
+                    name: 'Analisis Konsumsi BBM',
+                    href: '/fuel/analytics',
+                    icon: BarChart3,
+                    badge: '0.0475 Factor',
+                    badgeColor: 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300',
+                    active: url.startsWith('/fuel/analytics'),
+                },
+            ],
+        },
+        {
+            title: 'HR & Employee Management (Phase 8)',
+            permission: 'view_hr',
+            items: [
+                {
+                    name: 'Dashboard HR & SDM',
+                    href: '/hr/dashboard',
+                    icon: Users,
+                    badge: 'Phase 8',
+                    badgeColor: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300',
+                    active: url.startsWith('/hr/dashboard') || url === '/hr',
+                },
+                {
+                    name: 'Karyawan & Kontrak',
+                    href: '/hr/employees',
+                    icon: Briefcase,
+                    badge: 'PKWT/PKWTT',
+                    badgeColor: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300',
+                    active: url.startsWith('/hr/employees'),
+                },
+                {
+                    name: 'Lisensi & Training Driver',
+                    href: '/hr/drivers',
+                    icon: UserCheck,
+                    badge: 'SIMPER/MCU',
+                    badgeColor: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300',
+                    active: url.startsWith('/hr/drivers'),
+                },
+                {
+                    name: 'Presensi, Shift & Cuti',
+                    href: '/hr/attendance',
+                    icon: CalendarCheck,
+                    badge: 'Mobile HP',
+                    badgeColor: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300',
+                    active: url.startsWith('/hr/attendance'),
+                },
+                {
+                    name: 'Dokumen & Privasi HR',
+                    href: '/hr/documents',
+                    icon: ShieldCheck,
+                    badge: 'Confidential',
+                    badgeColor: 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300',
+                    active: url.startsWith('/hr/documents'),
+                },
+            ],
+        },
+        {
+            title: 'Reporting & Analytics (Phase 11)',
+            permission: 'view_analytics',
+            items: [
+                {
+                    name: 'Executive Dashboard',
+                    href: '/analytics/dashboard',
+                    icon: BarChart3,
+                    badge: 'Phase 11',
+                    badgeColor: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300',
+                    active: url.startsWith('/analytics/dashboard') || url === '/analytics',
+                },
+                {
+                    name: 'Production Report',
+                    href: '/analytics/production',
+                    icon: TrendingUp,
+                    badge: 'Ton/Rit',
+                    badgeColor: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300',
+                    active: url.startsWith('/analytics/production'),
+                },
+                {
+                    name: 'Fleet Report (PA/MA/UA)',
+                    href: '/analytics/fleet',
+                    icon: Truck,
+                    badge: 'Fleet KPI',
+                    badgeColor: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300',
+                    active: url.startsWith('/analytics/fleet'),
+                },
+                {
+                    name: 'Maintenance Report',
+                    href: '/analytics/maintenance',
+                    icon: Wrench,
+                    badge: 'MTTR/MTBF',
+                    badgeColor: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300',
+                    active: url.startsWith('/analytics/maintenance'),
+                },
+                {
+                    name: 'Warehouse & Procurement',
+                    href: '/analytics/warehouse-procurement',
+                    icon: Boxes,
+                    badge: 'Valuation',
+                    badgeColor: 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300',
+                    active: url.startsWith('/analytics/warehouse-procurement'),
+                },
+                {
+                    name: 'Fuel Report & Variance',
+                    href: '/analytics/fuel',
+                    icon: Fuel,
+                    badge: 'L/Ton',
+                    badgeColor: 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300',
+                    active: url.startsWith('/analytics/fuel'),
+                },
+            ],
+        },
+        {
             title: 'Organisasi & Struktur',
+            permission: 'view_organization',
             items: [
                 {
                     name: 'Organisasi & Site',
@@ -399,6 +572,7 @@ export default function Sidebar() {
         },
         {
             title: 'Master Operasional Hauling',
+            permission: 'view_master',
             items: [
                 {
                     name: 'Armada & Unit Hauling',
@@ -438,6 +612,7 @@ export default function Sidebar() {
         },
         {
             title: 'Mitra & Klien',
+            permission: 'view_master',
             items: [
                 {
                     name: 'Vendor & Rental',
@@ -455,6 +630,7 @@ export default function Sidebar() {
         },
         {
             title: 'Kepegawaian & Akses',
+            permission: 'view_users',
             items: [
                 {
                     name: 'Data Karyawan',
@@ -480,10 +656,17 @@ export default function Sidebar() {
                     icon: FileText,
                     active: url.startsWith('/security/activity-logs'),
                 },
+                {
+                    name: 'Log Aktivitas Login',
+                    href: '/security/login-logs',
+                    icon: Shield,
+                    active: url.startsWith('/security/login-logs'),
+                },
             ],
         },
         {
             title: 'Pengaturan',
+            permission: 'manage_settings',
             items: [
                 {
                     name: 'Konfigurasi Sistem',
@@ -494,6 +677,22 @@ export default function Sidebar() {
             ],
         },
     ];
+
+    const filteredMenuGroups = menuGroups
+        .map((group) => {
+            if (group.permission && !isSuperAdmin && !permissions.includes(group.permission)) {
+                return null;
+            }
+            const filteredItems = group.items.filter((item) => hasAccess(item));
+            if (filteredItems.length === 0) {
+                return null;
+            }
+            return {
+                ...group,
+                items: filteredItems,
+            };
+        })
+        .filter(Boolean);
 
     const sidebarContent = (
         <div className="flex flex-col h-full justify-between">
@@ -529,7 +728,7 @@ export default function Sidebar() {
 
                 {/* Navigation Menu Groups */}
                 <nav className="p-3 space-y-4">
-                    {menuGroups.map((group, groupIdx) => (
+                    {filteredMenuGroups.map((group, groupIdx) => (
                         <div key={groupIdx} className="space-y-1">
                             {!isCollapsed && (
                                 <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">

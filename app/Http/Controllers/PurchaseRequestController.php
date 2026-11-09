@@ -108,7 +108,7 @@ class PurchaseRequestController extends Controller
             'purpose' => 'required|string|max:1000',
             'requested_by' => 'nullable|exists:employees,id',
             'notes' => 'nullable|string',
-            'attachment' => 'nullable|file|max:5120',
+            'attachment' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx,csv|max:5120',
             'items' => 'required|array|min:1',
             'items.*.inventory_item_id' => 'nullable|exists:inventory_items,id',
             'items.*.item_name' => 'nullable|string|max:180',

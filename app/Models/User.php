@@ -17,6 +17,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
+        'username',
         'email',
         'role',
         'status',
@@ -63,9 +64,62 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class, 'user_has_roles');
     }
 
+    public function sites(): BelongsToMany
+    {
+        return $this->belongsToMany(Site::class, 'user_has_sites')
+            ->withPivot('is_default')
+            ->withTimestamps();
+    }
+
+    public function loginLogs(): HasMany
+    {
+        return $this->hasMany(LoginLog::class);
+    }
+
     public function activityLogs(): HasMany
     {
         return $this->hasMany(ActivityLog::class);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
+    }
+
+    public function canAccessSite(int|string|null $siteId): bool
+    {
+        if (empty($siteId)) {
+            return false;
+        }
+
+        // Super Admin and Management have global access across all sites
+        if ($this->hasRole(['super_admin', 'management']) || $this->role === 'admin') {
+            return true;
+        }
+
+        // Check primary site
+        if ((int) $this->site_id === (int) $siteId) {
+            return true;
+        }
+
+        // Check assigned sites pivot
+        return $this->sites()->where('sites.id', $siteId)->exists();
+    }
+
+    public function getAccessibleSites()
+    {
+        if ($this->hasRole(['super_admin', 'management']) || $this->role === 'admin') {
+            return Site::where('is_active', true)->orderBy('name')->get();
+        }
+
+        $siteIds = $this->sites()->pluck('sites.id');
+        if ($this->site_id) {
+            $siteIds->push($this->site_id);
+        }
+
+        $uniqueIds = $siteIds->filter()->unique()->values()->toArray();
+
+        return Site::whereIn('id', $uniqueIds)->where('is_active', true)->orderBy('name')->get();
     }
 
     public function hasRole(string|array $roleNames): bool

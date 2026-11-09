@@ -95,7 +95,7 @@ class RfqComparisonController extends Controller
             'delivery_lead_time_days' => 'required|integer|min:1',
             'payment_terms' => 'required|string|max:100',
             'remarks' => 'nullable|string',
-            'quotation_file' => 'nullable|file|max:5120',
+            'quotation_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,doc,docx,xls,xlsx|max:5120',
             'items' => 'required|array|min:1',
             'items.*.purchase_request_item_id' => 'nullable|exists:purchase_request_items,id',
             'items.*.inventory_item_id' => 'nullable|exists:inventory_items,id',

@@ -1,7 +1,7 @@
 import React, { forwardRef, useEffect, useRef, useState } from "react";
-import * as Icons from "lucide-react";
-import { Activity, AlertCircle, AlertOctagon, AlertTriangle, ArrowDownRight, ArrowLeft, ArrowLeftRight, ArrowUpRight, Award, BarChart3, Barcode, Bell, BellRing, BookOpen, Boxes, Briefcase, Building2, Calculator, Calendar, CalendarCheck, CalendarClock, Camera, CheckCircle, CheckCircle2, CheckSquare, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ClipboardCheck, ClipboardList, Clock, Coins, Database, DollarSign, Download, Edit, Edit3, Eye, FileSpreadsheet, FileText, Filter, Gauge, Hash, HelpCircle, History, Info, Layers, LayoutDashboard, LogOut, MapPin, Menu, Minus, Moon, Network, Package, PackageCheck, PackageSearch, Phone, Plus, Printer, Receipt, RefreshCw, RotateCcw, Route, Save, Scale, Search, Settings, Shield, ShieldAlert, ShieldCheck, ShoppingCart, Smartphone, Sparkles, Sun, Target, Ticket, Trash2, TrendingUp, Truck, UploadCloud, User, UserCheck, UserPlus, Users, Warehouse, Wrench, X, XCircle } from "lucide-react";
 import { Head, Link, createInertiaApp, router, useForm, usePage } from "@inertiajs/react";
+import * as Icons from "lucide-react";
+import { Activity, AlertCircle, AlertOctagon, AlertTriangle, ArrowDownRight, ArrowLeft, ArrowLeftRight, ArrowRight, ArrowUpRight, Award, BarChart3, Barcode, Bell, BellRing, BookOpen, Boxes, Briefcase, Building2, Calculator, Calendar, CalendarCheck, CalendarClock, Camera, CheckCircle, CheckCircle2, CheckSquare, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, ClipboardCheck, ClipboardList, Clock, Coins, Cpu, Database, DollarSign, Download, Droplets, Edit, Edit3, Eye, EyeOff, FileSpreadsheet, FileText, Filter, Fuel, Gauge, Hash, HelpCircle, History, Info, Key, Laptop, Layers, LayoutDashboard, Lock, LogOut, MapPin, Menu, Minus, Moon, Network, Package, PackageCheck, PackageSearch, Phone, Plus, Printer, Receipt, RefreshCw, RotateCcw, Route, Save, Scale, Search, Settings, Shield, ShieldAlert, ShieldCheck, ShoppingCart, Smartphone, Sparkles, Sun, Target, Ticket, Trash2, TrendingUp, Truck, Unlock, UploadCloud, User, UserCheck, UserMinus, UserPlus, Users, Warehouse, Wrench, X, XCircle } from "lucide-react";
 import { create } from "zustand";
 import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 import { persist } from "zustand/middleware";
@@ -29,9 +29,21 @@ var useSidebarStore = create((set) => ({
 }));
 // resources/js/components/organisms/Sidebar.jsx
 function Sidebar() {
-	const { url } = usePage();
+	const { url, props } = usePage();
 	const { isCollapsed, toggleCollapse, isMobileOpen, closeMobile } = useSidebarStore();
-	const menuGroups = [
+	const auth = props?.auth;
+	const permissions = auth?.user?.permissions || [];
+	const roles = auth?.user?.roles || [];
+	const isSuperAdmin = auth?.user?.is_super_admin || roles.includes("super_admin") || auth?.user?.role === "admin";
+	const hasAccess = (item) => {
+		if (!auth?.user) return false;
+		if (isSuperAdmin) return true;
+		if (item.roles && item.roles.some((r) => roles.includes(r))) return true;
+		if (item.permission) return permissions.includes(item.permission);
+		if (item.permissions) return item.permissions.some((p) => permissions.includes(p));
+		return true;
+	};
+	const filteredMenuGroups = [
 		{
 			title: "Menu Utama",
 			items: [{
@@ -45,11 +57,13 @@ function Sidebar() {
 				icon: TrendingUp,
 				badge: "Phase 2",
 				badgeColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
-				active: url.startsWith("/production/dashboard")
+				active: url.startsWith("/production/dashboard"),
+				permission: "view_production"
 			}]
 		},
 		{
 			title: "Manajemen Produksi Hauling",
+			permission: "view_production",
 			items: [
 				{
 					name: "Daily Dispatch",
@@ -113,6 +127,7 @@ function Sidebar() {
 		},
 		{
 			title: "Manajemen Fleet & Alat Berat",
+			permission: "view_fleet",
 			items: [
 				{
 					name: "Unit Registry & Status",
@@ -158,6 +173,7 @@ function Sidebar() {
 		},
 		{
 			title: "Maintenance & Workshop (Phase 4)",
+			permission: "view_maintenance",
 			items: [
 				{
 					name: "Dashboard Workshop",
@@ -243,6 +259,7 @@ function Sidebar() {
 		},
 		{
 			title: "Warehouse & Sparepart (Phase 5)",
+			permission: "view_warehouse",
 			items: [
 				{
 					name: "Dashboard Gudang",
@@ -310,6 +327,7 @@ function Sidebar() {
 		},
 		{
 			title: "Procurement Management (Phase 6)",
+			permission: "view_procurement",
 			items: [
 				{
 					name: "Dashboard Procurement",
@@ -362,7 +380,154 @@ function Sidebar() {
 			]
 		},
 		{
+			title: "Fuel Management (Phase 7)",
+			permission: "view_fuel",
+			items: [
+				{
+					name: "Dashboard BBM & Rasio",
+					href: "/fuel/dashboard",
+					icon: Fuel,
+					badge: "Phase 7",
+					badgeColor: "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
+					active: url.startsWith("/fuel/dashboard") || url === "/fuel"
+				},
+				{
+					name: "Inventori & Tangki Solar",
+					href: "/fuel/inventory",
+					icon: Droplets,
+					badge: "Multi-Tank",
+					badgeColor: "bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300",
+					active: url.startsWith("/fuel/inventory")
+				},
+				{
+					name: "Daily Sounding & Rekon",
+					href: "/fuel/soundings",
+					icon: Scale,
+					badge: "Kalibrasi",
+					badgeColor: "bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300",
+					active: url.startsWith("/fuel/soundings")
+				},
+				{
+					name: "Fuel Dispensing & Tiket",
+					href: "/fuel/dispensing",
+					icon: Ticket,
+					badge: "Digital Ticket",
+					badgeColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
+					active: url.startsWith("/fuel/dispensing")
+				},
+				{
+					name: "Analisis Konsumsi BBM",
+					href: "/fuel/analytics",
+					icon: BarChart3,
+					badge: "0.0475 Factor",
+					badgeColor: "bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300",
+					active: url.startsWith("/fuel/analytics")
+				}
+			]
+		},
+		{
+			title: "HR & Employee Management (Phase 8)",
+			permission: "view_hr",
+			items: [
+				{
+					name: "Dashboard HR & SDM",
+					href: "/hr/dashboard",
+					icon: Users,
+					badge: "Phase 8",
+					badgeColor: "bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300",
+					active: url.startsWith("/hr/dashboard") || url === "/hr"
+				},
+				{
+					name: "Karyawan & Kontrak",
+					href: "/hr/employees",
+					icon: Briefcase,
+					badge: "PKWT/PKWTT",
+					badgeColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
+					active: url.startsWith("/hr/employees")
+				},
+				{
+					name: "Lisensi & Training Driver",
+					href: "/hr/drivers",
+					icon: UserCheck,
+					badge: "SIMPER/MCU",
+					badgeColor: "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
+					active: url.startsWith("/hr/drivers")
+				},
+				{
+					name: "Presensi, Shift & Cuti",
+					href: "/hr/attendance",
+					icon: CalendarCheck,
+					badge: "Mobile HP",
+					badgeColor: "bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300",
+					active: url.startsWith("/hr/attendance")
+				},
+				{
+					name: "Dokumen & Privasi HR",
+					href: "/hr/documents",
+					icon: ShieldCheck,
+					badge: "Confidential",
+					badgeColor: "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300",
+					active: url.startsWith("/hr/documents")
+				}
+			]
+		},
+		{
+			title: "Reporting & Analytics (Phase 11)",
+			permission: "view_analytics",
+			items: [
+				{
+					name: "Executive Dashboard",
+					href: "/analytics/dashboard",
+					icon: BarChart3,
+					badge: "Phase 11",
+					badgeColor: "bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300",
+					active: url.startsWith("/analytics/dashboard") || url === "/analytics"
+				},
+				{
+					name: "Production Report",
+					href: "/analytics/production",
+					icon: TrendingUp,
+					badge: "Ton/Rit",
+					badgeColor: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
+					active: url.startsWith("/analytics/production")
+				},
+				{
+					name: "Fleet Report (PA/MA/UA)",
+					href: "/analytics/fleet",
+					icon: Truck,
+					badge: "Fleet KPI",
+					badgeColor: "bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300",
+					active: url.startsWith("/analytics/fleet")
+				},
+				{
+					name: "Maintenance Report",
+					href: "/analytics/maintenance",
+					icon: Wrench,
+					badge: "MTTR/MTBF",
+					badgeColor: "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
+					active: url.startsWith("/analytics/maintenance")
+				},
+				{
+					name: "Warehouse & Procurement",
+					href: "/analytics/warehouse-procurement",
+					icon: Boxes,
+					badge: "Valuation",
+					badgeColor: "bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300",
+					active: url.startsWith("/analytics/warehouse-procurement")
+				},
+				{
+					name: "Fuel Report & Variance",
+					href: "/analytics/fuel",
+					icon: Fuel,
+					badge: "L/Ton",
+					badgeColor: "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300",
+					active: url.startsWith("/analytics/fuel")
+				}
+			]
+		},
+		{
 			title: "Organisasi & Struktur",
+			permission: "view_organization",
 			items: [{
 				name: "Organisasi & Site",
 				href: "/organization",
@@ -374,6 +539,7 @@ function Sidebar() {
 		},
 		{
 			title: "Master Operasional Hauling",
+			permission: "view_master",
 			items: [
 				{
 					name: "Armada & Unit Hauling",
@@ -413,6 +579,7 @@ function Sidebar() {
 		},
 		{
 			title: "Mitra & Klien",
+			permission: "view_master",
 			items: [{
 				name: "Vendor & Rental",
 				href: "/master/vendors",
@@ -427,6 +594,7 @@ function Sidebar() {
 		},
 		{
 			title: "Kepegawaian & Akses",
+			permission: "view_users",
 			items: [
 				{
 					name: "Data Karyawan",
@@ -451,11 +619,18 @@ function Sidebar() {
 					href: "/security/activity-logs",
 					icon: FileText,
 					active: url.startsWith("/security/activity-logs")
+				},
+				{
+					name: "Log Aktivitas Login",
+					href: "/security/login-logs",
+					icon: Shield,
+					active: url.startsWith("/security/login-logs")
 				}
 			]
 		},
 		{
 			title: "Pengaturan",
+			permission: "manage_settings",
 			items: [{
 				name: "Konfigurasi Sistem",
 				href: "/settings/configuration",
@@ -463,7 +638,15 @@ function Sidebar() {
 				active: url.startsWith("/settings/configuration")
 			}]
 		}
-	];
+	].map((group) => {
+		if (group.permission && !isSuperAdmin && !permissions.includes(group.permission)) return null;
+		const filteredItems = group.items.filter((item) => hasAccess(item));
+		if (filteredItems.length === 0) return null;
+		return {
+			...group,
+			items: filteredItems
+		};
+	}).filter(Boolean);
 	const sidebarContent = /* @__PURE__ */ jsxs("div", {
 		className: "flex flex-col h-full justify-between",
 		children: [/* @__PURE__ */ jsxs("div", {
@@ -494,7 +677,7 @@ function Sidebar() {
 				})]
 			}), /* @__PURE__ */ jsx("nav", {
 				className: "p-3 space-y-4",
-				children: menuGroups.map((group, groupIdx) => /* @__PURE__ */ jsxs("div", {
+				children: filteredMenuGroups.map((group, groupIdx) => /* @__PURE__ */ jsxs("div", {
 					className: "space-y-1",
 					children: [!isCollapsed && /* @__PURE__ */ jsx("div", {
 						className: "px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500",
@@ -624,15 +807,28 @@ function Avatar({ src, name = "", size = "md", status = null, className = "" }) 
 }
 // resources/js/components/molecules/UserProfileDropdown.jsx
 function UserProfileDropdown({ user = null, className = "" }) {
+	const { auth } = usePage().props;
 	const [isOpen, setIsOpen] = useState(false);
+	const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 	const dropdownRef = useRef(null);
 	const { theme, toggleTheme } = useThemeStore();
-	const currentUser = user || {
-		name: "Mustapa Ahmad Kamal",
-		email: "admin@example.com",
-		role: "Administrator",
-		avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
+	const [passwordData, setPasswordData] = useState({
+		current_password: "",
+		password: "",
+		password_confirmation: ""
+	});
+	const [showCurrentPass, setShowCurrentPass] = useState(false);
+	const [showNewPass, setShowNewPass] = useState(false);
+	const [passwordErrors, setPasswordErrors] = useState({});
+	const [isSubmittingPassword, setIsSubmittingPassword] = useState(false);
+	const currentUser = user || auth?.user || {
+		name: "Pengguna TAP",
+		email: "user@tap-mining.com",
+		role: "user",
+		roles: ["user"],
+		avatar: null
 	};
+	const primaryRole = currentUser.roles?.[0] || currentUser.role || "User";
 	useEffect(() => {
 		const handleClickOutside = (event) => {
 			if (dropdownRef.current && !dropdownRef.current.contains(event.target)) setIsOpen(false);
@@ -640,13 +836,37 @@ function UserProfileDropdown({ user = null, className = "" }) {
 		document.addEventListener("mousedown", handleClickOutside);
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, []);
-	return /* @__PURE__ */ jsxs("div", {
+	const handleLogout = () => {
+		setIsOpen(false);
+		router.post("/logout");
+	};
+	const handlePasswordSubmit = (e) => {
+		e.preventDefault();
+		setIsSubmittingPassword(true);
+		setPasswordErrors({});
+		router.put("/profile/password", passwordData, {
+			onSuccess: () => {
+				setIsSubmittingPassword(false);
+				setIsPasswordModalOpen(false);
+				setPasswordData({
+					current_password: "",
+					password: "",
+					password_confirmation: ""
+				});
+			},
+			onError: (errors) => {
+				setIsSubmittingPassword(false);
+				setPasswordErrors(errors);
+			}
+		});
+	};
+	return /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsxs("div", {
 		className: `relative ${className}`,
 		ref: dropdownRef,
 		children: [/* @__PURE__ */ jsxs("button", {
 			type: "button",
 			onClick: () => setIsOpen(!isOpen),
-			className: "flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none",
+			className: "flex items-center gap-2.5 p-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none cursor-pointer",
 			children: [
 				/* @__PURE__ */ jsx(Avatar, {
 					src: currentUser.avatar,
@@ -661,23 +881,30 @@ function UserProfileDropdown({ user = null, className = "" }) {
 						children: currentUser.name
 					}), /* @__PURE__ */ jsx("p", {
 						className: "text-slate-500 dark:text-slate-400 capitalize",
-						children: currentUser.role || "Super Admin"
+						children: primaryRole.replace(/_/g, " ")
 					})]
 				}),
 				/* @__PURE__ */ jsx(ChevronDown, { className: "w-3.5 h-3.5 text-slate-400 hidden md:block" })
 			]
 		}), isOpen && /* @__PURE__ */ jsxs("div", {
-			className: "absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-slate-950/50 py-1.5 z-50 text-xs",
+			className: "absolute right-0 mt-2 w-60 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-slate-950/50 py-1.5 z-50 text-xs",
 			children: [
 				/* @__PURE__ */ jsxs("div", {
 					className: "px-4 py-2.5 border-b border-slate-100 dark:border-slate-800",
-					children: [/* @__PURE__ */ jsx("p", {
-						className: "font-semibold text-slate-900 dark:text-white truncate",
-						children: currentUser.name
-					}), /* @__PURE__ */ jsx("p", {
-						className: "text-slate-500 dark:text-slate-400 truncate mt-0.5",
-						children: currentUser.email
-					})]
+					children: [
+						/* @__PURE__ */ jsx("p", {
+							className: "font-semibold text-slate-900 dark:text-white truncate",
+							children: currentUser.name
+						}),
+						/* @__PURE__ */ jsx("p", {
+							className: "text-slate-500 dark:text-slate-400 truncate mt-0.5 text-[11px]",
+							children: currentUser.email
+						}),
+						auth?.active_site && /* @__PURE__ */ jsx("div", {
+							className: "mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-medium",
+							children: /* @__PURE__ */ jsx("span", { children: auth.active_site.name })
+						})
+					]
 				}),
 				/* @__PURE__ */ jsxs("div", {
 					className: "py-1",
@@ -688,7 +915,7 @@ function UserProfileDropdown({ user = null, className = "" }) {
 								toggleTheme();
 								setIsOpen(false);
 							},
-							className: "w-full flex items-center justify-between px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors",
+							className: "w-full flex items-center justify-between px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer",
 							children: [/* @__PURE__ */ jsxs("span", {
 								className: "flex items-center gap-2.5",
 								children: [theme === "dark" ? /* @__PURE__ */ jsx(Sun, { className: "w-4 h-4 text-amber-500" }) : /* @__PURE__ */ jsx(Moon, { className: "w-4 h-4 text-indigo-500" }), /* @__PURE__ */ jsx("span", { children: theme === "dark" ? "Mode Terang (Light)" : "Mode Gelap (Dark)" })]
@@ -697,40 +924,168 @@ function UserProfileDropdown({ user = null, className = "" }) {
 								children: theme
 							})]
 						}),
-						/* @__PURE__ */ jsxs(Link, {
-							href: "/settings",
-							onClick: () => setIsOpen(false),
-							className: "flex items-center gap-2.5 px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors",
-							children: [/* @__PURE__ */ jsx(Settings, { className: "w-4 h-4 text-slate-400" }), /* @__PURE__ */ jsx("span", { children: "Pengaturan Akun" })]
+						/* @__PURE__ */ jsxs("button", {
+							type: "button",
+							onClick: () => {
+								setIsOpen(false);
+								setIsPasswordModalOpen(true);
+							},
+							className: "w-full flex items-center gap-2.5 px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer",
+							children: [/* @__PURE__ */ jsx(Key, { className: "w-4 h-4 text-slate-400" }), /* @__PURE__ */ jsx("span", { children: "Ganti Kata Sandi" })]
 						}),
-						/* @__PURE__ */ jsxs(Link, {
+						(currentUser.is_super_admin || currentUser.roles?.includes("super_admin")) && /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsxs(Link, {
 							href: "/users",
 							onClick: () => setIsOpen(false),
 							className: "flex items-center gap-2.5 px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors",
 							children: [/* @__PURE__ */ jsx(Shield, { className: "w-4 h-4 text-slate-400" }), /* @__PURE__ */ jsx("span", { children: "Kelola Pengguna" })]
-						})
+						}), /* @__PURE__ */ jsxs(Link, {
+							href: "/security/login-logs",
+							onClick: () => setIsOpen(false),
+							className: "flex items-center gap-2.5 px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors",
+							children: [/* @__PURE__ */ jsx(User, { className: "w-4 h-4 text-slate-400" }), /* @__PURE__ */ jsx("span", { children: "Log Aktivitas Login" })]
+						})] })
 					]
 				}),
 				/* @__PURE__ */ jsx("div", {
 					className: "border-t border-slate-100 dark:border-slate-800 pt-1",
 					children: /* @__PURE__ */ jsxs("button", {
 						type: "button",
-						onClick: () => {
-							setIsOpen(false);
-							alert("Contoh logout");
-						},
-						className: "w-full flex items-center gap-2.5 px-4 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors",
+						onClick: handleLogout,
+						className: "w-full flex items-center gap-2.5 px-4 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-colors cursor-pointer",
 						children: [/* @__PURE__ */ jsx(LogOut, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { children: "Keluar (Logout)" })]
 					})
 				})
 			]
 		})]
-	});
+	}), isPasswordModalOpen && /* @__PURE__ */ jsx("div", {
+		className: "fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs",
+		children: /* @__PURE__ */ jsxs("div", {
+			className: "w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-2xl space-y-4",
+			children: [
+				/* @__PURE__ */ jsxs("div", {
+					className: "flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "flex items-center gap-2 text-slate-900 dark:text-white font-bold text-sm",
+						children: [/* @__PURE__ */ jsx(Key, { className: "w-4 h-4 text-amber-500" }), /* @__PURE__ */ jsx("span", { children: "Perbarui Kata Sandi" })]
+					}), /* @__PURE__ */ jsx("button", {
+						type: "button",
+						onClick: () => setIsPasswordModalOpen(false),
+						className: "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer",
+						children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4" })
+					})]
+				}),
+				passwordErrors.current_password && /* @__PURE__ */ jsxs("div", {
+					className: "p-2.5 rounded-xl bg-rose-500/10 text-rose-500 text-xs flex items-center gap-2",
+					children: [/* @__PURE__ */ jsx(AlertCircle, { className: "w-4 h-4 shrink-0" }), /* @__PURE__ */ jsx("span", { children: passwordErrors.current_password })]
+				}),
+				/* @__PURE__ */ jsxs("form", {
+					onSubmit: handlePasswordSubmit,
+					className: "space-y-3.5",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "space-y-1",
+							children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-semibold text-slate-700 dark:text-slate-300",
+								children: "Password Saat Ini"
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "relative",
+								children: [/* @__PURE__ */ jsx("input", {
+									type: showCurrentPass ? "text" : "password",
+									value: passwordData.current_password,
+									onChange: (e) => setPasswordData({
+										...passwordData,
+										current_password: e.target.value
+									}),
+									className: "w-full px-3 py-2 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500",
+									required: true
+								}), /* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setShowCurrentPass(!showCurrentPass),
+									className: "absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 cursor-pointer",
+									children: showCurrentPass ? /* @__PURE__ */ jsx(EyeOff, { className: "w-4 h-4" }) : /* @__PURE__ */ jsx(Eye, { className: "w-4 h-4" })
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "space-y-1",
+							children: [
+								/* @__PURE__ */ jsx("label", {
+									className: "block text-xs font-semibold text-slate-700 dark:text-slate-300",
+									children: "Password Baru (Minimal 8 Karakter)"
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "relative",
+									children: [/* @__PURE__ */ jsx("input", {
+										type: showNewPass ? "text" : "password",
+										value: passwordData.password,
+										onChange: (e) => setPasswordData({
+											...passwordData,
+											password: e.target.value
+										}),
+										className: "w-full px-3 py-2 pr-10 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500",
+										required: true
+									}), /* @__PURE__ */ jsx("button", {
+										type: "button",
+										onClick: () => setShowNewPass(!showNewPass),
+										className: "absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 cursor-pointer",
+										children: showNewPass ? /* @__PURE__ */ jsx(EyeOff, { className: "w-4 h-4" }) : /* @__PURE__ */ jsx(Eye, { className: "w-4 h-4" })
+									})]
+								}),
+								passwordErrors.password && /* @__PURE__ */ jsx("p", {
+									className: "text-[11px] text-rose-500",
+									children: passwordErrors.password
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "space-y-1",
+							children: [/* @__PURE__ */ jsx("label", {
+								className: "block text-xs font-semibold text-slate-700 dark:text-slate-300",
+								children: "Konfirmasi Password Baru"
+							}), /* @__PURE__ */ jsx("input", {
+								type: showNewPass ? "text" : "password",
+								value: passwordData.password_confirmation,
+								onChange: (e) => setPasswordData({
+									...passwordData,
+									password_confirmation: e.target.value
+								}),
+								className: "w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500",
+								required: true
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex items-center justify-end gap-2 pt-2",
+							children: [/* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setIsPasswordModalOpen(false),
+								className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors cursor-pointer",
+								children: "Batal"
+							}), /* @__PURE__ */ jsx("button", {
+								type: "submit",
+								disabled: isSubmittingPassword,
+								className: "px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-bold transition-all disabled:opacity-50 cursor-pointer",
+								children: isSubmittingPassword ? "Menyimpan..." : "Simpan Password Baru"
+							})]
+						})
+					]
+				})
+			]
+		})
+	})] });
 }
 // resources/js/components/organisms/Navbar.jsx
 function Navbar({ title = "Dashboard", breadcrumbs = [] }) {
 	const { toggleMobile } = useSidebarStore();
 	const { theme, toggleTheme } = useThemeStore();
+	const { auth } = usePage().props;
+	const [isSiteDropdownOpen, setIsSiteDropdownOpen] = useState(false);
+	const activeSite = auth?.active_site;
+	const accessibleSites = auth?.accessible_sites || [];
+	const canSwitchSite = accessibleSites.length > 1;
+	const handleSwitchSite = (siteId) => {
+		setIsSiteDropdownOpen(false);
+		if (siteId !== activeSite?.id) router.post("/switch-site", { site_id: siteId });
+	};
 	return /* @__PURE__ */ jsx("header", {
 		className: "sticky top-0 z-20 h-16 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 transition-colors",
 		children: /* @__PURE__ */ jsxs("div", {
@@ -755,6 +1110,52 @@ function Navbar({ title = "Dashboard", breadcrumbs = [] }) {
 			}), /* @__PURE__ */ jsxs("div", {
 				className: "flex items-center gap-2 sm:gap-3",
 				children: [
+					activeSite && /* @__PURE__ */ jsx("div", {
+						className: "relative",
+						children: canSwitchSite ? /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsxs("button", {
+							type: "button",
+							onClick: () => setIsSiteDropdownOpen(!isSiteDropdownOpen),
+							className: "flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-semibold transition-all cursor-pointer",
+							title: "Beralih Site Operasional",
+							children: [
+								/* @__PURE__ */ jsx(MapPin, { className: "w-3.5 h-3.5 shrink-0 text-amber-500" }),
+								/* @__PURE__ */ jsx("span", {
+									className: "max-w-[140px] truncate sm:max-w-none",
+									children: activeSite.name
+								}),
+								/* @__PURE__ */ jsx(ChevronDown, { className: "w-3.5 h-3.5 text-amber-500" })
+							]
+						}), isSiteDropdownOpen && /* @__PURE__ */ jsxs("div", {
+							className: "absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-slate-950/50 py-1.5 z-50 text-xs",
+							children: [/* @__PURE__ */ jsx("div", {
+								className: "px-3.5 py-2 border-b border-slate-100 dark:border-slate-800",
+								children: /* @__PURE__ */ jsx("p", {
+									className: "font-bold text-slate-400 text-[10px] uppercase tracking-wider",
+									children: "Pilih Site Operasional"
+								})
+							}), /* @__PURE__ */ jsx("div", {
+								className: "py-1 max-h-48 overflow-y-auto",
+								children: accessibleSites.map((site) => /* @__PURE__ */ jsxs("button", {
+									type: "button",
+									onClick: () => handleSwitchSite(site.id),
+									className: `w-full flex items-center justify-between px-3.5 py-2 text-left transition-colors cursor-pointer ${site.id === activeSite.id ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold" : "text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"}`,
+									children: [/* @__PURE__ */ jsx("span", {
+										className: "truncate",
+										children: site.name
+									}), /* @__PURE__ */ jsx("span", {
+										className: "text-[10px] font-mono text-slate-400",
+										children: site.code
+									})]
+								}, site.id))
+							})]
+						})] }) : /* @__PURE__ */ jsxs("div", {
+							className: "hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 text-slate-600 dark:text-slate-300 text-xs font-semibold",
+							children: [/* @__PURE__ */ jsx(MapPin, { className: "w-3.5 h-3.5 text-slate-400" }), /* @__PURE__ */ jsx("span", {
+								className: "max-w-[120px] truncate sm:max-w-none",
+								children: activeSite.name
+							})]
+						})
+					}),
 					/* @__PURE__ */ jsx("button", {
 						type: "button",
 						onClick: toggleTheme,
@@ -768,7 +1169,7 @@ function Navbar({ title = "Dashboard", breadcrumbs = [] }) {
 							type: "button",
 							className: "p-2 rounded-xl text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors",
 							title: "Pemberitahuan",
-							children: [/* @__PURE__ */ jsx(Bell, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { className: "absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-indigo-600 ring-2 ring-white dark:ring-slate-900" })]
+							children: [/* @__PURE__ */ jsx(Bell, { className: "w-4 h-4" }), /* @__PURE__ */ jsx("span", { className: "absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white dark:ring-slate-900" })]
 						})
 					}),
 					/* @__PURE__ */ jsx("div", { className: "h-5 w-px bg-slate-200 dark:bg-slate-800" }),
@@ -1141,8 +1542,2040 @@ function DashboardLayout({ children, title = "Dashboard", breadcrumbs = [] }) {
 		]
 	});
 }
+// resources/js/Pages/Analytics/Partials/AnalyticsFilterBar.jsx
+var AnalyticsFilterBar_exports = /* @__PURE__ */ __exportAll({ default: () => AnalyticsFilterBar });
+function AnalyticsFilterBar({ currentPath = "/analytics/dashboard", reportType = "executive", filters = {}, master = {}, statusOptions = [
+	{
+		value: "",
+		label: "Semua Status"
+	},
+	{
+		value: "verified",
+		label: "Verified / Approved"
+	},
+	{
+		value: "completed",
+		label: "Completed"
+	},
+	{
+		value: "open",
+		label: "Open / Pending"
+	}
+] }) {
+	const [form, setForm] = useState({
+		site_id: filters.site_id || "",
+		date_from: filters.date_from || "",
+		date_to: filters.date_to || "",
+		department_id: filters.department_id || "",
+		unit_id: filters.unit_id || "",
+		driver_id: filters.driver_id || "",
+		shift_id: filters.shift_id || "",
+		status: filters.status || ""
+	});
+	const cleanParams = (stateObj) => {
+		const out = {};
+		Object.entries(stateObj).forEach(([k, v]) => {
+			if (v !== "" && v !== null && v !== void 0) out[k] = v;
+		});
+		return out;
+	};
+	const handleApply = (e) => {
+		if (e) e.preventDefault();
+		router.get(currentPath, cleanParams(form), { preserveState: true });
+	};
+	const handleReset = () => {
+		const resetState = {
+			site_id: filters.is_site_locked ? filters.site_id : "",
+			date_from: "",
+			date_to: "",
+			department_id: "",
+			unit_id: "",
+			driver_id: "",
+			shift_id: "",
+			status: ""
+		};
+		setForm(resetState);
+		router.get(currentPath, cleanParams(resetState), { preserveState: true });
+	};
+	const buildExportUrl = (endpoint, extra = {}) => {
+		return `${endpoint}?${new URLSearchParams({
+			...cleanParams(form),
+			report_type: reportType,
+			...extra
+		}).toString()}`;
+	};
+	const handleQueueBackgroundExport = (format) => {
+		router.post("/analytics/export", {
+			...cleanParams(form),
+			report_type: reportType,
+			format,
+			queue_background: true
+		});
+	};
+	return /* @__PURE__ */ jsxs("div", {
+		className: "space-y-4",
+		children: [/* @__PURE__ */ jsxs("div", {
+			className: "flex flex-col xl:flex-row xl:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs",
+			children: [/* @__PURE__ */ jsx("div", {
+				className: "flex flex-wrap gap-1.5",
+				children: [
+					{
+						href: "/analytics/dashboard",
+						label: "1. Executive Dashboard",
+						icon: BarChart3
+					},
+					{
+						href: "/analytics/production",
+						label: "2. Production Report",
+						icon: TrendingUp
+					},
+					{
+						href: "/analytics/fleet",
+						label: "3. Fleet Report",
+						icon: Truck
+					},
+					{
+						href: "/analytics/maintenance",
+						label: "4. Maintenance Report",
+						icon: Wrench
+					},
+					{
+						href: "/analytics/warehouse-procurement",
+						label: "5. Warehouse & Procurement",
+						icon: Boxes
+					},
+					{
+						href: "/analytics/fuel",
+						label: "6. Fuel Report",
+						icon: Fuel
+					}
+				].map((tab) => {
+					const Icon = tab.icon;
+					const isActive = currentPath === tab.href;
+					return /* @__PURE__ */ jsxs(Link, {
+						href: tab.href,
+						data: cleanParams(form),
+						className: `px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition ${isActive ? "bg-indigo-600 text-white shadow-xs" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"}`,
+						children: [
+							/* @__PURE__ */ jsx(Icon, { className: "w-3.5 h-3.5" }),
+							" ",
+							tab.label
+						]
+					}, tab.href);
+				})
+			}), /* @__PURE__ */ jsxs("div", {
+				className: "flex flex-wrap items-center gap-2",
+				children: [
+					/* @__PURE__ */ jsxs("a", {
+						href: buildExportUrl("/analytics/export", { format: "excel" }),
+						className: "px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-xs",
+						children: [/* @__PURE__ */ jsx(Download, { className: "w-3.5 h-3.5" }), " Excel Export"]
+					}),
+					/* @__PURE__ */ jsxs("a", {
+						href: buildExportUrl("/analytics/export", { format: "pdf" }),
+						target: "_blank",
+						rel: "noreferrer",
+						className: "px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-xs",
+						children: [/* @__PURE__ */ jsx(FileText, { className: "w-3.5 h-3.5" }), " PDF Export"]
+					}),
+					/* @__PURE__ */ jsxs("a", {
+						href: buildExportUrl("/analytics/print"),
+						target: "_blank",
+						rel: "noreferrer",
+						className: "px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-900 dark:bg-slate-700 text-white text-xs font-bold inline-flex items-center gap-1.5 shadow-xs",
+						children: [/* @__PURE__ */ jsx(Printer, { className: "w-3.5 h-3.5" }), " Printable Report"]
+					}),
+					/* @__PURE__ */ jsxs("button", {
+						type: "button",
+						onClick: () => handleQueueBackgroundExport("excel"),
+						className: "px-3 py-1.5 rounded-xl bg-amber-50 hover:bg-amber-100 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-xs font-bold inline-flex items-center gap-1.5",
+						title: "Jalankan export berukuran besar melalui Background Job Queue",
+						children: [/* @__PURE__ */ jsx(Clock, { className: "w-3.5 h-3.5" }), " Queue Background Export"]
+					})
+				]
+			})]
+		}), /* @__PURE__ */ jsx("form", {
+			onSubmit: handleApply,
+			className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs",
+			children: /* @__PURE__ */ jsxs("div", {
+				className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-2.5 text-xs",
+				children: [
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsxs("label", {
+						className: "block text-[10px] font-bold uppercase text-slate-400 mb-1",
+						children: ["1. Site ", filters.is_site_locked ? "(Locked)" : ""]
+					}), /* @__PURE__ */ jsxs("select", {
+						value: form.site_id,
+						disabled: Boolean(filters.is_site_locked),
+						onChange: (e) => setForm({
+							...form,
+							site_id: e.target.value
+						}),
+						className: "w-full px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 font-medium",
+						children: [!filters.is_site_locked && /* @__PURE__ */ jsx("option", {
+							value: "",
+							children: "Semua Site TAP"
+						}), (master.sites || []).map((s) => /* @__PURE__ */ jsxs("option", {
+							value: s.id,
+							children: [
+								s.code,
+								" — ",
+								s.name
+							]
+						}, s.id))]
+					})] }),
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+						className: "block text-[10px] font-bold uppercase text-slate-400 mb-1",
+						children: "2a. Dari Tanggal"
+					}), /* @__PURE__ */ jsx("input", {
+						type: "date",
+						value: form.date_from,
+						onChange: (e) => setForm({
+							...form,
+							date_from: e.target.value
+						}),
+						className: "w-full px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+					})] }),
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+						className: "block text-[10px] font-bold uppercase text-slate-400 mb-1",
+						children: "2b. Sampai Tanggal"
+					}), /* @__PURE__ */ jsx("input", {
+						type: "date",
+						value: form.date_to,
+						onChange: (e) => setForm({
+							...form,
+							date_to: e.target.value
+						}),
+						className: "w-full px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+					})] }),
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+						className: "block text-[10px] font-bold uppercase text-slate-400 mb-1",
+						children: "3. Department"
+					}), /* @__PURE__ */ jsxs("select", {
+						value: form.department_id,
+						onChange: (e) => setForm({
+							...form,
+							department_id: e.target.value
+						}),
+						className: "w-full px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+						children: [/* @__PURE__ */ jsx("option", {
+							value: "",
+							children: "Semua Dept"
+						}), (master.departments || []).map((d) => /* @__PURE__ */ jsxs("option", {
+							value: d.id,
+							children: [
+								d.code,
+								" — ",
+								d.name
+							]
+						}, d.id))]
+					})] }),
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+						className: "block text-[10px] font-bold uppercase text-slate-400 mb-1",
+						children: "4. Unit DT"
+					}), /* @__PURE__ */ jsxs("select", {
+						value: form.unit_id,
+						onChange: (e) => setForm({
+							...form,
+							unit_id: e.target.value
+						}),
+						className: "w-full px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+						children: [/* @__PURE__ */ jsx("option", {
+							value: "",
+							children: "Semua Unit"
+						}), (master.units || []).map((u) => /* @__PURE__ */ jsxs("option", {
+							value: u.id,
+							children: [
+								u.unit_code,
+								" (",
+								u.brand,
+								")"
+							]
+						}, u.id))]
+					})] }),
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+						className: "block text-[10px] font-bold uppercase text-slate-400 mb-1",
+						children: "5. Driver"
+					}), /* @__PURE__ */ jsxs("select", {
+						value: form.driver_id,
+						onChange: (e) => setForm({
+							...form,
+							driver_id: e.target.value
+						}),
+						className: "w-full px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+						children: [/* @__PURE__ */ jsx("option", {
+							value: "",
+							children: "Semua Driver"
+						}), (master.drivers || []).map((d) => /* @__PURE__ */ jsxs("option", {
+							value: d.id,
+							children: [
+								d.driver_code,
+								" — ",
+								d.employee?.name
+							]
+						}, d.id))]
+					})] }),
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+						className: "block text-[10px] font-bold uppercase text-slate-400 mb-1",
+						children: "6. Shift"
+					}), /* @__PURE__ */ jsxs("select", {
+						value: form.shift_id,
+						onChange: (e) => setForm({
+							...form,
+							shift_id: e.target.value
+						}),
+						className: "w-full px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+						children: [/* @__PURE__ */ jsx("option", {
+							value: "",
+							children: "Semua Shift"
+						}), (master.shifts || []).map((sh) => /* @__PURE__ */ jsxs("option", {
+							value: sh.id,
+							children: [
+								sh.code,
+								" — ",
+								sh.name
+							]
+						}, sh.id))]
+					})] }),
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-col justify-between",
+						children: [/* @__PURE__ */ jsx("label", {
+							className: "block text-[10px] font-bold uppercase text-slate-400 mb-1",
+							children: "7. Status & Terapkan"
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "flex items-center gap-1.5",
+							children: [
+								/* @__PURE__ */ jsx("select", {
+									value: form.status,
+									onChange: (e) => setForm({
+										...form,
+										status: e.target.value
+									}),
+									className: "flex-1 px-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+									children: statusOptions.map((opt) => /* @__PURE__ */ jsx("option", {
+										value: opt.value,
+										children: opt.label
+									}, opt.value))
+								}),
+								/* @__PURE__ */ jsxs("button", {
+									type: "submit",
+									className: "px-2.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold inline-flex items-center gap-1",
+									title: "Terapkan Filter",
+									children: [/* @__PURE__ */ jsx(Filter, { className: "w-3.5 h-3.5" }), " Filter"]
+								}),
+								/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: handleReset,
+									className: "p-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-600",
+									title: "Reset Filter",
+									children: /* @__PURE__ */ jsx(RotateCcw, { className: "w-3.5 h-3.5" })
+								})
+							]
+						})]
+					})
+				]
+			})
+		})]
+	});
+}
+// resources/js/Pages/Analytics/Dashboard/Index.jsx
+var Index_exports$64 = /* @__PURE__ */ __exportAll({ default: () => ExecutiveDashboardIndex });
+var fmtNum$5 = (v, dec = 2) => new Intl.NumberFormat("id-ID", { maximumFractionDigits: dec }).format(Number(v || 0));
+var fmtIDR$3 = (v) => new Intl.NumberFormat("id-ID", {
+	style: "currency",
+	currency: "IDR",
+	maximumFractionDigits: 0
+}).format(Number(v || 0));
+function ExecutiveDashboardIndex({ report = {}, filters = {}, master = {}, exportJobs = [] }) {
+	const [drillDownTab, setDrillDownTab] = useState("production_tickets");
+	const kpis = report.kpis || {};
+	const periodComp = report.period_comparison || {};
+	const siteComp = report.site_comparison || [];
+	const dailyTrend = report.daily_trend || [];
+	const drillDown = report.drill_down || {};
+	const maxTrendTon = Math.max(1, ...dailyTrend.map((d) => Number(d.tonnage || 0)));
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Executive Analytics & Reporting Center",
+		children: [/* @__PURE__ */ jsx(Head, { title: "Executive Dashboard & Analytics - Phase 11" }), /* @__PURE__ */ jsxs("div", {
+			className: "space-y-6",
+			children: [
+				/* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex flex-wrap items-center gap-2",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-md bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300",
+								children: "Phase 11 — Centralized Reporting & Management Analytics"
+							}), /* @__PURE__ */ jsx("span", {
+								className: "px-2.5 py-0.5 text-[11px] font-semibold rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
+								children: "100% Real Transaction Data • Zero Dummy Numbers"
+							})]
+						}),
+						/* @__PURE__ */ jsx("h1", {
+							className: "text-xl font-extrabold text-slate-900 dark:text-white mt-1",
+							children: "TAP Executive Command & Operational Analytics Dashboard"
+						}),
+						/* @__PURE__ */ jsxs("p", {
+							className: "text-xs text-slate-500",
+							children: [
+								"Periode Aktif: ",
+								/* @__PURE__ */ jsx("strong", { children: filters.date_from }),
+								" s/d ",
+								/* @__PURE__ */ jsx("strong", { children: filters.date_to }),
+								" (",
+								filters.days_span,
+								" hari) — setiap angka dan grafik terhubung langsung ke transaksi sumber."
+							]
+						})
+					]
+				}),
+				/* @__PURE__ */ jsx(AnalyticsFilterBar, {
+					currentPath: "/analytics/dashboard",
+					reportType: "executive",
+					filters,
+					master
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-9 gap-3",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "flex items-center justify-between text-xs font-semibold text-slate-500",
+									children: [/* @__PURE__ */ jsx("span", { children: "Total Site" }), /* @__PURE__ */ jsx(Building2, { className: "w-4 h-4 text-indigo-500" })]
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-2xl font-extrabold text-slate-900 dark:text-white mt-2",
+									children: kpis.total_sites || 0
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-[10px] text-slate-400 mt-1",
+									children: "Site Aktif"
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "flex items-center justify-between text-xs font-semibold text-slate-500",
+									children: [/* @__PURE__ */ jsx("span", { children: "Total Unit" }), /* @__PURE__ */ jsx(Truck, { className: "w-4 h-4 text-blue-500" })]
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-2xl font-extrabold text-slate-900 dark:text-white mt-2",
+									children: kpis.total_units || 0
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/analytics/fleet",
+									className: "text-[10px] text-indigo-600 font-bold hover:underline mt-1 inline-block",
+									children: "Lihat Fleet →"
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "flex items-center justify-between text-xs font-semibold text-slate-500",
+									children: [/* @__PURE__ */ jsx("span", { children: "Available Unit" }), /* @__PURE__ */ jsx(CheckCircle2, { className: "w-4 h-4 text-emerald-500" })]
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2",
+									children: kpis.available_units || 0
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-[10px] text-slate-400 mt-1",
+									children: "Ready for Operation"
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							onClick: () => setDrillDownTab("breakdown_units_list"),
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 cursor-pointer hover:border-rose-400 transition",
+							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "flex items-center justify-between text-xs font-semibold text-slate-500",
+									children: [/* @__PURE__ */ jsx("span", { children: "Breakdown Unit" }), /* @__PURE__ */ jsx(AlertOctagon, { className: "w-4 h-4 text-rose-500" })]
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-2xl font-extrabold text-rose-600 dark:text-rose-400 mt-2",
+									children: kpis.breakdown_units || 0
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-[10px] text-rose-500 font-semibold mt-1",
+									children: "Klik Drill-Down ↓"
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							onClick: () => setDrillDownTab("production_tickets"),
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 cursor-pointer hover:border-indigo-400 transition",
+							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "flex items-center justify-between text-xs font-semibold text-slate-500",
+									children: [/* @__PURE__ */ jsx("span", { children: "Prod. Today" }), /* @__PURE__ */ jsx(TrendingUp, { className: "w-4 h-4 text-indigo-500" })]
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-xl font-extrabold text-slate-900 dark:text-white mt-2",
+									children: [
+										fmtNum$5(kpis.total_production_today),
+										" ",
+										/* @__PURE__ */ jsx("span", {
+											className: "text-xs font-normal",
+											children: "MT"
+										})
+									]
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-[10px] text-slate-400 mt-1",
+									children: [
+										kpis.ritase_today || 0,
+										" Ritase (",
+										filters.date_to,
+										")"
+									]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "flex items-center justify-between text-xs font-semibold text-slate-500",
+									children: [/* @__PURE__ */ jsx("span", { children: "Monthly Prod." }), /* @__PURE__ */ jsx(TrendingUp, { className: "w-4 h-4 text-emerald-500" })]
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2",
+									children: [
+										fmtNum$5(kpis.monthly_production),
+										" ",
+										/* @__PURE__ */ jsx("span", {
+											className: "text-xs font-normal",
+											children: "MT"
+										})
+									]
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-[10px] text-slate-400 mt-1",
+									children: [
+										"Periode: ",
+										fmtNum$5(kpis.period_production_tonnage),
+										" MT"
+									]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "flex items-center justify-between text-xs font-semibold text-slate-500",
+									children: [/* @__PURE__ */ jsx("span", { children: "Target vs Actual" }), /* @__PURE__ */ jsx(Target, { className: "w-4 h-4 text-amber-500" })]
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-xl font-extrabold text-amber-600 dark:text-amber-400 mt-2",
+									children: [fmtNum$5(kpis.target_vs_actual_percent, 1), "%"]
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-[10px] text-slate-400 mt-1",
+									children: [
+										"Target: ",
+										fmtNum$5(kpis.target_tonnage),
+										" MT"
+									]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "flex items-center justify-between text-xs font-semibold text-slate-500",
+									children: [/* @__PURE__ */ jsx("span", { children: "Total Ritase" }), /* @__PURE__ */ jsx(Layers, { className: "w-4 h-4 text-cyan-500" })]
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-2xl font-extrabold text-cyan-600 dark:text-cyan-400 mt-2",
+									children: fmtNum$5(kpis.total_ritase, 0)
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-[10px] text-slate-400 mt-1",
+									children: "Tiket Terverifikasi"
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							onClick: () => setDrillDownTab("fuel_dispensing"),
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 cursor-pointer hover:border-amber-400 transition",
+							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "flex items-center justify-between text-xs font-semibold text-slate-500",
+									children: [/* @__PURE__ */ jsx("span", { children: "Fuel Consump." }), /* @__PURE__ */ jsx(Fuel, { className: "w-4 h-4 text-amber-500" })]
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-xl font-extrabold text-amber-600 dark:text-amber-400 mt-2",
+									children: [
+										fmtNum$5(kpis.fuel_consumption_liters, 0),
+										" ",
+										/* @__PURE__ */ jsx("span", {
+											className: "text-xs font-normal",
+											children: "L"
+										})
+									]
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-[10px] text-slate-400 mt-1",
+									children: [
+										"Rasio: ",
+										fmtNum$5(kpis.fuel_per_ton, 3),
+										" L/Ton"
+									]
+								})
+							]
+						})
+					]
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 lg:grid-cols-3 gap-6",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "lg:col-span-2 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex items-center justify-between mb-4",
+							children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("h2", {
+								className: "text-sm font-bold text-slate-900 dark:text-white",
+								children: "Trend Produksi Tonase & Konsumsi BBM Harian (Traceable Trend Chart)"
+							}), /* @__PURE__ */ jsx("p", {
+								className: "text-[11px] text-slate-400",
+								children: "Klik bar tanggal untuk menelusuri tiket produksi sumber."
+							})] }), /* @__PURE__ */ jsxs(Link, {
+								href: "/analytics/production",
+								className: "text-xs font-bold text-indigo-600 hover:underline flex items-center gap-1",
+								children: ["Buka Production Report ", /* @__PURE__ */ jsx(ArrowUpRight, { className: "w-3.5 h-3.5" })]
+							})]
+						}), dailyTrend.length === 0 ? /* @__PURE__ */ jsx("p", {
+							className: "text-xs text-slate-400 py-8 text-center",
+							children: "Belum ada transaksi pada rentang tanggal ini."
+						}) : /* @__PURE__ */ jsx("div", {
+							className: "space-y-2.5 max-h-64 overflow-y-auto pr-2",
+							children: dailyTrend.map((d) => {
+								const pct = Math.min(100, Math.round(Number(d.tonnage) / maxTrendTon * 100));
+								return /* @__PURE__ */ jsxs("div", {
+									className: "space-y-1",
+									children: [/* @__PURE__ */ jsxs("div", {
+										className: "flex items-center justify-between text-xs",
+										children: [/* @__PURE__ */ jsx("span", {
+											className: "font-mono font-semibold text-slate-700 dark:text-slate-300",
+											children: d.date
+										}), /* @__PURE__ */ jsxs("span", {
+											className: "text-slate-600 dark:text-slate-400",
+											children: [
+												/* @__PURE__ */ jsxs("strong", { children: [fmtNum$5(d.tonnage), " MT"] }),
+												" (",
+												d.ritase,
+												" Rit) • Solar: ",
+												/* @__PURE__ */ jsxs("strong", { children: [fmtNum$5(d.fuel_liters), " L"] })
+											]
+										})]
+									}), /* @__PURE__ */ jsx("div", {
+										className: "w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden",
+										children: /* @__PURE__ */ jsx("div", {
+											className: "h-full bg-gradient-to-r from-indigo-500 to-emerald-500 rounded-full",
+											style: { width: `${Math.max(4, pct)}%` }
+										})
+									})]
+								}, d.date);
+							})
+						})]
+					}), /* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 space-y-4",
+						children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("h2", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: "Period Comparison (Komparasi Periode)"
+						}), /* @__PURE__ */ jsxs("p", {
+							className: "text-[11px] text-slate-400",
+							children: [
+								"Aktif (",
+								periodComp.current_period,
+								") vs Sebelumnya (",
+								periodComp.previous_period,
+								")"
+							]
+						})] }), /* @__PURE__ */ jsxs("div", {
+							className: "space-y-3 text-xs",
+							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 flex items-center justify-between",
+									children: [/* @__PURE__ */ jsxs("div", { children: [
+										/* @__PURE__ */ jsx("span", {
+											className: "text-slate-400 block",
+											children: "Tonase Produksi"
+										}),
+										/* @__PURE__ */ jsxs("strong", {
+											className: "text-sm text-slate-900 dark:text-white",
+											children: [fmtNum$5(periodComp.tonnage_current), " MT"]
+										}),
+										/* @__PURE__ */ jsxs("span", {
+											className: "text-[10px] text-slate-400 block",
+											children: [
+												"Prev: ",
+												fmtNum$5(periodComp.tonnage_previous),
+												" MT"
+											]
+										})
+									] }), /* @__PURE__ */ jsxs("span", {
+										className: `px-2 py-1 rounded-lg font-bold ${Number(periodComp.tonnage_growth_percent) >= 0 ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"}`,
+										children: [
+											Number(periodComp.tonnage_growth_percent) >= 0 ? "+" : "",
+											fmtNum$5(periodComp.tonnage_growth_percent, 1),
+											"%"
+										]
+									})]
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 flex items-center justify-between",
+									children: [/* @__PURE__ */ jsxs("div", { children: [
+										/* @__PURE__ */ jsx("span", {
+											className: "text-slate-400 block",
+											children: "Total Ritase Hauling"
+										}),
+										/* @__PURE__ */ jsxs("strong", {
+											className: "text-sm text-slate-900 dark:text-white",
+											children: [fmtNum$5(periodComp.ritase_current, 0), " Rit"]
+										}),
+										/* @__PURE__ */ jsxs("span", {
+											className: "text-[10px] text-slate-400 block",
+											children: [
+												"Prev: ",
+												fmtNum$5(periodComp.ritase_previous, 0),
+												" Rit"
+											]
+										})
+									] }), /* @__PURE__ */ jsxs("span", {
+										className: `px-2 py-1 rounded-lg font-bold ${Number(periodComp.ritase_growth_percent) >= 0 ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"}`,
+										children: [
+											Number(periodComp.ritase_growth_percent) >= 0 ? "+" : "",
+											fmtNum$5(periodComp.ritase_growth_percent, 1),
+											"%"
+										]
+									})]
+								}),
+								/* @__PURE__ */ jsx("div", {
+									className: "p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 flex items-center justify-between",
+									children: /* @__PURE__ */ jsxs("div", { children: [
+										/* @__PURE__ */ jsx("span", {
+											className: "text-slate-400 block",
+											children: "Konsumsi BBM Solar"
+										}),
+										/* @__PURE__ */ jsxs("strong", {
+											className: "text-sm text-amber-600",
+											children: [fmtNum$5(periodComp.fuel_current_liters), " Liter"]
+										}),
+										/* @__PURE__ */ jsxs("span", {
+											className: "text-[10px] text-slate-400 block",
+											children: [
+												"Prev: ",
+												fmtNum$5(periodComp.fuel_previous_liters),
+												" Liter"
+											]
+										})
+									] })
+								})
+							]
+						})]
+					})]
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+					children: [/* @__PURE__ */ jsx("div", {
+						className: "flex items-center justify-between mb-4",
+						children: /* @__PURE__ */ jsx("h2", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: "Site Comparison Matrix (Perbandingan Kinerja Antar-Site TAP)"
+						})
+					}), /* @__PURE__ */ jsx("div", {
+						className: "overflow-x-auto",
+						children: /* @__PURE__ */ jsxs("table", {
+							className: "w-full text-left text-xs",
+							children: [/* @__PURE__ */ jsx("thead", {
+								className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+								children: /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsx("th", {
+										className: "px-4 py-3",
+										children: "Site Operasional"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "px-4 py-3 text-center",
+										children: "Total Unit"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "px-4 py-3 text-center",
+										children: "Available"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "px-4 py-3 text-center",
+										children: "Breakdown"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "px-4 py-3 text-right",
+										children: "Ritase"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "px-4 py-3 text-right",
+										children: "Tonase (MT)"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "px-4 py-3 text-right",
+										children: "Konsumsi Solar (L)"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "px-4 py-3 text-right",
+										children: "Rasio (L/Ton)"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "px-4 py-3 text-right",
+										children: "Biaya Maintenance"
+									})
+								] })
+							}), /* @__PURE__ */ jsx("tbody", {
+								className: "divide-y divide-slate-100 dark:divide-slate-800",
+								children: siteComp.map((s) => /* @__PURE__ */ jsxs("tr", {
+									className: "hover:bg-slate-50/60 dark:hover:bg-slate-800/30",
+									children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3 font-bold text-slate-900 dark:text-white",
+											children: [
+												s.site_code,
+												" — ",
+												s.site_name
+											]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 text-center font-semibold",
+											children: s.total_units
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 text-center font-bold text-emerald-600",
+											children: s.available_units
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 text-center font-bold text-rose-600",
+											children: s.breakdown_units
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 text-right font-semibold",
+											children: fmtNum$5(s.ritase, 0)
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 text-right font-extrabold text-indigo-600",
+											children: fmtNum$5(s.tonnage)
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 text-right font-semibold text-amber-600",
+											children: fmtNum$5(s.fuel_consumption_liters)
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 text-right font-mono",
+											children: fmtNum$5(s.fuel_per_ton, 4)
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 text-right font-semibold",
+											children: fmtIDR$3(s.maintenance_cost_idr)
+										})
+									]
+								}, s.site_id))
+							})]
+						})
+					})]
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4",
+							children: [/* @__PURE__ */ jsxs("div", {
+								className: "flex items-center gap-2",
+								children: [/* @__PURE__ */ jsx(Eye, { className: "w-4 h-4 text-indigo-600" }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("h2", {
+									className: "text-sm font-bold text-slate-900 dark:text-white",
+									children: "Drill-Down Source Transaction Inspector (Penelusuran Data Sumber)"
+								}), /* @__PURE__ */ jsx("p", {
+									className: "text-[11px] text-slate-400",
+									children: "Bukti transaksi langsung dari tabel database untuk memverifikasi angka KPI di atas."
+								})] })]
+							}), /* @__PURE__ */ jsx("div", {
+								className: "flex flex-wrap gap-1.5",
+								children: [
+									{
+										id: "production_tickets",
+										label: `Tiket Produksi (${(drillDown.production_tickets || []).length})`
+									},
+									{
+										id: "breakdown_units_list",
+										label: `Unit Breakdown (${(drillDown.breakdown_units_list || []).length})`
+									},
+									{
+										id: "fuel_dispensing",
+										label: `Transaksi Solar (${(drillDown.fuel_dispensing || []).length})`
+									},
+									{
+										id: "export_jobs",
+										label: `Riwayat Export Job (${exportJobs.length})`
+									}
+								].map((t) => /* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setDrillDownTab(t.id),
+									className: `px-3 py-1.5 rounded-xl text-xs font-bold transition ${drillDownTab === t.id ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`,
+									children: t.label
+								}, t.id))
+							})]
+						}),
+						drillDownTab === "production_tickets" && /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "No. Tiket"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Tanggal"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Site"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Unit DT"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Driver"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2 text-right",
+											children: "Tonase (MT)"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: (drillDown.production_tickets || []).map((t) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2 font-bold",
+											children: t.ticket_number
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2",
+											children: t.ticket_date?.substring(0, 10)
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2",
+											children: t.site?.code
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2 font-semibold",
+											children: t.unit?.unit_code
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2",
+											children: t.driver?.employee?.name || "-"
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2 text-right font-bold text-emerald-600",
+											children: fmtNum$5(t.tonnage)
+										})
+									] }, t.id))
+								})]
+							})
+						}),
+						drillDownTab === "breakdown_units_list" && /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Kode Unit"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Merek / Model"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Site"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "HM / KM Terakhir"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Status Aktual"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: (drillDown.breakdown_units_list || []).map((u) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2 font-bold",
+											children: u.unit_code
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-3 py-2",
+											children: [
+												u.brand,
+												" ",
+												u.model
+											]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2",
+											children: u.site?.code
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-3 py-2",
+											children: [
+												fmtNum$5(u.last_hm),
+												" HM / ",
+												fmtNum$5(u.last_km),
+												" KM"
+											]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2",
+											children: /* @__PURE__ */ jsx("span", {
+												className: "px-2 py-0.5 rounded-md bg-rose-100 text-rose-800 text-[10px] font-bold uppercase",
+												children: u.status
+											})
+										})
+									] }, u.id))
+								})]
+							})
+						}),
+						drillDownTab === "fuel_dispensing" && /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "No. Transaksi"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Tanggal"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Site"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Unit DT"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Tangki Sumber"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2 text-right",
+											children: "Volume (Liter)"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: (drillDown.fuel_dispensing || []).map((f) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2 font-bold",
+											children: f.transaction_number
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2",
+											children: f.transaction_date?.substring(0, 10)
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2",
+											children: f.site?.code
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2 font-semibold",
+											children: f.unit?.unit_code
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2",
+											children: f.tank?.tank_code
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-3 py-2 text-right font-bold text-amber-600",
+											children: [fmtNum$5(f.liters), " L"]
+										})
+									] }, f.id))
+								})]
+							})
+						}),
+						drillDownTab === "export_jobs" && /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Kode Export"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Jenis Laporan"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Format"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Mode"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Jumlah Baris"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Status"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: exportJobs.map((job) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2 font-bold",
+											children: job.export_code
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2 uppercase",
+											children: job.report_type
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2 uppercase font-semibold",
+											children: job.export_format
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2",
+											children: job.is_background_job ? /* @__PURE__ */ jsxs("span", {
+												className: "inline-flex items-center gap-1 text-indigo-600 font-semibold",
+												children: [/* @__PURE__ */ jsx(Clock, { className: "w-3 h-3" }), " Background Queue"]
+											}) : "Direct Stream"
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2 font-mono",
+											children: job.row_count
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2",
+											children: /* @__PURE__ */ jsx("span", {
+												className: "px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase",
+												children: job.status
+											})
+										})
+									] }, job.id))
+								})]
+							})
+						})
+					]
+				})
+			]
+		})]
+	});
+}
+// resources/js/Pages/Analytics/Fleet/Index.jsx
+var Index_exports$63 = /* @__PURE__ */ __exportAll({ default: () => FleetReportIndex });
+var fmtNum$4 = (v, dec = 2) => new Intl.NumberFormat("id-ID", { maximumFractionDigits: dec }).format(Number(v || 0));
+function FleetReportIndex({ report = {}, filters = {}, master = {} }) {
+	const [activeTab, setActiveTab] = useState("performance");
+	const summary = report.summary || {};
+	const unitPerf = report.unit_performance || [];
+	const history = report.unit_history || {};
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Fleet Availability, Utilization & Performance Report",
+		children: [/* @__PURE__ */ jsx(Head, { title: "Fleet Report (PA/MA/UA) - Phase 11" }), /* @__PURE__ */ jsxs("div", {
+			className: "space-y-6",
+			children: [
+				/* @__PURE__ */ jsx(AnalyticsFilterBar, {
+					currentPath: "/analytics/fleet",
+					reportType: "fleet",
+					filters,
+					master,
+					statusOptions: [
+						{
+							value: "",
+							label: "Semua Status Unit"
+						},
+						{
+							value: "available",
+							label: "Available / RFU"
+						},
+						{
+							value: "operating",
+							label: "Operating"
+						},
+						{
+							value: "breakdown",
+							label: "Breakdown"
+						},
+						{
+							value: "maintenance",
+							label: "Maintenance"
+						}
+					]
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "text-xs font-semibold text-slate-500",
+									children: "Fleet Availability (PA)"
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-2xl font-extrabold text-emerald-600 mt-2",
+									children: [fmtNum$4(summary.avg_pa_percent), "%"]
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-[11px] text-slate-400",
+									children: [
+										"MA: ",
+										fmtNum$4(summary.avg_ma_percent),
+										"%"
+									]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "text-xs font-semibold text-slate-500",
+									children: "Utilization (UA)"
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-2xl font-extrabold text-indigo-600 mt-2",
+									children: [fmtNum$4(summary.avg_ua_percent), "%"]
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-[11px] text-slate-400",
+									children: "Use of Availability"
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-semibold text-slate-500",
+								children: "Operating Hours"
+							}), /* @__PURE__ */ jsxs("p", {
+								className: "text-2xl font-extrabold text-slate-900 dark:text-white mt-2",
+								children: [
+									fmtNum$4(summary.total_operating_hours),
+									" ",
+									/* @__PURE__ */ jsx("span", {
+										className: "text-xs font-normal",
+										children: "HM"
+									})
+								]
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-semibold text-slate-500",
+								children: "Downtime Hours"
+							}), /* @__PURE__ */ jsxs("p", {
+								className: "text-2xl font-extrabold text-rose-600 mt-2",
+								children: [
+									fmtNum$4(summary.total_downtime_hours),
+									" ",
+									/* @__PURE__ */ jsx("span", {
+										className: "text-xs font-normal",
+										children: "Jam"
+									})
+								]
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-semibold text-slate-500",
+								children: "Breakdown Frequency"
+							}), /* @__PURE__ */ jsxs("p", {
+								className: "text-2xl font-extrabold text-amber-600 mt-2",
+								children: [
+									summary.total_breakdown_frequency || 0,
+									" ",
+									/* @__PURE__ */ jsx("span", {
+										className: "text-xs font-normal",
+										children: "Kali"
+									})
+								]
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-semibold text-slate-500",
+								children: "Available / Total Unit"
+							}), /* @__PURE__ */ jsxs("p", {
+								className: "text-2xl font-extrabold text-cyan-600 mt-2",
+								children: [
+									summary.available_units || 0,
+									" / ",
+									summary.total_units || 0
+								]
+							})]
+						})
+					]
+				}),
+				/* @__PURE__ */ jsx("div", {
+					className: "flex flex-wrap gap-1.5 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+					children: [{
+						id: "performance",
+						label: `Unit Performance & Availability (${unitPerf.length})`
+					}, {
+						id: "history",
+						label: "Unit History (HM/KM & Breakdown Logs)"
+					}].map((t) => /* @__PURE__ */ jsx("button", {
+						type: "button",
+						onClick: () => setActiveTab(t.id),
+						className: `px-3.5 py-2 rounded-xl text-xs font-bold transition ${activeTab === t.id ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`,
+						children: t.label
+					}, t.id))
+				}),
+				activeTab === "performance" && /* @__PURE__ */ jsx("div", {
+					className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-x-auto",
+					children: /* @__PURE__ */ jsxs("table", {
+						className: "w-full text-left text-xs",
+						children: [/* @__PURE__ */ jsx("thead", {
+							className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+							children: /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Unit Code & Model"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Site"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Status"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Operating (HM)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Downtime (Jam)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "PA (%)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "MA (%)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "UA (%)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-center",
+									children: "BD Freq"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Tonase (MT)"
+								})
+							] })
+						}), /* @__PURE__ */ jsx("tbody", {
+							className: "divide-y divide-slate-100 dark:divide-slate-800",
+							children: unitPerf.map((u) => /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsxs("td", {
+									className: "px-3 py-2.5",
+									children: [/* @__PURE__ */ jsx("div", {
+										className: "font-bold text-slate-900 dark:text-white",
+										children: u.unit_code
+									}), /* @__PURE__ */ jsx("div", {
+										className: "text-[10px] text-slate-400",
+										children: u.brand_model
+									})]
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 font-semibold",
+									children: u.site_code
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5",
+									children: /* @__PURE__ */ jsx("span", {
+										className: `px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${["breakdown", "maintenance"].includes(u.status) ? "bg-rose-100 text-rose-800" : "bg-emerald-100 text-emerald-800"}`,
+										children: u.status
+									})
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right font-semibold",
+									children: fmtNum$4(u.operating_hours)
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right text-rose-600 font-semibold",
+									children: fmtNum$4(u.downtime_hours)
+								}),
+								/* @__PURE__ */ jsxs("td", {
+									className: "px-3 py-2.5 text-right font-bold text-emerald-600",
+									children: [fmtNum$4(u.pa_percent), "%"]
+								}),
+								/* @__PURE__ */ jsxs("td", {
+									className: "px-3 py-2.5 text-right font-bold text-indigo-600",
+									children: [fmtNum$4(u.ma_percent), "%"]
+								}),
+								/* @__PURE__ */ jsxs("td", {
+									className: "px-3 py-2.5 text-right font-bold text-cyan-600",
+									children: [fmtNum$4(u.ua_percent), "%"]
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-center font-bold text-amber-600",
+									children: u.breakdown_frequency
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right font-bold",
+									children: fmtNum$4(u.tonnage)
+								})
+							] }, u.unit_id))
+						})]
+					})
+				}),
+				activeTab === "history" && /* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 lg:grid-cols-2 gap-6",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsxs("h3", {
+							className: "text-xs font-bold uppercase text-indigo-600 mb-3",
+							children: [
+								"Unit HM/KM History (",
+								(history.hm_km_logs || []).length,
+								")"
+							]
+						}), /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto max-h-80",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "border-b border-slate-200 dark:border-slate-800 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "Tanggal"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "Unit"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2 text-right",
+											children: "Δ HM"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2 text-right",
+											children: "Δ KM"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: (history.hm_km_logs || []).map((l) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2 font-mono",
+											children: l.log_date?.substring(0, 10)
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2 font-bold",
+											children: l.unit?.unit_code
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2 text-right text-emerald-600 font-bold",
+											children: ["+", fmtNum$4(l.diff_hm)]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2 text-right text-indigo-600 font-bold",
+											children: ["+", fmtNum$4(l.diff_km)]
+										})
+									] }, l.id))
+								})]
+							})
+						})]
+					}), /* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsxs("h3", {
+							className: "text-xs font-bold uppercase text-rose-600 mb-3",
+							children: [
+								"Unit Breakdown Incident History (",
+								(history.breakdown_reports || []).length,
+								")"
+							]
+						}), /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto max-h-80",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "border-b border-slate-200 dark:border-slate-800 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "No. Laporan"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "Unit"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "Kategori Kerusakan"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "Status"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: (history.breakdown_reports || []).map((b) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2 font-bold",
+											children: b.report_number
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2 font-semibold",
+											children: b.unit?.unit_code
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2",
+											children: b.damage_category
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2 uppercase font-bold text-rose-600",
+											children: b.status
+										})
+									] }, b.id))
+								})]
+							})
+						})]
+					})]
+				})
+			]
+		})]
+	});
+}
+// resources/js/Pages/Analytics/Fuel/Index.jsx
+var Index_exports$62 = /* @__PURE__ */ __exportAll({ default: () => FuelReportIndex });
+var fmtNum$3 = (v, dec = 2) => new Intl.NumberFormat("id-ID", { maximumFractionDigits: dec }).format(Number(v || 0));
+var fmtIDR$2 = (v) => new Intl.NumberFormat("id-ID", {
+	style: "currency",
+	currency: "IDR",
+	maximumFractionDigits: 0
+}).format(Number(v || 0));
+function FuelReportIndex({ report = {}, filters = {}, master = {} }) {
+	const [activeTab, setActiveTab] = useState("fuel_per_unit");
+	const summary = report.summary || {};
+	const tanks = report.tanks || [];
+	const receivedTx = report.received_transactions || [];
+	const issuedTx = report.issued_transactions || [];
+	const fuelPerUnit = report.fuel_per_unit || [];
+	const soundings = report.sounding_variances || [];
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Fuel Stock, Consumption, Ratio & Sounding Variance Report",
+		children: [/* @__PURE__ */ jsx(Head, { title: "Fuel Report - Phase 11" }), /* @__PURE__ */ jsxs("div", {
+			className: "space-y-6",
+			children: [
+				/* @__PURE__ */ jsx(AnalyticsFilterBar, {
+					currentPath: "/analytics/fuel",
+					reportType: "fuel",
+					filters,
+					master
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "text-xs font-semibold text-slate-500",
+									children: "Fuel Stock (Tanks)"
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-xl font-extrabold text-indigo-600 mt-2",
+									children: [
+										fmtNum$3(summary.fuel_stock_liters),
+										" ",
+										/* @__PURE__ */ jsx("span", {
+											className: "text-xs font-normal",
+											children: "L"
+										})
+									]
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-[11px] text-slate-400",
+									children: [
+										"Kapasitas: ",
+										fmtNum$3(summary.fuel_capacity_liters, 0),
+										" L"
+									]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-semibold text-slate-500",
+								children: "Fuel Received"
+							}), /* @__PURE__ */ jsxs("p", {
+								className: "text-xl font-extrabold text-emerald-600 mt-2",
+								children: [
+									fmtNum$3(summary.fuel_received_liters),
+									" ",
+									/* @__PURE__ */ jsx("span", {
+										className: "text-xs font-normal",
+										children: "L"
+									})
+								]
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "text-xs font-semibold text-slate-500",
+									children: "Fuel Issued / Consumed"
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-xl font-extrabold text-amber-600 mt-2",
+									children: [
+										fmtNum$3(summary.fuel_issued_liters),
+										" ",
+										/* @__PURE__ */ jsx("span", {
+											className: "text-xs font-normal",
+											children: "L"
+										})
+									]
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-[11px] text-slate-400",
+									children: fmtIDR$2(summary.fuel_issued_cost_idr)
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "text-xs font-semibold text-slate-500",
+									children: "Fuel per Ton"
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-xl font-extrabold text-cyan-600 mt-2",
+									children: [
+										fmtNum$3(summary.fuel_per_ton, 4),
+										" ",
+										/* @__PURE__ */ jsx("span", {
+											className: "text-xs font-normal",
+											children: "L/MT"
+										})
+									]
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-[11px] text-slate-400",
+									children: [
+										"Tonase: ",
+										fmtNum$3(summary.verified_tonnage),
+										" MT"
+									]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "text-xs font-semibold text-slate-500",
+									children: "Fuel Ratio (L/HM & L/KM)"
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-lg font-extrabold text-slate-900 dark:text-white mt-2",
+									children: [fmtNum$3(summary.fuel_ratio_liter_per_hm), " L/HM"]
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-[11px] text-slate-400",
+									children: [fmtNum$3(summary.fuel_ratio_liter_per_km, 4), " L/KM"]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "text-xs font-semibold text-slate-500",
+									children: "Sounding Variance"
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-xl font-extrabold text-rose-600 mt-2",
+									children: [
+										fmtNum$3(summary.total_sounding_variance_liters),
+										" ",
+										/* @__PURE__ */ jsx("span", {
+											className: "text-xs font-normal",
+											children: "L"
+										})
+									]
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-[11px] text-slate-400",
+									children: [summary.sounding_records_count || 0, " Sounding"]
+								})
+							]
+						})
+					]
+				}),
+				/* @__PURE__ */ jsx("div", {
+					className: "flex flex-wrap gap-1.5 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+					children: [
+						{
+							id: "fuel_per_unit",
+							label: `Fuel per Unit (${fuelPerUnit.length})`
+						},
+						{
+							id: "tanks_sounding",
+							label: `Fuel Stock & Sounding Variance (${soundings.length})`
+						},
+						{
+							id: "transactions",
+							label: `Fuel Received (${receivedTx.length}) & Issued (${issuedTx.length})`
+						}
+					].map((t) => /* @__PURE__ */ jsx("button", {
+						type: "button",
+						onClick: () => setActiveTab(t.id),
+						className: `px-3.5 py-2 rounded-xl text-xs font-bold transition ${activeTab === t.id ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`,
+						children: t.label
+					}, t.id))
+				}),
+				activeTab === "fuel_per_unit" && /* @__PURE__ */ jsx("div", {
+					className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-x-auto",
+					children: /* @__PURE__ */ jsxs("table", {
+						className: "w-full text-left text-xs",
+						children: [/* @__PURE__ */ jsx("thead", {
+							className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+							children: /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Unit DT"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-center",
+									children: "Frekuensi Isi"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Solar Aktual (L)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Tonase (MT)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Operating HM"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Jarak KM"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Fuel / Ton"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Fuel / HM"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Fuel / KM"
+								})
+							] })
+						}), /* @__PURE__ */ jsx("tbody", {
+							className: "divide-y divide-slate-100 dark:divide-slate-800",
+							children: fuelPerUnit.map((f) => /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsxs("td", {
+									className: "px-3 py-2.5 font-bold",
+									children: [
+										f.unit_code,
+										" ",
+										/* @__PURE__ */ jsxs("span", {
+											className: "text-[10px] font-normal text-slate-400",
+											children: [
+												"(",
+												f.brand_model,
+												")"
+											]
+										})
+									]
+								}),
+								/* @__PURE__ */ jsxs("td", {
+									className: "px-3 py-2.5 text-center",
+									children: [f.dispensing_count, "x"]
+								}),
+								/* @__PURE__ */ jsxs("td", {
+									className: "px-3 py-2.5 text-right font-bold text-amber-600",
+									children: [fmtNum$3(f.liters_consumed), " L"]
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right font-semibold",
+									children: fmtNum$3(f.tonnage)
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right",
+									children: fmtNum$3(f.operating_hm)
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right",
+									children: fmtNum$3(f.distance_km)
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right font-bold text-indigo-600",
+									children: fmtNum$3(f.fuel_per_ton, 4)
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right font-bold text-emerald-600",
+									children: fmtNum$3(f.fuel_per_hm)
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right font-mono",
+									children: fmtNum$3(f.fuel_per_km, 4)
+								})
+							] }, f.unit_id))
+						})]
+					})
+				}),
+				activeTab === "tanks_sounding" && /* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 lg:grid-cols-2 gap-6",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsxs("h3", {
+							className: "text-xs font-bold uppercase text-indigo-600 mb-3",
+							children: [
+								"Fuel Stock per Tank (",
+								tanks.length,
+								")"
+							]
+						}), /* @__PURE__ */ jsxs("table", {
+							className: "w-full text-left text-xs",
+							children: [/* @__PURE__ */ jsx("thead", {
+								className: "border-b border-slate-200 dark:border-slate-800 text-slate-500",
+								children: /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2",
+										children: "Tangki & Site"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2 text-right",
+										children: "Kapasitas (L)"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2 text-right",
+										children: "Stok Saat Ini (L)"
+									})
+								] })
+							}), /* @__PURE__ */ jsx("tbody", {
+								className: "divide-y divide-slate-100 dark:divide-slate-800",
+								children: tanks.map((t) => /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsxs("td", {
+										className: "py-2 font-bold",
+										children: [
+											t.tank_code,
+											" — ",
+											t.tank_name,
+											" (",
+											t.site?.code,
+											")"
+										]
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-2 text-right",
+										children: fmtNum$3(t.capacity_liters, 0)
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-2 text-right font-extrabold text-emerald-600",
+										children: fmtNum$3(t.current_stock_liters)
+									})
+								] }, t.id))
+							})]
+						})]
+					}), /* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsxs("h3", {
+							className: "text-xs font-bold uppercase text-rose-600 mb-3",
+							children: [
+								"Daily Tank Sounding Variance (",
+								soundings.length,
+								")"
+							]
+						}), /* @__PURE__ */ jsxs("table", {
+							className: "w-full text-left text-xs",
+							children: [/* @__PURE__ */ jsx("thead", {
+								className: "border-b border-slate-200 dark:border-slate-800 text-slate-500",
+								children: /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2",
+										children: "No. Sounding"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2",
+										children: "Tangki"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2 text-right",
+										children: "Stok Sistem"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2 text-right",
+										children: "Fisik (Sounding)"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2 text-right",
+										children: "Varians (L)"
+									})
+								] })
+							}), /* @__PURE__ */ jsx("tbody", {
+								className: "divide-y divide-slate-100 dark:divide-slate-800",
+								children: soundings.map((s) => /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsx("td", {
+										className: "py-2 font-bold",
+										children: s.sounding_number
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-2",
+										children: s.tank?.tank_code
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-2 text-right",
+										children: fmtNum$3(s.system_stock_liters)
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-2 text-right font-semibold",
+										children: fmtNum$3(s.estimated_volume_liters)
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: `py-2 text-right font-bold ${Number(s.variance_liters) < 0 ? "text-rose-600" : "text-emerald-600"}`,
+										children: [fmtNum$3(s.variance_liters), " L"]
+									})
+								] }, s.id))
+							})]
+						})]
+					})]
+				}),
+				activeTab === "transactions" && /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-x-auto",
+					children: [/* @__PURE__ */ jsxs("h3", {
+						className: "text-xs font-bold uppercase text-amber-600 mb-3",
+						children: [
+							"Fuel Issued / Dispensing Transactions (",
+							issuedTx.length,
+							")"
+						]
+					}), /* @__PURE__ */ jsxs("table", {
+						className: "w-full text-left text-xs",
+						children: [/* @__PURE__ */ jsx("thead", {
+							className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+							children: /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2",
+									children: "No. Transaksi"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2",
+									children: "Tanggal"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2",
+									children: "Site & Tangki"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2",
+									children: "Unit DT & Driver"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2 text-right",
+									children: "Volume (Liter)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2 text-right",
+									children: "Biaya Solar"
+								})
+							] })
+						}), /* @__PURE__ */ jsx("tbody", {
+							className: "divide-y divide-slate-100 dark:divide-slate-800",
+							children: issuedTx.map((tx) => /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2 font-bold",
+									children: tx.transaction_number
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2",
+									children: tx.transaction_date?.substring(0, 10)
+								}),
+								/* @__PURE__ */ jsxs("td", {
+									className: "px-3 py-2",
+									children: [
+										tx.site?.code,
+										" — ",
+										tx.tank?.tank_code
+									]
+								}),
+								/* @__PURE__ */ jsxs("td", {
+									className: "px-3 py-2 font-semibold",
+									children: [
+										tx.unit?.unit_code,
+										" (",
+										tx.driver?.employee?.name || "-",
+										")"
+									]
+								}),
+								/* @__PURE__ */ jsxs("td", {
+									className: "px-3 py-2 text-right font-bold text-amber-600",
+									children: [fmtNum$3(tx.liters), " L"]
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2 text-right font-semibold",
+									children: fmtIDR$2(tx.total_cost)
+								})
+							] }, tx.id))
+						})]
+					})]
+				})
+			]
+		})]
+	});
+}
 // resources/js/Pages/Analytics/Index.jsx
-var Index_exports$49 = /* @__PURE__ */ __exportAll({ default: () => AnalyticsIndex });
+var Index_exports$61 = /* @__PURE__ */ __exportAll({ default: () => AnalyticsIndex });
 function AnalyticsIndex() {
 	return /* @__PURE__ */ jsx(DashboardLayout, {
 		title: "Arsitektur & Analytics",
@@ -1248,6 +3681,2151 @@ function AnalyticsIndex() {
 				})]
 			})
 		})
+	});
+}
+// resources/js/Pages/Analytics/Maintenance/Index.jsx
+var Index_exports$60 = /* @__PURE__ */ __exportAll({ default: () => MaintenanceReportIndex });
+var fmtNum$2 = (v, dec = 2) => new Intl.NumberFormat("id-ID", { maximumFractionDigits: dec }).format(Number(v || 0));
+var fmtIDR$1 = (v) => new Intl.NumberFormat("id-ID", {
+	style: "currency",
+	currency: "IDR",
+	maximumFractionDigits: 0
+}).format(Number(v || 0));
+function MaintenanceReportIndex({ report = {}, filters = {}, master = {} }) {
+	const [activeTab, setActiveTab] = useState("work_orders");
+	const summary = report.summary || {};
+	const pmSchedules = report.pm_schedules || [];
+	const workOrders = report.work_orders || [];
+	const costByType = report.cost_by_type || [];
+	const sparepartUsage = report.sparepart_usage || [];
+	const breakdownAnalysis = report.breakdown_analysis || [];
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Maintenance, PM Compliance, MTTR/MTBF & Cost Report",
+		children: [/* @__PURE__ */ jsx(Head, { title: "Maintenance Report - Phase 11" }), /* @__PURE__ */ jsxs("div", {
+			className: "space-y-6",
+			children: [
+				/* @__PURE__ */ jsx(AnalyticsFilterBar, {
+					currentPath: "/analytics/maintenance",
+					reportType: "maintenance",
+					filters,
+					master,
+					statusOptions: [
+						{
+							value: "",
+							label: "Semua Status WO"
+						},
+						{
+							value: "completed",
+							label: "Completed"
+						},
+						{
+							value: "in_progress",
+							label: "In Progress"
+						},
+						{
+							value: "open",
+							label: "Open / Submitted"
+						}
+					]
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "text-xs font-semibold text-slate-500",
+									children: "PM Compliance"
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-2xl font-extrabold text-emerald-600 mt-2",
+									children: [fmtNum$2(summary.pm_compliance_percent), "%"]
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-[11px] text-slate-400",
+									children: [
+										summary.compliant_pm_schedules || 0,
+										" / ",
+										summary.total_pm_schedules || 0,
+										" Jadwal PM"
+									]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "text-xs font-semibold text-slate-500",
+									children: "Work Order (PM / CM)"
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-2xl font-extrabold text-indigo-600 mt-2",
+									children: summary.total_work_orders || 0
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-[11px] text-slate-400",
+									children: [
+										"PM: ",
+										summary.pm_work_orders_count || 0,
+										" • CM: ",
+										summary.cm_work_orders_count || 0
+									]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-semibold text-slate-500",
+								children: "MTTR (Mean Time To Repair)"
+							}), /* @__PURE__ */ jsxs("p", {
+								className: "text-2xl font-extrabold text-amber-600 mt-2",
+								children: [
+									fmtNum$2(summary.mttr_hours),
+									" ",
+									/* @__PURE__ */ jsx("span", {
+										className: "text-xs font-normal",
+										children: "Jam"
+									})
+								]
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-semibold text-slate-500",
+								children: "MTBF (Mean Time Between Failures)"
+							}), /* @__PURE__ */ jsxs("p", {
+								className: "text-2xl font-extrabold text-cyan-600 mt-2",
+								children: [
+									fmtNum$2(summary.mtbf_hours),
+									" ",
+									/* @__PURE__ */ jsx("span", {
+										className: "text-xs font-normal",
+										children: "HM"
+									})
+								]
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-semibold text-slate-500",
+								children: "Total Maintenance Cost"
+							}), /* @__PURE__ */ jsx("p", {
+								className: "text-lg font-extrabold text-slate-900 dark:text-white mt-2",
+								children: fmtIDR$1(summary.total_maintenance_cost_idr)
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-semibold text-slate-500",
+								children: "Sparepart Usage Value"
+							}), /* @__PURE__ */ jsx("p", {
+								className: "text-lg font-extrabold text-rose-600 mt-2",
+								children: fmtIDR$1(summary.total_sparepart_usage_cost_idr)
+							})]
+						})
+					]
+				}),
+				/* @__PURE__ */ jsx("div", {
+					className: "flex flex-wrap gap-1.5 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+					children: [
+						{
+							id: "work_orders",
+							label: `Work Order & CM Summary (${workOrders.length})`
+						},
+						{
+							id: "pm_compliance",
+							label: `PM Compliance (${pmSchedules.length})`
+						},
+						{
+							id: "cost_sparepart",
+							label: "Maintenance Cost & Sparepart Usage"
+						},
+						{
+							id: "breakdown_analysis",
+							label: `Breakdown Analysis (${breakdownAnalysis.length})`
+						}
+					].map((t) => /* @__PURE__ */ jsx("button", {
+						type: "button",
+						onClick: () => setActiveTab(t.id),
+						className: `px-3.5 py-2 rounded-xl text-xs font-bold transition ${activeTab === t.id ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`,
+						children: t.label
+					}, t.id))
+				}),
+				activeTab === "work_orders" && /* @__PURE__ */ jsx("div", {
+					className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-x-auto",
+					children: /* @__PURE__ */ jsxs("table", {
+						className: "w-full text-left text-xs",
+						children: [/* @__PURE__ */ jsx("thead", {
+							className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+							children: /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "No. Work Order"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Site & Unit"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Job Type"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Mekanik"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Downtime (Menit)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Biaya Aktual"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Status"
+								})
+							] })
+						}), /* @__PURE__ */ jsx("tbody", {
+							className: "divide-y divide-slate-100 dark:divide-slate-800",
+							children: workOrders.map((wo) => /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 font-bold",
+									children: wo.wo_number
+								}),
+								/* @__PURE__ */ jsxs("td", {
+									className: "px-3 py-2.5 font-semibold",
+									children: [
+										wo.site?.code,
+										" — ",
+										wo.unit?.unit_code
+									]
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 uppercase font-semibold text-indigo-600",
+									children: wo.job_type
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5",
+									children: wo.mechanic?.name || "-"
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right",
+									children: wo.downtime_minutes || 0
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right font-bold",
+									children: fmtIDR$1(wo.actual_cost)
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5",
+									children: /* @__PURE__ */ jsx("span", {
+										className: "px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-bold uppercase",
+										children: wo.status
+									})
+								})
+							] }, wo.id))
+						})]
+					})
+				}),
+				activeTab === "pm_compliance" && /* @__PURE__ */ jsx("div", {
+					className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-x-auto",
+					children: /* @__PURE__ */ jsxs("table", {
+						className: "w-full text-left text-xs",
+						children: [/* @__PURE__ */ jsx("thead", {
+							className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+							children: /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Unit DT"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Site"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Service Type"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Last Service HM"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Next Due HM"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Status Jadwal"
+								})
+							] })
+						}), /* @__PURE__ */ jsx("tbody", {
+							className: "divide-y divide-slate-100 dark:divide-slate-800",
+							children: pmSchedules.map((pm) => /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 font-bold",
+									children: pm.unit?.unit_code
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5",
+									children: pm.site?.code
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 font-semibold text-indigo-600",
+									children: pm.service_type
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right",
+									children: fmtNum$2(pm.last_service_hm)
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right font-bold",
+									children: fmtNum$2(pm.next_due_hm)
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5",
+									children: /* @__PURE__ */ jsx("span", {
+										className: `px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${pm.status === "overdue" ? "bg-rose-100 text-rose-800" : "bg-emerald-100 text-emerald-800"}`,
+										children: pm.status
+									})
+								})
+							] }, pm.id))
+						})]
+					})
+				}),
+				activeTab === "cost_sparepart" && /* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 lg:grid-cols-2 gap-6",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsx("h3", {
+							className: "text-xs font-bold uppercase text-indigo-600 mb-3",
+							children: "Maintenance Cost by Category"
+						}), /* @__PURE__ */ jsxs("table", {
+							className: "w-full text-left text-xs",
+							children: [/* @__PURE__ */ jsx("thead", {
+								className: "border-b border-slate-200 dark:border-slate-800 text-slate-500",
+								children: /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2",
+										children: "Kategori Biaya"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2 text-center",
+										children: "Transaksi"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2 text-right",
+										children: "Estimasi"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2 text-right",
+										children: "Aktual"
+									})
+								] })
+							}), /* @__PURE__ */ jsx("tbody", {
+								className: "divide-y divide-slate-100 dark:divide-slate-800",
+								children: costByType.map((c) => /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsx("td", {
+										className: "py-2 font-bold uppercase",
+										children: c.cost_type
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-2 text-center",
+										children: c.count
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-2 text-right",
+										children: fmtIDR$1(c.estimated_amount)
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-2 text-right font-bold text-indigo-600",
+										children: fmtIDR$1(c.actual_amount)
+									})
+								] }, c.cost_type))
+							})]
+						})]
+					}), /* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsxs("h3", {
+							className: "text-xs font-bold uppercase text-emerald-600 mb-3",
+							children: [
+								"Sparepart Usage Requests (",
+								sparepartUsage.length,
+								")"
+							]
+						}), /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto max-h-72",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "border-b border-slate-200 dark:border-slate-800 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "No. Request"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "Unit / WO"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "Status"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2 text-right",
+											children: "Total Nilai"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: sparepartUsage.map((sp) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2 font-bold",
+											children: sp.request_number
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2",
+											children: [
+												sp.work_order?.unit?.unit_code,
+												" (",
+												sp.work_order?.wo_number,
+												")"
+											]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2 uppercase font-semibold",
+											children: sp.status
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2 text-right font-bold",
+											children: fmtIDR$1(sp.total_cost)
+										})
+									] }, sp.id))
+								})]
+							})
+						})]
+					})]
+				}),
+				activeTab === "breakdown_analysis" && /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+					children: [/* @__PURE__ */ jsx("h3", {
+						className: "text-xs font-bold uppercase text-rose-600 mb-3",
+						children: "Breakdown Analysis by Damage Category"
+					}), /* @__PURE__ */ jsxs("table", {
+						className: "w-full text-left text-xs",
+						children: [/* @__PURE__ */ jsx("thead", {
+							className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+							children: /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2",
+									children: "Kategori Kerusakan"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2 text-center",
+									children: "Jumlah Kejadian"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2 text-center",
+									children: "Kejadian Kritis"
+								})
+							] })
+						}), /* @__PURE__ */ jsx("tbody", {
+							className: "divide-y divide-slate-100 dark:divide-slate-800",
+							children: breakdownAnalysis.map((ba) => /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2 font-bold uppercase",
+									children: ba.damage_category
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2 text-center font-semibold",
+									children: ba.incident_count
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2 text-center font-bold text-rose-600",
+									children: ba.critical_count
+								})
+							] }, ba.damage_category))
+						})]
+					})]
+				})
+			]
+		})]
+	});
+}
+// resources/js/Pages/Analytics/Print/Report.jsx
+var Report_exports = /* @__PURE__ */ __exportAll({ default: () => PrintableAnalyticsReport });
+function PrintableAnalyticsReport({ dataset = {}, reportType = "executive", format = "printable", exportCode = "", filters = {} }) {
+	const headers = dataset.headers || [];
+	const rows = dataset.rows || [];
+	const summary = dataset.summary || {};
+	return /* @__PURE__ */ jsxs("div", {
+		className: "min-h-screen bg-white text-slate-900 p-8",
+		children: [
+			/* @__PURE__ */ jsx(Head, { title: `${dataset.title || "Analytics Report"} - ${exportCode}` }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "print:hidden flex items-center justify-between mb-6 pb-4 border-b border-slate-200",
+				children: [/* @__PURE__ */ jsxs(Link, {
+					href: "/analytics/dashboard",
+					className: "px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold inline-flex items-center gap-1.5",
+					children: [/* @__PURE__ */ jsx(ArrowLeft, { className: "w-4 h-4" }), " Kembali ke Analytics Center"]
+				}), /* @__PURE__ */ jsxs("button", {
+					type: "button",
+					onClick: () => window.print(),
+					className: "px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold inline-flex items-center gap-1.5",
+					children: [/* @__PURE__ */ jsx(Printer, { className: "w-4 h-4" }), " Cetak / Simpan sebagai PDF"]
+				})]
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "border-b-2 border-slate-900 pb-4 mb-6 flex items-start justify-between",
+				children: [/* @__PURE__ */ jsxs("div", { children: [
+					/* @__PURE__ */ jsx("p", {
+						className: "text-xs font-extrabold uppercase tracking-widest text-amber-600",
+						children: "PT TEKNINDO ADHYA PANE — INTEGRATED COAL HAULING MANAGEMENT SYSTEM"
+					}),
+					/* @__PURE__ */ jsx("h1", {
+						className: "text-xl font-black text-slate-900 mt-1",
+						children: dataset.title || "Official Operational & Management Report"
+					}),
+					/* @__PURE__ */ jsxs("p", {
+						className: "text-xs text-slate-600 mt-1",
+						children: [
+							"Periode Laporan: ",
+							/* @__PURE__ */ jsx("strong", { children: filters.date_from }),
+							" s/d ",
+							/* @__PURE__ */ jsx("strong", { children: filters.date_to }),
+							" • Site Filter: ",
+							/* @__PURE__ */ jsx("strong", { children: filters.site_id ? `Site ID #${filters.site_id}` : "All Authorized Sites" })
+						]
+					})
+				] }), /* @__PURE__ */ jsxs("div", {
+					className: "text-right text-xs",
+					children: [
+						/* @__PURE__ */ jsx("div", {
+							className: "font-mono font-bold text-slate-800",
+							children: exportCode
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "text-slate-500 uppercase",
+							children: [
+								"Mode: ",
+								format,
+								" (",
+								reportType,
+								")"
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "text-slate-500",
+							children: ["Total Baris: ", rows.length]
+						})
+					]
+				})]
+			}),
+			/* @__PURE__ */ jsx("div", {
+				className: "grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 mb-6",
+				children: Object.entries(summary).slice(0, 6).map(([k, v]) => /* @__PURE__ */ jsxs("div", {
+					className: "p-3 rounded-xl border border-slate-200 bg-slate-50",
+					children: [/* @__PURE__ */ jsx("span", {
+						className: "text-[10px] font-bold uppercase text-slate-500 block",
+						children: k.replace(/_/g, " ")
+					}), /* @__PURE__ */ jsx("span", {
+						className: "text-sm font-extrabold text-slate-900 mt-0.5 block",
+						children: typeof v === "number" ? v.toLocaleString("id-ID") : String(v ?? "-")
+					})]
+				}, k))
+			}),
+			/* @__PURE__ */ jsx("div", {
+				className: "overflow-x-auto",
+				children: /* @__PURE__ */ jsxs("table", {
+					className: "w-full text-left text-xs border-collapse border border-slate-300",
+					children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsx("tr", {
+						className: "bg-slate-100 text-slate-800",
+						children: headers.map((h, i) => /* @__PURE__ */ jsx("th", {
+							className: "border border-slate-300 px-3 py-2 font-bold",
+							children: h
+						}, i))
+					}) }), /* @__PURE__ */ jsx("tbody", { children: rows.length === 0 ? /* @__PURE__ */ jsx("tr", { children: /* @__PURE__ */ jsx("td", {
+						colSpan: headers.length || 1,
+						className: "border border-slate-300 px-3 py-6 text-center text-slate-400",
+						children: "Tidak ada baris transaksi untuk filter yang dipilih."
+					}) }) : rows.map((row, rIdx) => /* @__PURE__ */ jsx("tr", {
+						className: "even:bg-slate-50/50",
+						children: row.map((cell, cIdx) => /* @__PURE__ */ jsx("td", {
+							className: "border border-slate-300 px-3 py-1.5",
+							children: cell ?? "-"
+						}, cIdx))
+					}, rIdx)) })]
+				})
+			})
+		]
+	});
+}
+// resources/js/Pages/Analytics/Production/Index.jsx
+var Index_exports$59 = /* @__PURE__ */ __exportAll({ default: () => ProductionReportIndex });
+var fmtNum$1 = (v, dec = 2) => new Intl.NumberFormat("id-ID", { maximumFractionDigits: dec }).format(Number(v || 0));
+function ProductionReportIndex({ report = {}, filters = {}, master = {} }) {
+	const [activeTab, setActiveTab] = useState("period");
+	const summary = report.summary || {};
+	const daily = report.daily_production || [];
+	const weekly = report.weekly_production || [];
+	const monthly = report.monthly_production || [];
+	const unitProd = report.unit_productivity || [];
+	const driverProd = report.driver_productivity || [];
+	const shiftProd = report.shift_productivity || [];
+	const loadingPoints = report.loading_point_summary || [];
+	const dumpingPoints = report.dumping_point_summary || [];
+	const sourceTickets = report.source_tickets || [];
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Production Analytics & Hauling Performance Report",
+		children: [/* @__PURE__ */ jsx(Head, { title: "Production Report - Phase 11" }), /* @__PURE__ */ jsxs("div", {
+			className: "space-y-6",
+			children: [
+				/* @__PURE__ */ jsx(AnalyticsFilterBar, {
+					currentPath: "/analytics/production",
+					reportType: "production",
+					filters,
+					master,
+					statusOptions: [
+						{
+							value: "verified",
+							label: "Verified Production"
+						},
+						{
+							value: "pending_verification",
+							label: "Pending Verification"
+						},
+						{
+							value: "rejected",
+							label: "Rejected"
+						},
+						{
+							value: "all",
+							label: "Semua Status Tiket"
+						}
+					]
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-semibold text-slate-500",
+								children: "Total Tonase Aktual"
+							}), /* @__PURE__ */ jsxs("p", {
+								className: "text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-2",
+								children: [
+									fmtNum$1(summary.total_tonnage),
+									" ",
+									/* @__PURE__ */ jsx("span", {
+										className: "text-xs font-normal",
+										children: "MT"
+									})
+								]
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-semibold text-slate-500",
+								children: "Total Ritase"
+							}), /* @__PURE__ */ jsxs("p", {
+								className: "text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2",
+								children: [
+									fmtNum$1(summary.total_ritase, 0),
+									" ",
+									/* @__PURE__ */ jsx("span", {
+										className: "text-xs font-normal",
+										children: "Rit"
+									})
+								]
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-semibold text-slate-500",
+								children: "Rata-Rata Muatan / Rit"
+							}), /* @__PURE__ */ jsxs("p", {
+								className: "text-2xl font-extrabold text-slate-900 dark:text-white mt-2",
+								children: [
+									fmtNum$1(summary.avg_ton_per_ritase),
+									" ",
+									/* @__PURE__ */ jsx("span", {
+										className: "text-xs font-normal",
+										children: "MT/Rit"
+									})
+								]
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-semibold text-slate-500",
+								children: "Target Tonase"
+							}), /* @__PURE__ */ jsxs("p", {
+								className: "text-2xl font-extrabold text-amber-600 dark:text-amber-400 mt-2",
+								children: [
+									fmtNum$1(summary.target_tonnage),
+									" ",
+									/* @__PURE__ */ jsx("span", {
+										className: "text-xs font-normal",
+										children: "MT"
+									})
+								]
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "text-xs font-semibold text-slate-500",
+									children: "Target vs Actual"
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-2xl font-extrabold text-cyan-600 dark:text-cyan-400 mt-2",
+									children: [fmtNum$1(summary.achievement_percent, 1), "%"]
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-[11px] text-slate-400 mt-0.5",
+									children: [
+										"Varians: ",
+										Number(summary.variance_tonnage) >= 0 ? "+" : "",
+										fmtNum$1(summary.variance_tonnage),
+										" MT"
+									]
+								})
+							]
+						})
+					]
+				}),
+				/* @__PURE__ */ jsx("div", {
+					className: "flex flex-wrap gap-1.5 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+					children: [
+						{
+							id: "period",
+							label: "Daily / Weekly / Monthly Production"
+						},
+						{
+							id: "unit_driver",
+							label: "Unit & Driver Productivity"
+						},
+						{
+							id: "shift_location",
+							label: "Shift, Loading & Dumping Point"
+						},
+						{
+							id: "tickets",
+							label: `Source Dumping Tickets (${sourceTickets.length})`
+						}
+					].map((t) => /* @__PURE__ */ jsx("button", {
+						type: "button",
+						onClick: () => setActiveTab(t.id),
+						className: `px-3.5 py-2 rounded-xl text-xs font-bold transition ${activeTab === t.id ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`,
+						children: t.label
+					}, t.id))
+				}),
+				activeTab === "period" && /* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 lg:grid-cols-3 gap-6",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsxs("h3", {
+								className: "text-xs font-bold uppercase tracking-wider text-indigo-600 mb-3",
+								children: [
+									"Daily Production (",
+									daily.length,
+									" Hari)"
+								]
+							}), /* @__PURE__ */ jsx("div", {
+								className: "overflow-x-auto max-h-80",
+								children: /* @__PURE__ */ jsxs("table", {
+									className: "w-full text-left text-xs",
+									children: [/* @__PURE__ */ jsx("thead", {
+										className: "border-b border-slate-200 dark:border-slate-800 text-slate-500",
+										children: /* @__PURE__ */ jsxs("tr", { children: [
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2",
+												children: "Tanggal"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2 text-right",
+												children: "Ritase"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2 text-right",
+												children: "Tonase (MT)"
+											})
+										] })
+									}), /* @__PURE__ */ jsx("tbody", {
+										className: "divide-y divide-slate-100 dark:divide-slate-800",
+										children: daily.map((d) => /* @__PURE__ */ jsxs("tr", { children: [
+											/* @__PURE__ */ jsx("td", {
+												className: "py-2 font-mono",
+												children: d.date
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-2 text-right font-semibold",
+												children: d.ritase
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-2 text-right font-bold text-indigo-600",
+												children: fmtNum$1(d.tonnage)
+											})
+										] }, d.date))
+									})]
+								})
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsxs("h3", {
+								className: "text-xs font-bold uppercase tracking-wider text-emerald-600 mb-3",
+								children: [
+									"Weekly Production (",
+									weekly.length,
+									" Minggu)"
+								]
+							}), /* @__PURE__ */ jsx("div", {
+								className: "overflow-x-auto max-h-80",
+								children: /* @__PURE__ */ jsxs("table", {
+									className: "w-full text-left text-xs",
+									children: [/* @__PURE__ */ jsx("thead", {
+										className: "border-b border-slate-200 dark:border-slate-800 text-slate-500",
+										children: /* @__PURE__ */ jsxs("tr", { children: [
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2",
+												children: "Minggu"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2 text-right",
+												children: "Ritase"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2 text-right",
+												children: "Tonase (MT)"
+											})
+										] })
+									}), /* @__PURE__ */ jsx("tbody", {
+										className: "divide-y divide-slate-100 dark:divide-slate-800",
+										children: weekly.map((w) => /* @__PURE__ */ jsxs("tr", { children: [
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-2",
+												children: [/* @__PURE__ */ jsx("div", {
+													className: "font-bold",
+													children: w.week
+												}), /* @__PURE__ */ jsxs("div", {
+													className: "text-[10px] text-slate-400",
+													children: [
+														w.start_date,
+														" s/d ",
+														w.end_date
+													]
+												})]
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-2 text-right font-semibold",
+												children: w.ritase
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-2 text-right font-bold text-emerald-600",
+												children: fmtNum$1(w.tonnage)
+											})
+										] }, w.week))
+									})]
+								})
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsxs("h3", {
+								className: "text-xs font-bold uppercase tracking-wider text-amber-600 mb-3",
+								children: [
+									"Monthly Production (",
+									monthly.length,
+									" Bulan)"
+								]
+							}), /* @__PURE__ */ jsx("div", {
+								className: "overflow-x-auto max-h-80",
+								children: /* @__PURE__ */ jsxs("table", {
+									className: "w-full text-left text-xs",
+									children: [/* @__PURE__ */ jsx("thead", {
+										className: "border-b border-slate-200 dark:border-slate-800 text-slate-500",
+										children: /* @__PURE__ */ jsxs("tr", { children: [
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2",
+												children: "Bulan"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2 text-right",
+												children: "Ritase"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2 text-right",
+												children: "Tonase (MT)"
+											})
+										] })
+									}), /* @__PURE__ */ jsx("tbody", {
+										className: "divide-y divide-slate-100 dark:divide-slate-800",
+										children: monthly.map((m) => /* @__PURE__ */ jsxs("tr", { children: [
+											/* @__PURE__ */ jsx("td", {
+												className: "py-2 font-bold",
+												children: m.month
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-2 text-right font-semibold",
+												children: m.ritase
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-2 text-right font-bold text-amber-600",
+												children: fmtNum$1(m.tonnage)
+											})
+										] }, m.month))
+									})]
+								})
+							})]
+						})
+					]
+				}),
+				activeTab === "unit_driver" && /* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 lg:grid-cols-2 gap-6",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex items-center gap-2 mb-3",
+							children: [/* @__PURE__ */ jsx(Truck, { className: "w-4 h-4 text-indigo-600" }), /* @__PURE__ */ jsx("h3", {
+								className: "text-sm font-bold text-slate-900 dark:text-white",
+								children: "Unit Productivity (Produktivitas per Unit DT)"
+							})]
+						}), /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Unit DT"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2 text-right",
+											children: "Ritase"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2 text-right",
+											children: "Tonase (MT)"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2 text-right",
+											children: "Operating HM"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2 text-right",
+											children: "Ton / HM"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: unitProd.map((u) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-3 py-2 font-bold",
+											children: [
+												u.unit_code,
+												" ",
+												/* @__PURE__ */ jsxs("span", {
+													className: "text-[10px] font-normal text-slate-400",
+													children: [
+														"(",
+														u.brand_model,
+														")"
+													]
+												})
+											]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2 text-right",
+											children: u.ritase
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2 text-right font-bold text-indigo-600",
+											children: fmtNum$1(u.tonnage)
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2 text-right",
+											children: fmtNum$1(u.operating_hm)
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2 text-right font-semibold text-emerald-600",
+											children: fmtNum$1(u.ton_per_hm)
+										})
+									] }, u.unit_id))
+								})]
+							})
+						})]
+					}), /* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex items-center gap-2 mb-3",
+							children: [/* @__PURE__ */ jsx(UserCheck, { className: "w-4 h-4 text-emerald-600" }), /* @__PURE__ */ jsx("h3", {
+								className: "text-sm font-bold text-slate-900 dark:text-white",
+								children: "Driver Productivity (Produktivitas per Driver)"
+							})]
+						}), /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2",
+											children: "Driver"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2 text-right",
+											children: "Ritase"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2 text-right",
+											children: "Tonase (MT)"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-3 py-2 text-right",
+											children: "Avg MT/Rit"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: driverProd.map((d) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-3 py-2",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-bold",
+												children: d.driver_name
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-[10px] text-slate-400",
+												children: d.driver_code
+											})]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2 text-right",
+											children: d.ritase
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2 text-right font-bold text-emerald-600",
+											children: fmtNum$1(d.tonnage)
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-3 py-2 text-right",
+											children: fmtNum$1(d.avg_ton_per_rit)
+										})
+									] }, d.driver_id))
+								})]
+							})
+						})]
+					})]
+				}),
+				activeTab === "shift_location" && /* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 lg:grid-cols-3 gap-6",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsxs("div", {
+								className: "flex items-center gap-2 mb-3",
+								children: [/* @__PURE__ */ jsx(Clock, { className: "w-4 h-4 text-indigo-600" }), /* @__PURE__ */ jsx("h3", {
+									className: "text-xs font-bold uppercase text-slate-800 dark:text-slate-200",
+									children: "Shift Productivity"
+								})]
+							}), /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "border-b border-slate-200 dark:border-slate-800 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "Shift"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2 text-right",
+											children: "Ritase"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2 text-right",
+											children: "Tonase"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2 text-right",
+											children: "Porsi"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: shiftProd.map((s) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2 font-bold",
+											children: s.shift_name
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2 text-right",
+											children: s.ritase
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2 text-right font-bold text-indigo-600",
+											children: fmtNum$1(s.tonnage)
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2 text-right",
+											children: [fmtNum$1(s.share_percent, 1), "%"]
+										})
+									] }, s.shift_id))
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsxs("div", {
+								className: "flex items-center gap-2 mb-3",
+								children: [/* @__PURE__ */ jsx(MapPin, { className: "w-4 h-4 text-emerald-600" }), /* @__PURE__ */ jsx("h3", {
+									className: "text-xs font-bold uppercase text-slate-800 dark:text-slate-200",
+									children: "Loading Point (PIT / ROM)"
+								})]
+							}), /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "border-b border-slate-200 dark:border-slate-800 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "Lokasi Loading"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2 text-right",
+											children: "Ritase"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2 text-right",
+											children: "Tonase"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: loadingPoints.map((lp) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2 font-semibold",
+											children: [
+												lp.location_code,
+												" — ",
+												lp.location_name
+											]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2 text-right",
+											children: lp.ritase
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2 text-right font-bold text-emerald-600",
+											children: fmtNum$1(lp.tonnage)
+										})
+									] }, lp.location_id))
+								})]
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsxs("div", {
+								className: "flex items-center gap-2 mb-3",
+								children: [/* @__PURE__ */ jsx(MapPin, { className: "w-4 h-4 text-amber-600" }), /* @__PURE__ */ jsx("h3", {
+									className: "text-xs font-bold uppercase text-slate-800 dark:text-slate-200",
+									children: "Dumping Point (Stockpile / Jetty)"
+								})]
+							}), /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "border-b border-slate-200 dark:border-slate-800 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "Lokasi Dumping"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2 text-right",
+											children: "Ritase"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2 text-right",
+											children: "Tonase"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: dumpingPoints.map((dp) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2 font-semibold",
+											children: [
+												dp.location_code,
+												" — ",
+												dp.location_name
+											]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2 text-right",
+											children: dp.ritase
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2 text-right font-bold text-amber-600",
+											children: fmtNum$1(dp.tonnage)
+										})
+									] }, dp.location_id))
+								})]
+							})]
+						})
+					]
+				}),
+				activeTab === "tickets" && /* @__PURE__ */ jsx("div", {
+					className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-x-auto",
+					children: /* @__PURE__ */ jsxs("table", {
+						className: "w-full text-left text-xs",
+						children: [/* @__PURE__ */ jsx("thead", {
+							className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+							children: /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2",
+									children: "No. Tiket"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2",
+									children: "Tanggal"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2",
+									children: "Site"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2",
+									children: "Unit"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2",
+									children: "Driver"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2",
+									children: "Shift"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2",
+									children: "Loading → Dumping"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2 text-right",
+									children: "Tonase (MT)"
+								})
+							] })
+						}), /* @__PURE__ */ jsx("tbody", {
+							className: "divide-y divide-slate-100 dark:divide-slate-800",
+							children: sourceTickets.map((t) => /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2 font-bold",
+									children: t.ticket_number
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2",
+									children: t.ticket_date?.substring(0, 10)
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2",
+									children: t.site?.code
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2 font-semibold",
+									children: t.unit?.unit_code
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2",
+									children: t.driver?.employee?.name
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2",
+									children: t.shift?.name
+								}),
+								/* @__PURE__ */ jsxs("td", {
+									className: "px-3 py-2 text-slate-500",
+									children: [
+										t.loading_point?.code,
+										" → ",
+										t.dumping_point?.code
+									]
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2 text-right font-bold text-indigo-600",
+									children: fmtNum$1(t.tonnage)
+								})
+							] }, t.id))
+						})]
+					})
+				})
+			]
+		})]
+	});
+}
+// resources/js/Pages/Analytics/WarehouseProcurement/Index.jsx
+var Index_exports$58 = /* @__PURE__ */ __exportAll({ default: () => WarehouseProcurementReportIndex });
+var fmtNum = (v, dec = 2) => new Intl.NumberFormat("id-ID", { maximumFractionDigits: dec }).format(Number(v || 0));
+var fmtIDR = (v) => new Intl.NumberFormat("id-ID", {
+	style: "currency",
+	currency: "IDR",
+	maximumFractionDigits: 0
+}).format(Number(v || 0));
+function WarehouseProcurementReportIndex({ report = {}, filters = {}, master = {} }) {
+	const [activeTab, setActiveTab] = useState("stock_balance");
+	const summary = report.summary || {};
+	const balances = report.stock_balances || [];
+	const minStock = report.minimum_stock_items || [];
+	const movements = report.stock_movements || [];
+	const purchaseOrders = report.purchase_orders || [];
+	const outstandingPos = report.purchase_outstanding || [];
+	const vendorPerf = report.vendor_performance || [];
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Warehouse Stock Valuation & Procurement Analytics Report",
+		children: [/* @__PURE__ */ jsx(Head, { title: "Warehouse & Procurement Report - Phase 11" }), /* @__PURE__ */ jsxs("div", {
+			className: "space-y-6",
+			children: [
+				/* @__PURE__ */ jsx(AnalyticsFilterBar, {
+					currentPath: "/analytics/warehouse-procurement",
+					reportType: "warehouse_procurement",
+					filters,
+					master,
+					statusOptions: [
+						{
+							value: "",
+							label: "Semua Status PO"
+						},
+						{
+							value: "approved",
+							label: "Approved"
+						},
+						{
+							value: "completed",
+							label: "Completed"
+						},
+						{
+							value: "pending_approval",
+							label: "Pending Approval"
+						}
+					]
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "text-xs font-semibold text-slate-500",
+									children: "Stock Valuation (MWA)"
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-lg font-extrabold text-indigo-600 mt-2",
+									children: fmtIDR(summary.stock_valuation_idr)
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-[11px] text-slate-400",
+									children: [
+										"On Hand: ",
+										fmtNum(summary.total_on_hand_qty, 0),
+										" Qty"
+									]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-semibold text-slate-500",
+								children: "Minimum Stock Alert"
+							}), /* @__PURE__ */ jsxs("p", {
+								className: "text-2xl font-extrabold text-rose-600 mt-2",
+								children: [
+									summary.minimum_stock_alert_count || 0,
+									" ",
+									/* @__PURE__ */ jsx("span", {
+										className: "text-xs font-normal",
+										children: "SKU"
+									})
+								]
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-semibold text-slate-500",
+								children: "Stock Movement (IN / OUT)"
+							}), /* @__PURE__ */ jsxs("p", {
+								className: "text-lg font-extrabold text-emerald-600 mt-2",
+								children: [
+									"+",
+									summary.stock_in_transactions_count || 0,
+									" / -",
+									summary.stock_out_transactions_count || 0
+								]
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "text-xs font-semibold text-slate-500",
+									children: "Purchase Summary (PO)"
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-lg font-extrabold text-slate-900 dark:text-white mt-2",
+									children: fmtIDR(summary.total_po_value_idr)
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-[11px] text-slate-400",
+									children: [
+										"PR: ",
+										summary.total_pr_count || 0,
+										" • PO: ",
+										summary.total_po_count || 0
+									]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "text-xs font-semibold text-slate-500",
+									children: "Purchase Outstanding"
+								}),
+								/* @__PURE__ */ jsx("p", {
+									className: "text-lg font-extrabold text-amber-600 mt-2",
+									children: fmtIDR(summary.purchase_outstanding_value_idr)
+								}),
+								/* @__PURE__ */ jsxs("p", {
+									className: "text-[11px] text-slate-400",
+									children: [summary.purchase_outstanding_count || 0, " PO Open"]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("span", {
+								className: "text-xs font-semibold text-slate-500",
+								children: "Invoiced Value"
+							}), /* @__PURE__ */ jsx("p", {
+								className: "text-lg font-extrabold text-cyan-600 mt-2",
+								children: fmtIDR(summary.total_invoiced_value_idr)
+							})]
+						})
+					]
+				}),
+				/* @__PURE__ */ jsx("div", {
+					className: "flex flex-wrap gap-1.5 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+					children: [
+						{
+							id: "stock_balance",
+							label: `Stock Balance & Valuation (${balances.length})`
+						},
+						{
+							id: "min_stock",
+							label: `Minimum Stock Alert (${minStock.length})`
+						},
+						{
+							id: "movement",
+							label: `Stock Movement (${movements.length})`
+						},
+						{
+							id: "procurement",
+							label: `Purchase Summary, Outstanding & Vendor (${purchaseOrders.length})`
+						}
+					].map((t) => /* @__PURE__ */ jsx("button", {
+						type: "button",
+						onClick: () => setActiveTab(t.id),
+						className: `px-3.5 py-2 rounded-xl text-xs font-bold transition ${activeTab === t.id ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`,
+						children: t.label
+					}, t.id))
+				}),
+				activeTab === "stock_balance" && /* @__PURE__ */ jsx("div", {
+					className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-x-auto",
+					children: /* @__PURE__ */ jsxs("table", {
+						className: "w-full text-left text-xs",
+						children: [/* @__PURE__ */ jsx("thead", {
+							className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+							children: /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Gudang & Site"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Kode & Nama Barang"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Kategori"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "On Hand"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Available"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Avg Unit Cost"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Total Valuation"
+								})
+							] })
+						}), /* @__PURE__ */ jsx("tbody", {
+							className: "divide-y divide-slate-100 dark:divide-slate-800",
+							children: balances.map((b) => /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsxs("td", {
+									className: "px-3 py-2.5 font-semibold",
+									children: [
+										b.warehouse?.code,
+										" (",
+										b.site?.code,
+										")"
+									]
+								}),
+								/* @__PURE__ */ jsxs("td", {
+									className: "px-3 py-2.5",
+									children: [/* @__PURE__ */ jsx("div", {
+										className: "font-bold",
+										children: b.item?.name
+									}), /* @__PURE__ */ jsx("div", {
+										className: "text-[10px] text-slate-400",
+										children: b.item?.item_code
+									})]
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 uppercase",
+									children: b.item?.category
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right font-bold",
+									children: fmtNum(b.on_hand_qty)
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right text-emerald-600 font-semibold",
+									children: fmtNum(b.available_qty)
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right",
+									children: fmtIDR(b.average_unit_cost)
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right font-bold text-indigo-600",
+									children: fmtIDR(b.total_value)
+								})
+							] }, b.id))
+						})]
+					})
+				}),
+				activeTab === "min_stock" && /* @__PURE__ */ jsx("div", {
+					className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-x-auto",
+					children: /* @__PURE__ */ jsxs("table", {
+						className: "w-full text-left text-xs",
+						children: [/* @__PURE__ */ jsx("thead", {
+							className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+							children: /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Gudang"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Item"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "On Hand Qty"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Minimum Stock"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Reorder Point"
+								})
+							] })
+						}), /* @__PURE__ */ jsx("tbody", {
+							className: "divide-y divide-slate-100 dark:divide-slate-800",
+							children: minStock.map((b) => /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 font-semibold",
+									children: b.warehouse?.code
+								}),
+								/* @__PURE__ */ jsxs("td", {
+									className: "px-3 py-2.5 font-bold text-rose-600",
+									children: [
+										b.item?.item_code,
+										" — ",
+										b.item?.name
+									]
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right font-extrabold text-rose-600",
+									children: fmtNum(b.on_hand_qty)
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right",
+									children: fmtNum(b.item?.minimum_stock)
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right",
+									children: fmtNum(b.item?.reorder_point)
+								})
+							] }, b.id))
+						})]
+					})
+				}),
+				activeTab === "movement" && /* @__PURE__ */ jsx("div", {
+					className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-x-auto",
+					children: /* @__PURE__ */ jsxs("table", {
+						className: "w-full text-left text-xs",
+						children: [/* @__PURE__ */ jsx("thead", {
+							className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+							children: /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "No. Dokumen"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Tanggal"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Gudang"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5",
+									children: "Arah & Tipe"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "px-3 py-2.5 text-right",
+									children: "Nilai Transaksi"
+								})
+							] })
+						}), /* @__PURE__ */ jsx("tbody", {
+							className: "divide-y divide-slate-100 dark:divide-slate-800",
+							children: movements.map((m) => /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 font-bold",
+									children: m.document_number
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5",
+									children: m.transaction_date?.substring(0, 10)
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5",
+									children: m.warehouse?.code
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5",
+									children: /* @__PURE__ */ jsxs("span", {
+										className: `px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${m.direction === "IN" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`,
+										children: [
+											m.direction,
+											" — ",
+											m.transaction_type
+										]
+									})
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "px-3 py-2.5 text-right font-bold",
+									children: fmtIDR(m.total_amount)
+								})
+							] }, m.id))
+						})]
+					})
+				}),
+				activeTab === "procurement" && /* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 lg:grid-cols-2 gap-6",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsxs("h3", {
+							className: "text-xs font-bold uppercase text-indigo-600 mb-3",
+							children: [
+								"Vendor Performance (",
+								vendorPerf.length,
+								")"
+							]
+						}), /* @__PURE__ */ jsxs("table", {
+							className: "w-full text-left text-xs",
+							children: [/* @__PURE__ */ jsx("thead", {
+								className: "border-b border-slate-200 dark:border-slate-800 text-slate-500",
+								children: /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2",
+										children: "Vendor"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2 text-center",
+										children: "PO Count"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2 text-right",
+										children: "Total Nilai PO"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2 text-right",
+										children: "Rating"
+									})
+								] })
+							}), /* @__PURE__ */ jsx("tbody", {
+								className: "divide-y divide-slate-100 dark:divide-slate-800",
+								children: vendorPerf.map((v) => /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsxs("td", {
+										className: "py-2 font-bold",
+										children: [
+											v.vendor_code,
+											" — ",
+											v.vendor_name
+										]
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-2 text-center",
+										children: v.po_count
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-2 text-right font-bold text-indigo-600",
+										children: fmtIDR(v.total_po_value_idr)
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "py-2 text-right font-semibold text-amber-600",
+										children: [v.rating, " / 5.0"]
+									})
+								] }, v.vendor_id))
+							})]
+						})]
+					}), /* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsxs("h3", {
+							className: "text-xs font-bold uppercase text-amber-600 mb-3",
+							children: [
+								"Purchase Outstanding (",
+								outstandingPos.length,
+								" PO)"
+							]
+						}), /* @__PURE__ */ jsxs("table", {
+							className: "w-full text-left text-xs",
+							children: [/* @__PURE__ */ jsx("thead", {
+								className: "border-b border-slate-200 dark:border-slate-800 text-slate-500",
+								children: /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2",
+										children: "No. PO"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2",
+										children: "Vendor"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2",
+										children: "Status"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "py-2 text-right",
+										children: "Grand Total"
+									})
+								] })
+							}), /* @__PURE__ */ jsx("tbody", {
+								className: "divide-y divide-slate-100 dark:divide-slate-800",
+								children: outstandingPos.map((po) => /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsx("td", {
+										className: "py-2 font-bold",
+										children: po.po_number
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-2",
+										children: po.vendor?.name
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-2 uppercase font-semibold text-amber-600",
+										children: po.status
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "py-2 text-right font-bold",
+										children: fmtIDR(po.grand_total)
+									})
+								] }, po.id))
+							})]
+						})]
+					})]
+				})
+			]
+		})]
+	});
+}
+// resources/js/Pages/Auth/Login.jsx
+var Login_exports = /* @__PURE__ */ __exportAll({ default: () => Login });
+function Login() {
+	const { flash, errors } = usePage().props;
+	const [showPassword, setShowPassword] = useState(false);
+	const [showDemoAccounts, setShowDemoAccounts] = useState(false);
+	const { data, setData, post, processing, reset } = useForm({
+		login: "",
+		password: "",
+		remember: false
+	});
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		post("/login", { onFinish: () => reset("password") });
+	};
+	const handleSelectDemo = (username, password) => {
+		setData({
+			...data,
+			login: username,
+			password
+		});
+	};
+	return /* @__PURE__ */ jsxs("div", {
+		className: "min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-center relative overflow-hidden font-sans selection:bg-amber-500 selection:text-slate-950",
+		children: [
+			/* @__PURE__ */ jsx("div", { className: "absolute top-0 -left-40 w-96 h-96 bg-amber-600/10 rounded-full blur-3xl pointer-events-none" }),
+			/* @__PURE__ */ jsx("div", { className: "absolute bottom-0 -right-40 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" }),
+			/* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:24px_24px] opacity-25 pointer-events-none" }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "container mx-auto px-4 py-8 relative z-10 max-w-5xl",
+				children: [/* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 lg:grid-cols-12 gap-8 items-center",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "lg:col-span-6 space-y-6 text-center lg:text-left",
+						children: [
+							/* @__PURE__ */ jsxs("div", {
+								className: "inline-flex items-center gap-2.5 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold uppercase tracking-wider",
+								children: [/* @__PURE__ */ jsx(Truck, { className: "w-4 h-4 text-amber-400" }), /* @__PURE__ */ jsx("span", { children: "Enterprise Mining Management System" })]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "space-y-3",
+								children: [/* @__PURE__ */ jsxs("h1", {
+									className: "text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight",
+									children: ["PT TEKNINDO ", /* @__PURE__ */ jsx("span", {
+										className: "text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500",
+										children: "ADHYA PANE"
+									})]
+								}), /* @__PURE__ */ jsx("p", {
+									className: "text-base sm:text-lg text-slate-400 font-medium",
+									children: "Integrated Coal Hauling Management System (TAP-CMS)"
+								})]
+							}),
+							/* @__PURE__ */ jsx("p", {
+								className: "text-sm text-slate-400 leading-relaxed max-w-xl",
+								children: "Platform operasional terpadu pengelolaan armada pengangkutan batubara: Daily Dispatch, Tiket Timbangan, Workshop & Pemeliharaan, Gudang Sparepart, Manajemen BBM Solar, dan Personalia Lintas Site."
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-3 gap-3 pt-2",
+								children: [
+									/* @__PURE__ */ jsxs("div", {
+										className: "p-3 rounded-xl bg-slate-900/80 border border-slate-800/80 text-left",
+										children: [/* @__PURE__ */ jsx("div", {
+											className: "text-amber-400 text-lg font-bold",
+											children: "Multi-Site"
+										}), /* @__PURE__ */ jsx("div", {
+											className: "text-[11px] text-slate-400",
+											children: "MTW & Lahat Project"
+										})]
+									}),
+									/* @__PURE__ */ jsxs("div", {
+										className: "p-3 rounded-xl bg-slate-900/80 border border-slate-800/80 text-left",
+										children: [/* @__PURE__ */ jsx("div", {
+											className: "text-emerald-400 text-lg font-bold",
+											children: "15 Roles"
+										}), /* @__PURE__ */ jsx("div", {
+											className: "text-[11px] text-slate-400",
+											children: "3-Tier RBAC Security"
+										})]
+									}),
+									/* @__PURE__ */ jsxs("div", {
+										className: "p-3 rounded-xl bg-slate-900/80 border border-slate-800/80 text-left",
+										children: [/* @__PURE__ */ jsx("div", {
+											className: "text-cyan-400 text-lg font-bold",
+											children: "Real-Time"
+										}), /* @__PURE__ */ jsx("div", {
+											className: "text-[11px] text-slate-400",
+											children: "Dispatch & Telematics"
+										})]
+									})
+								]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "pt-2",
+								children: [/* @__PURE__ */ jsxs("button", {
+									type: "button",
+									onClick: () => setShowDemoAccounts(!showDemoAccounts),
+									className: "inline-flex items-center gap-2 text-xs font-semibold text-amber-400 hover:text-amber-300 transition-colors cursor-pointer",
+									children: [/* @__PURE__ */ jsx(Cpu, { className: "w-3.5 h-3.5" }), /* @__PURE__ */ jsx("span", { children: showDemoAccounts ? "Tutup Daftar Akun Cepat" : "Lihat Akun Percontohan (Demo 15 Roles)" })]
+								}), showDemoAccounts && /* @__PURE__ */ jsxs("div", {
+									className: "mt-3 p-3.5 rounded-2xl bg-slate-900/95 border border-slate-800 text-left space-y-2 max-h-56 overflow-y-auto custom-scrollbar",
+									children: [/* @__PURE__ */ jsx("div", {
+										className: "flex items-center justify-between text-[11px] font-semibold text-slate-400 pb-1 border-b border-slate-800",
+										children: /* @__PURE__ */ jsx("span", { children: "Pilih akun untuk mengisi form otomatis (Password: password123)" })
+									}), /* @__PURE__ */ jsx("div", {
+										className: "grid grid-cols-1 sm:grid-cols-2 gap-2",
+										children: [
+											{
+												role: "Super Admin",
+												username: "superadmin",
+												name: "Mustapa Ahmad Kamal",
+												site: "Semua Site (Global)"
+											},
+											{
+												role: "Management",
+												username: "management",
+												name: "Ir. Bambang Soedirman",
+												site: "Semua Site (Lintas Proyek)"
+											},
+											{
+												role: "Project Manager",
+												username: "pm_teweh",
+												name: "Dharmawan Wicaksono",
+												site: "Site Muara Teweh & Lahat"
+											},
+											{
+												role: "PJO",
+												username: "pjo_teweh",
+												name: "Budi Santoso, S.T.",
+												site: "Site Muara Teweh"
+											},
+											{
+												role: "SVP Hauling",
+												username: "svp_hauling",
+												name: "Hendra Saputra",
+												site: "Site Muara Teweh"
+											},
+											{
+												role: "Admin Produksi",
+												username: "admin_prod",
+												name: "Wahyu Hidayat",
+												site: "Site Muara Teweh"
+											},
+											{
+												role: "SVP Plant & Maint",
+												username: "svp_plant",
+												name: "Ahmad Fauzi",
+												site: "Site Muara Teweh"
+											},
+											{
+												role: "Maintenance Planner",
+												username: "maint_planner",
+												name: "Rian Pratama",
+												site: "Site Muara Teweh"
+											},
+											{
+												role: "Mekanik",
+												username: "mekanik_agus",
+												name: "Agus Riyadi",
+												site: "Site Muara Teweh"
+											},
+											{
+												role: "Admin SCM",
+												username: "admin_scm",
+												name: "Surya Wijaya",
+												site: "Site Muara Teweh & Lahat"
+											},
+											{
+												role: "Admin Procurement",
+												username: "admin_proc",
+												name: "Dewi Lestari",
+												site: "Site Muara Teweh"
+											},
+											{
+												role: "Storeman Gudang",
+												username: "storeman",
+												name: "Joko Susilo",
+												site: "Site Muara Teweh"
+											},
+											{
+												role: "Fuelman",
+												username: "fuelman_andi",
+												name: "Andi Wijaya",
+												site: "Site Muara Teweh"
+											},
+											{
+												role: "HR/GA",
+												username: "hr_ga",
+												name: "Siti Nurhaliza",
+												site: "Site Muara Teweh"
+											},
+											{
+												role: "Driver DT",
+												username: "driver_budi",
+												name: "Budi Santoso",
+												site: "Site Muara Teweh"
+											}
+										].map((acc) => /* @__PURE__ */ jsxs("button", {
+											type: "button",
+											onClick: () => handleSelectDemo(acc.username, "password123"),
+											className: "p-2 rounded-lg bg-slate-800/70 hover:bg-amber-500/20 hover:border-amber-500/40 border border-slate-700/50 text-left transition-all group",
+											children: [/* @__PURE__ */ jsxs("div", {
+												className: "text-xs font-bold text-white group-hover:text-amber-300 flex items-center justify-between",
+												children: [/* @__PURE__ */ jsx("span", { children: acc.role }), /* @__PURE__ */ jsxs("span", {
+													className: "text-[10px] font-mono text-slate-400 group-hover:text-amber-200",
+													children: ["@", acc.username]
+												})]
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-[10px] text-slate-400 truncate",
+												children: acc.name
+											})]
+										}, acc.username))
+									})]
+								})]
+							})
+						]
+					}), /* @__PURE__ */ jsx("div", {
+						className: "lg:col-span-6 flex justify-center",
+						children: /* @__PURE__ */ jsxs("div", {
+							className: "w-full max-w-md bg-slate-900/90 backdrop-blur-xl border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-black/80",
+							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "text-center mb-6",
+									children: [
+										/* @__PURE__ */ jsx("div", {
+											className: "inline-flex p-3 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-600 text-slate-950 shadow-lg shadow-amber-500/20 mb-3",
+											children: /* @__PURE__ */ jsx(ShieldCheck, { className: "w-6 h-6" })
+										}),
+										/* @__PURE__ */ jsx("h2", {
+											className: "text-xl font-bold text-white tracking-tight",
+											children: "Otentikasi Pengguna"
+										}),
+										/* @__PURE__ */ jsx("p", {
+											className: "text-xs text-slate-400 mt-1",
+											children: "Masukkan kredensial akun terdaftar TAP Anda"
+										})
+									]
+								}),
+								flash?.success && /* @__PURE__ */ jsxs("div", {
+									className: "mb-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2",
+									children: [/* @__PURE__ */ jsx(CheckCircle2, { className: "w-4 h-4 shrink-0" }), /* @__PURE__ */ jsx("span", { children: flash.success })]
+								}),
+								flash?.info && /* @__PURE__ */ jsxs("div", {
+									className: "mb-4 p-3 rounded-xl bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs flex items-center gap-2",
+									children: [/* @__PURE__ */ jsx(AlertCircle, { className: "w-4 h-4 shrink-0" }), /* @__PURE__ */ jsx("span", { children: flash.info })]
+								}),
+								errors?.login && /* @__PURE__ */ jsxs("div", {
+									className: "mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-start gap-2",
+									children: [/* @__PURE__ */ jsx(AlertCircle, { className: "w-4 h-4 shrink-0 mt-0.5" }), /* @__PURE__ */ jsx("span", { children: errors.login })]
+								}),
+								/* @__PURE__ */ jsxs("form", {
+									onSubmit: handleSubmit,
+									className: "space-y-4",
+									children: [
+										/* @__PURE__ */ jsxs("div", {
+											className: "space-y-1.5",
+											children: [/* @__PURE__ */ jsx("label", {
+												className: "block text-xs font-semibold text-slate-300",
+												children: "Username atau Alamat Email"
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "relative",
+												children: [/* @__PURE__ */ jsx("div", {
+													className: "absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500",
+													children: /* @__PURE__ */ jsx(User, { className: "w-4 h-4" })
+												}), /* @__PURE__ */ jsx("input", {
+													type: "text",
+													value: data.login,
+													onChange: (e) => setData("login", e.target.value),
+													placeholder: "contoh: admin@tap-mining.com atau superadmin",
+													className: "w-full pl-10 pr-4 py-2.5 bg-slate-950/70 border border-slate-700/80 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all",
+													required: true,
+													autoFocus: true,
+													autoComplete: "username"
+												})]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("div", {
+											className: "space-y-1.5",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "flex items-center justify-between",
+												children: /* @__PURE__ */ jsx("label", {
+													className: "block text-xs font-semibold text-slate-300",
+													children: "Kata Sandi (Password)"
+												})
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "relative",
+												children: [
+													/* @__PURE__ */ jsx("div", {
+														className: "absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-500",
+														children: /* @__PURE__ */ jsx(Lock, { className: "w-4 h-4" })
+													}),
+													/* @__PURE__ */ jsx("input", {
+														type: showPassword ? "text" : "password",
+														value: data.password,
+														onChange: (e) => setData("password", e.target.value),
+														placeholder: "Masukkan kata sandi Anda",
+														className: "w-full pl-10 pr-10 py-2.5 bg-slate-950/70 border border-slate-700/80 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all",
+														required: true,
+														autoComplete: "current-password"
+													}),
+													/* @__PURE__ */ jsx("button", {
+														type: "button",
+														onClick: () => setShowPassword(!showPassword),
+														className: "absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-slate-300 focus:outline-none cursor-pointer",
+														title: showPassword ? "Sembunyikan password" : "Tampilkan password",
+														children: showPassword ? /* @__PURE__ */ jsx(EyeOff, { className: "w-4 h-4" }) : /* @__PURE__ */ jsx(Eye, { className: "w-4 h-4" })
+													})
+												]
+											})]
+										}),
+										/* @__PURE__ */ jsx("div", {
+											className: "flex items-center justify-between pt-1 text-xs",
+											children: /* @__PURE__ */ jsxs("label", {
+												className: "flex items-center gap-2 cursor-pointer select-none text-slate-400 hover:text-slate-200",
+												children: [/* @__PURE__ */ jsx("input", {
+													type: "checkbox",
+													checked: data.remember,
+													onChange: (e) => setData("remember", e.target.checked),
+													className: "w-4 h-4 rounded bg-slate-950 border-slate-700 text-amber-500 focus:ring-amber-500/20 focus:ring-offset-0 cursor-pointer"
+												}), /* @__PURE__ */ jsx("span", { children: "Ingat Saya di Perangkat Ini" })]
+											})
+										}),
+										/* @__PURE__ */ jsx("button", {
+											type: "submit",
+											disabled: processing,
+											className: "w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 active:scale-[0.99] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
+											children: processing ? /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx("div", { className: "w-4 h-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin" }), /* @__PURE__ */ jsx("span", { children: "Memvalidasi Akses..." })] }) : /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx("span", { children: "Masuk ke Sistem TAP" }), /* @__PURE__ */ jsx(ArrowRight, { className: "w-4 h-4" })] })
+										})
+									]
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "mt-6 pt-4 border-t border-slate-800/80 text-center text-[11px] text-slate-500 space-y-1",
+									children: [/* @__PURE__ */ jsxs("p", {
+										className: "flex items-center justify-center gap-1",
+										children: [/* @__PURE__ */ jsx(HelpCircle, { className: "w-3 h-3 text-slate-400" }), /* @__PURE__ */ jsx("span", { children: "Kendala akses atau reset password?" })]
+									}), /* @__PURE__ */ jsx("p", {
+										className: "text-slate-400 font-medium",
+										children: "Hubungi IT & Security Administrator Site MTW / LHT"
+									})]
+								})
+							]
+						})
+					})]
+				}), /* @__PURE__ */ jsx("div", {
+					className: "mt-12 text-center text-xs text-slate-500",
+					children: /* @__PURE__ */ jsx("p", { children: "© 2026 PT Teknindo Adhya Pane. All Rights Reserved. • Mining Fleet & Coal Hauling Operation v2.4" })
+				})]
+			})
+		]
 	});
 }
 // resources/js/components/atoms/Input.jsx
@@ -1452,7 +6030,7 @@ function PaginationControls({ links = [], from = 0, to = 0, total = 0, className
 	});
 }
 // resources/js/Pages/Customers/Index.jsx
-var Index_exports$48 = /* @__PURE__ */ __exportAll({ default: () => CustomersIndex });
+var Index_exports$57 = /* @__PURE__ */ __exportAll({ default: () => CustomersIndex });
 function CustomersIndex({ customers, filters = {}, sites = [] }) {
 	const { confirm } = useAlertStore();
 	const [search, setSearch] = useState(filters.search || "");
@@ -2029,7 +6607,7 @@ function QuickActionPanel() {
 	});
 }
 // resources/js/Pages/Dashboard/Index.jsx
-var Index_exports$47 = /* @__PURE__ */ __exportAll({ default: () => DashboardIndex });
+var Index_exports$56 = /* @__PURE__ */ __exportAll({ default: () => DashboardIndex });
 function DashboardIndex({ metrics = [], recentUnits = [], recentDrivers = [], chartData = [], unitStatusCounts = {}, driverStatusCounts = {} }) {
 	const getUnitStatusBadge = (status) => {
 		switch (status) {
@@ -2419,7 +6997,7 @@ function DashboardIndex({ metrics = [], recentUnits = [], recentDrivers = [], ch
 	});
 }
 // resources/js/Pages/Drivers/Index.jsx
-var Index_exports$46 = /* @__PURE__ */ __exportAll({ default: () => DriversIndex });
+var Index_exports$55 = /* @__PURE__ */ __exportAll({ default: () => DriversIndex });
 function DriversIndex({ drivers, filters = {}, availableEmployees = [], statistics = {} }) {
 	const { confirm } = useAlertStore();
 	const [search, setSearch] = useState(filters.search || "");
@@ -2980,7 +7558,7 @@ function DriversIndex({ drivers, filters = {}, availableEmployees = [], statisti
 	});
 }
 // resources/js/Pages/Employees/Index.jsx
-var Index_exports$45 = /* @__PURE__ */ __exportAll({ default: () => EmployeesIndex });
+var Index_exports$54 = /* @__PURE__ */ __exportAll({ default: () => EmployeesIndex });
 function EmployeesIndex({ employees, filters = {}, companies = [], sites = [], departments = [], positions = [] }) {
 	const { confirm } = useAlertStore();
 	const [search, setSearch] = useState(filters.search || "");
@@ -3631,7 +8209,7 @@ function Pagination({ links = [] }) {
 	return /* @__PURE__ */ jsx(PaginationControls, { links });
 }
 // resources/js/Pages/Fleet/HMKM/Index.jsx
-var Index_exports$44 = /* @__PURE__ */ __exportAll({ default: () => HmKmMonitoringIndex });
+var Index_exports$53 = /* @__PURE__ */ __exportAll({ default: () => HmKmMonitoringIndex });
 function HmKmMonitoringIndex({ logs = {
 	data: [],
 	links: []
@@ -4389,7 +8967,7 @@ function HmKmMonitoringIndex({ logs = {
 	] });
 }
 // resources/js/Pages/Fleet/KPI/Index.jsx
-var Index_exports$43 = /* @__PURE__ */ __exportAll({ default: () => FleetKpiIndex });
+var Index_exports$52 = /* @__PURE__ */ __exportAll({ default: () => FleetKpiIndex });
 function FleetKpiIndex({ metrics = {}, formulas = {}, dailyTrends = [], unitBreakdown = [], filters = {}, master = {} }) {
 	const [dateFrom, setDateFrom] = useState(filters.date_from || "");
 	const [dateTo, setDateTo] = useState(filters.date_to || "");
@@ -5095,7 +9673,7 @@ function FleetKpiIndex({ metrics = {}, formulas = {}, dailyTrends = [], unitBrea
 	})] });
 }
 // resources/js/Pages/Fleet/P2H/Index.jsx
-var Index_exports$42 = /* @__PURE__ */ __exportAll({ default: () => DigitalP2hIndex });
+var Index_exports$51 = /* @__PURE__ */ __exportAll({ default: () => DigitalP2hIndex });
 var STANDARD_P2H_ITEMS = [
 	{
 		name: "Engine (Suara & Getaran Mesin)",
@@ -6003,7 +10581,7 @@ function DigitalP2hIndex({ inspections = {
 	] });
 }
 // resources/js/Pages/Fleet/Registry/Index.jsx
-var Index_exports$41 = /* @__PURE__ */ __exportAll({ default: () => FleetRegistryIndex });
+var Index_exports$50 = /* @__PURE__ */ __exportAll({ default: () => FleetRegistryIndex });
 function FleetRegistryIndex({ units = {
 	data: [],
 	links: []
@@ -7067,7 +11645,7 @@ function FleetRegistryIndex({ units = {
 	] });
 }
 // resources/js/Pages/Fleet/WorkOrders/Index.jsx
-var Index_exports$40 = /* @__PURE__ */ __exportAll({ default: () => WorkOrdersIndex });
+var Index_exports$49 = /* @__PURE__ */ __exportAll({ default: () => WorkOrdersIndex });
 function WorkOrdersIndex({ workOrders = {
 	data: [],
 	links: []
@@ -7846,6 +12424,6510 @@ function WorkOrdersIndex({ workOrders = {
 			})
 		})
 	] });
+}
+// resources/js/Pages/Fuel/Analytics/Index.jsx
+var Index_exports$48 = /* @__PURE__ */ __exportAll({ default: () => FuelAnalyticsIndex });
+function FuelAnalyticsIndex({ summary, consumptionPerUnit, consumptionPerShift, consumptionPerMonth, siteParameters, filters, master }) {
+	const formatNumber = (val, digits = 2) => Number(val || 0).toLocaleString("id-ID", {
+		minimumFractionDigits: digits,
+		maximumFractionDigits: digits
+	});
+	const formatIDR = (val) => new Intl.NumberFormat("id-ID", {
+		style: "currency",
+		currency: "IDR",
+		maximumFractionDigits: 0
+	}).format(Number(val || 0));
+	const applyFilter = (key, val) => {
+		router.get("/fuel/analytics", {
+			...filters,
+			[key]: val
+		}, {
+			preserveState: true,
+			replace: true
+		});
+	};
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Fuel Consumption Analysis & Production Ratio Integration",
+		children: [/* @__PURE__ */ jsx(Head, { title: "Fuel Consumption Analysis - TAP Fuel Management" }), /* @__PURE__ */ jsxs("div", {
+			className: "space-y-6",
+			children: [
+				/* @__PURE__ */ jsxs("div", {
+					className: "flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-wrap items-center gap-2 text-xs font-bold",
+						children: [
+							/* @__PURE__ */ jsx(Link, {
+								href: "/fuel/dashboard",
+								className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+								children: "Dashboard BBM"
+							}),
+							/* @__PURE__ */ jsx(Link, {
+								href: "/fuel/inventory",
+								className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+								children: "1. Fuel Inventory & Tangki"
+							}),
+							/* @__PURE__ */ jsx(Link, {
+								href: "/fuel/soundings",
+								className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+								children: "2. Daily Sounding & Rekonsiliasi"
+							}),
+							/* @__PURE__ */ jsx(Link, {
+								href: "/fuel/dispensing",
+								className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+								children: "3. Fuel Dispensing & Digital Ticket"
+							}),
+							/* @__PURE__ */ jsx(Link, {
+								href: "/fuel/analytics",
+								className: "px-3.5 py-2 rounded-xl bg-amber-600 text-white",
+								children: "4. Analisis Konsumsi & Rasio BBM"
+							})
+						]
+					}), /* @__PURE__ */ jsxs("div", {
+						className: "flex flex-wrap gap-2",
+						children: [/* @__PURE__ */ jsxs("select", {
+							value: filters?.site_id || "",
+							onChange: (e) => applyFilter("site_id", e.target.value),
+							className: "rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs",
+							children: [/* @__PURE__ */ jsx("option", {
+								value: "",
+								children: "Semua Site"
+							}), (master?.sites || []).map((s) => /* @__PURE__ */ jsxs("option", {
+								value: s.id,
+								children: [
+									s.name,
+									" (",
+									s.code,
+									")"
+								]
+							}, s.id))]
+						}), /* @__PURE__ */ jsxs("select", {
+							value: filters?.unit_id || "",
+							onChange: (e) => applyFilter("unit_id", e.target.value),
+							className: "rounded-xl border-slate-300 dark:border-slate-700 dark:bg-slate-800 text-xs",
+							children: [/* @__PURE__ */ jsx("option", {
+								value: "",
+								children: "Semua Unit Hauling"
+							}), (master?.units || []).map((u) => /* @__PURE__ */ jsx("option", {
+								value: u.id,
+								children: u.unit_code
+							}, u.id))]
+						})]
+					})]
+				}),
+				/* @__PURE__ */ jsx("div", {
+					className: "bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-2xl p-4 text-xs flex flex-wrap items-center justify-between gap-3",
+					children: /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("div", {
+						className: "font-black text-amber-900 dark:text-amber-200 uppercase",
+						children: "Pemisahan Konsumsi Aktual vs Konsumsi Estimasi (Standar TAP)"
+					}), /* @__PURE__ */ jsxs("div", {
+						className: "text-amber-800 dark:text-amber-300 mt-0.5",
+						children: [
+							"• ",
+							/* @__PURE__ */ jsx("strong", { children: "Actual Fuel Consumption" }),
+							" dihitung murni dari transaksi pengisian dispenser solar (Bukan dari tonase dumping).",
+							/* @__PURE__ */ jsx("br", {}),
+							"• ",
+							/* @__PURE__ */ jsx("strong", { children: "Estimated Fuel Consumption" }),
+							" dihitung dari Tiket Produksi Verified: ",
+							/* @__PURE__ */ jsxs("code", {
+								className: "font-black",
+								children: [
+									"Tonase × Jarak (",
+									summary?.default_haul_distance_km,
+									" KM) × ",
+									summary?.estimation_factor
+								]
+							})
+						]
+					})] })
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-2 lg:grid-cols-5 gap-4",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("div", {
+									className: "text-[10px] font-black uppercase text-amber-600",
+									children: "Actual Fuel Consumption"
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "text-xl font-black text-amber-600 mt-1",
+									children: [formatNumber(summary?.actual_fuel_liters), " L"]
+								}),
+								/* @__PURE__ */ jsx("div", {
+									className: "text-[10px] text-slate-400",
+									children: "Dari Fuel Dispensing"
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("div", {
+									className: "text-[10px] font-black uppercase text-indigo-600",
+									children: "Estimated Fuel Consumption"
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "text-xl font-black text-indigo-600 mt-1",
+									children: [formatNumber(summary?.estimated_fuel_liters), " L"]
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "text-[10px] text-slate-400",
+									children: ["Tonase × Jarak × ", summary?.estimation_factor]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("div", {
+									className: "text-[10px] font-black uppercase text-emerald-600",
+									children: "Liter per Ton (Fuel Ratio)"
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "text-xl font-black text-emerald-600 mt-1",
+									children: [formatNumber(summary?.liter_per_ton, 4), " L/Ton"]
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "text-[10px] text-slate-400",
+									children: [
+										"Produksi: ",
+										formatNumber(summary?.verified_tonnage),
+										" Ton"
+									]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("div", {
+									className: "text-[10px] font-black uppercase text-cyan-600",
+									children: "Liter per HM & KM"
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "text-lg font-black text-slate-900 dark:text-white mt-1",
+									children: [formatNumber(summary?.liter_per_hm, 2), " L/HM"]
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "text-[10px] text-slate-500",
+									children: [formatNumber(summary?.liter_per_km, 2), " L/KM"]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+							children: [
+								/* @__PURE__ */ jsx("div", {
+									className: "text-[10px] font-black uppercase text-purple-600",
+									children: "Biaya BBM / Ton"
+								}),
+								/* @__PURE__ */ jsx("div", {
+									className: "text-lg font-black text-slate-900 dark:text-white mt-1",
+									children: formatIDR(summary?.fuel_cost_per_ton)
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "text-[10px] text-slate-500",
+									children: ["Total: ", formatIDR(summary?.total_fuel_cost)]
+								})
+							]
+						})
+					]
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm",
+					children: [/* @__PURE__ */ jsx("h3", {
+						className: "text-sm font-black text-slate-900 dark:text-white mb-3",
+						children: "1. Analisis Konsumsi BBM per Unit (Actual vs Estimated, L/Ton, L/HM, L/KM)"
+					}), /* @__PURE__ */ jsx("div", {
+						className: "overflow-x-auto",
+						children: /* @__PURE__ */ jsxs("table", {
+							className: "w-full text-xs",
+							children: [/* @__PURE__ */ jsx("thead", {
+								className: "bg-slate-50 dark:bg-slate-800 text-[10px] uppercase text-slate-500",
+								children: /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-left",
+										children: "Unit"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-right",
+										children: "Tonase Verified"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-right",
+										children: "Actual Fuel (L)"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-right",
+										children: "Estimated Fuel (L)"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-right",
+										children: "Selisih (Act - Est)"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-right",
+										children: "HM Operasi"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-right",
+										children: "Jarak Tempuh (KM)"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-right",
+										children: "Liter / Ton"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-right",
+										children: "Liter / HM"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-right",
+										children: "Liter / KM"
+									})
+								] })
+							}), /* @__PURE__ */ jsx("tbody", {
+								className: "divide-y divide-slate-200 dark:divide-slate-800",
+								children: (consumptionPerUnit || []).map((u) => /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsxs("td", {
+										className: "p-2.5 font-black text-slate-900 dark:text-white",
+										children: [
+											u.unit_code,
+											" ",
+											/* @__PURE__ */ jsx("span", {
+												className: "text-[10px] font-normal text-slate-500",
+												children: u.brand_model
+											})
+										]
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "p-2.5 text-right font-semibold",
+										children: [formatNumber(u.verified_tonnage), " T"]
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "p-2.5 text-right font-black text-amber-600",
+										children: [formatNumber(u.actual_fuel_liters), " L"]
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "p-2.5 text-right font-semibold text-indigo-600",
+										children: [formatNumber(u.estimated_fuel_liters), " L"]
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "p-2.5 text-right font-bold",
+										children: /* @__PURE__ */ jsxs("span", {
+											className: u.variance_liters > 0 ? "text-rose-600" : "text-emerald-600",
+											children: [
+												u.variance_liters > 0 ? "+" : "",
+												formatNumber(u.variance_liters),
+												" L"
+											]
+										})
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "p-2.5 text-right",
+										children: [formatNumber(u.operating_hm), " HM"]
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "p-2.5 text-right",
+										children: [formatNumber(u.distance_km), " KM"]
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "p-2.5 text-right font-bold",
+										children: formatNumber(u.liter_per_ton, 4)
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "p-2.5 text-right",
+										children: formatNumber(u.liter_per_hm, 2)
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "p-2.5 text-right",
+										children: formatNumber(u.liter_per_km, 2)
+									})
+								] }, u.unit_id))
+							})]
+						})
+					})]
+				}),
+				/* @__PURE__ */ jsxs("div", {
+					className: "grid grid-cols-1 lg:grid-cols-2 gap-6",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm",
+						children: [/* @__PURE__ */ jsx("h3", {
+							className: "text-sm font-black text-slate-900 dark:text-white mb-3",
+							children: "2. Konsumsi BBM per Shift Operasional"
+						}), /* @__PURE__ */ jsxs("table", {
+							className: "w-full text-xs",
+							children: [/* @__PURE__ */ jsx("thead", {
+								className: "bg-slate-50 dark:bg-slate-800 text-[10px] uppercase text-slate-500",
+								children: /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-left",
+										children: "Shift"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-right",
+										children: "Tonase"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-right",
+										children: "Actual (L)"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-right",
+										children: "Estimated (L)"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-right",
+										children: "L / Ton"
+									})
+								] })
+							}), /* @__PURE__ */ jsx("tbody", {
+								className: "divide-y divide-slate-200 dark:divide-slate-800",
+								children: (consumptionPerShift || []).map((sh) => /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsx("td", {
+										className: "p-2.5 font-bold",
+										children: sh.shift_name
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "p-2.5 text-right",
+										children: [formatNumber(sh.verified_tonnage), " T"]
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "p-2.5 text-right font-black text-amber-600",
+										children: [formatNumber(sh.actual_fuel_liters), " L"]
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "p-2.5 text-right text-indigo-600",
+										children: [formatNumber(sh.estimated_fuel_liters), " L"]
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "p-2.5 text-right font-bold",
+										children: formatNumber(sh.liter_per_ton, 4)
+									})
+								] }, sh.shift_id))
+							})]
+						})]
+					}), /* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm",
+						children: [/* @__PURE__ */ jsx("h3", {
+							className: "text-sm font-black text-slate-900 dark:text-white mb-3",
+							children: "3. Konsumsi BBM per Bulan (Monthly Recap)"
+						}), /* @__PURE__ */ jsxs("table", {
+							className: "w-full text-xs",
+							children: [/* @__PURE__ */ jsx("thead", {
+								className: "bg-slate-50 dark:bg-slate-800 text-[10px] uppercase text-slate-500",
+								children: /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-left",
+										children: "Periode Bulan"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-right",
+										children: "Tonase"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-right",
+										children: "Actual (L)"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-right",
+										children: "Estimated (L)"
+									}),
+									/* @__PURE__ */ jsx("th", {
+										className: "p-2.5 text-right",
+										children: "Biaya Solar"
+									})
+								] })
+							}), /* @__PURE__ */ jsx("tbody", {
+								className: "divide-y divide-slate-200 dark:divide-slate-800",
+								children: (consumptionPerMonth || []).map((m) => /* @__PURE__ */ jsxs("tr", { children: [
+									/* @__PURE__ */ jsx("td", {
+										className: "p-2.5 font-black",
+										children: m.month
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "p-2.5 text-right",
+										children: [formatNumber(m.verified_tonnage), " T"]
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "p-2.5 text-right font-black text-amber-600",
+										children: [formatNumber(m.actual_fuel_liters), " L"]
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "p-2.5 text-right text-indigo-600",
+										children: [formatNumber(m.estimated_fuel_liters), " L"]
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "p-2.5 text-right font-bold",
+										children: formatIDR(m.total_fuel_cost)
+									})
+								] }, m.month))
+							})]
+						})]
+					})]
+				})
+			]
+		})]
+	});
+}
+// resources/js/Pages/Fuel/Dispensing/Index.jsx
+var Index_exports$47 = /* @__PURE__ */ __exportAll({ default: () => FuelDispensingIndex });
+function FuelDispensingIndex({ transactions, metrics, filters, master }) {
+	const [showDispenseModal, setShowDispenseModal] = useState(false);
+	const form = useForm({
+		site_id: master?.sites?.[0]?.id || "",
+		shift_id: master?.shifts?.[0]?.id || "",
+		source_tank_id: master?.tanks?.[0]?.id || "",
+		unit_id: master?.units?.[0]?.id || "",
+		driver_id: master?.drivers?.[0]?.id || "",
+		fuelman_id: master?.employees?.[0]?.id || "",
+		dumping_ticket_id: "",
+		reference_ticket_number: "",
+		transaction_date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10),
+		transaction_time: (/* @__PURE__ */ new Date()).toTimeString().slice(0, 8),
+		current_hm: "",
+		current_km: "",
+		liters: 220,
+		flowmeter_start: "",
+		flowmeter_end: "",
+		remarks: "Pengisian solar operasional unit hauling"
+	});
+	const formatNumber = (val, digits = 2) => Number(val || 0).toLocaleString("id-ID", {
+		minimumFractionDigits: digits,
+		maximumFractionDigits: digits
+	});
+	const formatIDR = (val) => new Intl.NumberFormat("id-ID", {
+		style: "currency",
+		currency: "IDR",
+		maximumFractionDigits: 0
+	}).format(Number(val || 0));
+	const handleSelectUnit = (unitId) => {
+		const u = (master?.units || []).find((x) => String(x.id) === String(unitId));
+		form.setData({
+			...form.data,
+			unit_id: unitId,
+			site_id: u?.site_id || form.data.site_id,
+			current_hm: u ? Number(u.last_hm) + 5 : "",
+			current_km: u ? Number(u.last_km) + 64 : ""
+		});
+	};
+	const handleSubmit = (e) => {
+		e.preventDefault();
+		form.post("/fuel/dispensing", { onSuccess: () => setShowDispenseModal(false) });
+	};
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Fuel Dispensing per Unit & Digital Fuel Ticket",
+		children: [
+			/* @__PURE__ */ jsx(Head, { title: "Fuel Dispensing - TAP Fuel Management" }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "space-y-6",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex flex-wrap items-center gap-2 text-xs font-bold",
+							children: [
+								/* @__PURE__ */ jsx(Link, {
+									href: "/fuel/dashboard",
+									className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "Dashboard BBM"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/fuel/inventory",
+									className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "1. Fuel Inventory & Tangki"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/fuel/soundings",
+									className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "2. Daily Sounding & Rekonsiliasi"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/fuel/dispensing",
+									className: "px-3.5 py-2 rounded-xl bg-amber-600 text-white",
+									children: "3. Fuel Dispensing & Digital Ticket"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/fuel/analytics",
+									className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "4. Analisis Konsumsi & Rasio BBM"
+								})
+							]
+						}), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setShowDispenseModal(true),
+							className: "px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black shadow-sm",
+							children: "+ Input Pengisian Solar Unit (Digital Ticket)"
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-2 lg:grid-cols-4 gap-4",
+						children: [
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[10px] font-black uppercase text-slate-400",
+									children: "Total Transaksi Dispensing"
+								}), /* @__PURE__ */ jsx("div", {
+									className: "text-2xl font-black text-slate-900 dark:text-white mt-1",
+									children: metrics?.total_transactions || 0
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[10px] font-black uppercase text-amber-500",
+									children: "Total Solar Dikeluarkan"
+								}), /* @__PURE__ */ jsxs("div", {
+									className: "text-xl font-black text-amber-600 mt-1",
+									children: [formatNumber(metrics?.total_liters_dispensed, 2), " L"]
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[10px] font-black uppercase text-indigo-500",
+									children: "Rata-Rata Pengisian / Unit"
+								}), /* @__PURE__ */ jsxs("div", {
+									className: "text-xl font-black text-indigo-600 mt-1",
+									children: [formatNumber(metrics?.average_liters_per_fill, 1), " L"]
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[10px] font-black uppercase text-emerald-500",
+									children: "Total Nilai Solar Terpakai"
+								}), /* @__PURE__ */ jsx("div", {
+									className: "text-lg font-black text-slate-900 dark:text-white mt-1",
+									children: formatIDR(metrics?.total_fuel_cost)
+								})]
+							})
+						]
+					}),
+					/* @__PURE__ */ jsx("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm",
+						children: /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800 text-[10px] uppercase text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-left",
+											children: "No. Transaksi & Digital Ticket"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-left",
+											children: "Waktu & Site"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-left",
+											children: "Unit & Driver"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-left",
+											children: "Sumber Tangki & Fuelman"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-right",
+											children: "HM / KM Unit"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-right",
+											children: "Volume (Liter)"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-left",
+											children: "Ref. Tiket Produksi"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-3 px-4 text-center",
+											children: "Tiket Digital"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-200 dark:divide-slate-800",
+									children: (transactions?.data || []).map((tx) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3 px-4",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-black text-slate-900 dark:text-white",
+												children: tx.transaction_number
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-[11px] font-bold text-indigo-600",
+												children: tx.digital_ticket_code
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3 px-4",
+											children: [/* @__PURE__ */ jsxs("div", {
+												className: "font-semibold",
+												children: [
+													tx.transaction_date?.slice(0, 10),
+													" • ",
+													tx.transaction_time
+												]
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-[10px] text-slate-500",
+												children: [
+													tx.site?.name,
+													" (",
+													tx.shift?.name || "Shift 1",
+													")"
+												]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3 px-4",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-black text-slate-900 dark:text-white",
+												children: tx.unit?.unit_code
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-[11px] text-slate-500",
+												children: tx.driver?.employee?.name || "-"
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3 px-4",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-bold text-slate-800 dark:text-slate-200",
+												children: tx.source_tank?.tank_number
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-[10px] text-slate-500",
+												children: ["Fuelman: ", tx.fuelman?.name || "-"]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3 px-4 text-right",
+											children: [/* @__PURE__ */ jsxs("div", {
+												className: "font-semibold",
+												children: [
+													"HM: ",
+													tx.current_hm,
+													" (+",
+													tx.hm_delta,
+													")"
+												]
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-[10px] text-slate-500",
+												children: [
+													"KM: ",
+													tx.current_km,
+													" (+",
+													tx.km_delta,
+													")"
+												]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3 px-4 text-right",
+											children: [/* @__PURE__ */ jsxs("div", {
+												className: "font-black text-amber-600 text-sm",
+												children: [formatNumber(tx.liters), " L"]
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-[10px] text-slate-500",
+												children: formatIDR(tx.total_cost)
+											})]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-3 px-4",
+											children: tx.dumping_ticket ? /* @__PURE__ */ jsxs("span", {
+												className: "px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[10px] font-bold",
+												children: [
+													tx.dumping_ticket.ticket_number,
+													" (",
+													tx.dumping_ticket.tonnage,
+													" T)"
+												]
+											}) : /* @__PURE__ */ jsx("span", {
+												className: "text-slate-400",
+												children: tx.reference_ticket_number || "-"
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-3 px-4 text-center",
+											children: /* @__PURE__ */ jsx(Link, {
+												href: `/fuel/dispensing/${tx.id}/ticket`,
+												className: "px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] font-bold",
+												children: "Cetak Tiket"
+											})
+										})
+									] }, tx.id))
+								})]
+							})
+						})
+					})
+				]
+			}),
+			showDispenseModal && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4",
+				children: /* @__PURE__ */ jsxs("form", {
+					onSubmit: handleSubmit,
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-2xl w-full p-6 space-y-4 shadow-xl text-xs",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3",
+							children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("h3", {
+								className: "text-sm font-black",
+								children: "Input Pengisian Solar per Unit (Digital Fuel Ticket)"
+							}), /* @__PURE__ */ jsx("p", {
+								className: "text-[11px] text-slate-500",
+								children: "Validasi ketat: Pengisian tidak dapat melebihi stok tangki tersedia."
+							})] }), /* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setShowDispenseModal(false),
+								children: "✕"
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "grid grid-cols-2 gap-3",
+							children: [
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Unit Dump Truck / Support"
+								}), /* @__PURE__ */ jsx("select", {
+									required: true,
+									value: form.data.unit_id,
+									onChange: (e) => handleSelectUnit(e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs",
+									children: (master?.units || []).map((u) => /* @__PURE__ */ jsxs("option", {
+										value: u.id,
+										children: [
+											u.unit_code,
+											" - ",
+											u.brand,
+											" ",
+											u.model,
+											" (HM: ",
+											u.last_hm,
+											")"
+										]
+									}, u.id))
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Sumber Tangki / Bowser"
+								}), /* @__PURE__ */ jsx("select", {
+									required: true,
+									value: form.data.source_tank_id,
+									onChange: (e) => form.setData("source_tank_id", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs",
+									children: (master?.tanks || []).map((t) => /* @__PURE__ */ jsxs("option", {
+										value: t.id,
+										children: [
+											t.tank_number,
+											" (",
+											formatNumber(t.current_stock_liters),
+											" L)"
+										]
+									}, t.id))
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Driver"
+								}), /* @__PURE__ */ jsxs("select", {
+									value: form.data.driver_id,
+									onChange: (e) => form.setData("driver_id", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs",
+									children: [/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "-- Pilih Driver --"
+									}), (master?.drivers || []).map((d) => /* @__PURE__ */ jsx("option", {
+										value: d.id,
+										children: d.employee?.name
+									}, d.id))]
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Petugas Fuelman"
+								}), /* @__PURE__ */ jsxs("select", {
+									value: form.data.fuelman_id,
+									onChange: (e) => form.setData("fuelman_id", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs",
+									children: [/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "-- Pilih Fuelman --"
+									}), (master?.employees || []).map((emp) => /* @__PURE__ */ jsx("option", {
+										value: emp.id,
+										children: emp.name
+									}, emp.id))]
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "HM Saat Pengisian"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									step: "0.1",
+									value: form.data.current_hm,
+									onChange: (e) => form.setData("current_hm", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs"
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "KM Saat Pengisian"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									step: "0.1",
+									value: form.data.current_km,
+									onChange: (e) => form.setData("current_km", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs"
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Volume Solar Diisi (Liter)"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									step: "0.01",
+									required: true,
+									value: form.data.liters,
+									onChange: (e) => form.setData("liters", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs font-black text-amber-600"
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Referensi Tiket Produksi (Opsional)"
+								}), /* @__PURE__ */ jsxs("select", {
+									value: form.data.dumping_ticket_id,
+									onChange: (e) => form.setData("dumping_ticket_id", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs",
+									children: [/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "-- Tanpa Tiket Referensi --"
+									}), (master?.tickets || []).map((tk) => /* @__PURE__ */ jsxs("option", {
+										value: tk.id,
+										children: [
+											tk.ticket_number,
+											" (",
+											tk.tonnage,
+											" Ton)"
+										]
+									}, tk.id))]
+								})] })
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setShowDispenseModal(false),
+								className: "px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold",
+								children: "Batal"
+							}), /* @__PURE__ */ jsx("button", {
+								type: "submit",
+								disabled: form.processing,
+								className: "px-4 py-2 rounded-xl bg-emerald-600 text-white font-black",
+								children: "Terbitkan Digital Fuel Ticket & Potong Stok"
+							})]
+						})
+					]
+				})
+			})
+		]
+	});
+}
+// resources/js/Pages/Fuel/Dispensing/Ticket.jsx
+var Ticket_exports = /* @__PURE__ */ __exportAll({ default: () => FuelDispensingTicket });
+function FuelDispensingTicket({ transaction }) {
+	const tx = transaction;
+	const formatNumber = (val, digits = 2) => Number(val || 0).toLocaleString("id-ID", {
+		minimumFractionDigits: digits,
+		maximumFractionDigits: digits
+	});
+	const formatIDR = (val) => new Intl.NumberFormat("id-ID", {
+		style: "currency",
+		currency: "IDR",
+		maximumFractionDigits: 0
+	}).format(Number(val || 0));
+	return /* @__PURE__ */ jsxs("div", {
+		className: "min-h-screen bg-slate-100 dark:bg-slate-950 py-8 px-4 print:bg-white print:p-0",
+		children: [
+			/* @__PURE__ */ jsx(Head, { title: `Digital Fuel Ticket - ${tx?.digital_ticket_code || tx?.transaction_number}` }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "max-w-xl mx-auto mb-6 flex items-center justify-between bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm print:hidden",
+				children: [/* @__PURE__ */ jsx(Link, {
+					href: "/fuel/dispensing",
+					className: "px-3.5 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200",
+					children: "← Kembali ke Fuel Dispensing"
+				}), /* @__PURE__ */ jsx("button", {
+					type: "button",
+					onClick: () => window.print(),
+					className: "px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-black",
+					children: "Cetak Digital Fuel Ticket (Ctrl+P)"
+				})]
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "max-w-xl mx-auto bg-white text-slate-900 p-6 md:p-8 rounded-2xl border-2 border-slate-900 shadow-lg print:shadow-none print:rounded-none",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex items-start justify-between border-b-2 border-dashed border-slate-300 pb-4",
+						children: [/* @__PURE__ */ jsxs("div", { children: [
+							/* @__PURE__ */ jsx("div", {
+								className: "text-[10px] font-black uppercase tracking-widest text-amber-600",
+								children: "PT TEKNINDO ADHYA PANE"
+							}),
+							/* @__PURE__ */ jsx("h1", {
+								className: "text-lg font-black text-slate-900",
+								children: "DIGITAL FUEL DISPENSING TICKET"
+							}),
+							/* @__PURE__ */ jsxs("p", {
+								className: "text-xs text-slate-500",
+								children: ["Site: ", /* @__PURE__ */ jsxs("span", {
+									className: "font-bold text-slate-800",
+									children: [
+										tx.site?.name,
+										" (",
+										tx.site?.code,
+										")"
+									]
+								})]
+							})
+						] }), /* @__PURE__ */ jsxs("div", {
+							className: "text-right",
+							children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "inline-block px-2.5 py-0.5 rounded bg-slate-900 text-white text-[10px] font-black",
+									children: tx.digital_ticket_code
+								}),
+								/* @__PURE__ */ jsx("div", {
+									className: "text-xs font-bold text-slate-700 mt-1",
+									children: tx.transaction_number
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "text-[11px] text-slate-500",
+									children: [
+										tx.transaction_date?.slice(0, 10),
+										" • ",
+										tx.transaction_time
+									]
+								})
+							]
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "my-5 p-4 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between",
+						children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("div", {
+							className: "text-[10px] font-black uppercase text-amber-800",
+							children: "VOLUME SOLAR B35 DITERIMA UNIT"
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "text-3xl font-black text-slate-900 mt-0.5",
+							children: [
+								formatNumber(tx.liters),
+								" ",
+								/* @__PURE__ */ jsx("span", {
+									className: "text-sm font-bold text-amber-700",
+									children: "LITER"
+								})
+							]
+						})] }), /* @__PURE__ */ jsxs("div", {
+							className: "text-right text-xs",
+							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "text-slate-500",
+									children: [
+										"Unit Cost: ",
+										formatIDR(tx.unit_cost),
+										"/L"
+									]
+								}),
+								/* @__PURE__ */ jsx("div", {
+									className: "font-black text-slate-900 text-sm mt-0.5",
+									children: formatIDR(tx.total_cost)
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "text-[10px] font-bold text-emerald-700 uppercase mt-0.5",
+									children: ["STATUS: ", tx.status]
+								})
+							]
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-2 gap-3 text-xs border-b-2 border-dashed border-slate-300 pb-5",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "text-slate-400 block text-[10px] uppercase font-bold",
+									children: "Nomor Lambung Unit"
+								}),
+								/* @__PURE__ */ jsx("span", {
+									className: "font-black text-sm text-slate-900",
+									children: tx.unit?.unit_code
+								}),
+								/* @__PURE__ */ jsxs("span", {
+									className: "block text-[11px] text-slate-500",
+									children: [
+										tx.unit?.brand,
+										" ",
+										tx.unit?.model
+									]
+								})
+							] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-slate-400 block text-[10px] uppercase font-bold",
+								children: "Driver Penerima"
+							}), /* @__PURE__ */ jsx("span", {
+								className: "font-bold text-slate-900",
+								children: tx.driver?.employee?.name || "Driver Operasional"
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [
+								/* @__PURE__ */ jsx("span", {
+									className: "text-slate-400 block text-[10px] uppercase font-bold",
+									children: "Sumber Pengisian (Fuel Source)"
+								}),
+								/* @__PURE__ */ jsx("span", {
+									className: "font-bold text-slate-900",
+									children: tx.source_tank?.tank_number
+								}),
+								/* @__PURE__ */ jsx("span", {
+									className: "block text-[11px] text-slate-500",
+									children: tx.source_tank?.tank_name
+								})
+							] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-slate-400 block text-[10px] uppercase font-bold",
+								children: "Petugas Fuelman"
+							}), /* @__PURE__ */ jsx("span", {
+								className: "font-bold text-slate-900",
+								children: tx.fuelman?.name || "Fuelman Duty"
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-slate-400 block text-[10px] uppercase font-bold",
+								children: "Pembacaan Hour Meter (HM)"
+							}), /* @__PURE__ */ jsxs("span", {
+								className: "font-bold text-slate-900",
+								children: [
+									tx.current_hm,
+									" HM (Δ +",
+									tx.hm_delta,
+									")"
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-slate-400 block text-[10px] uppercase font-bold",
+								children: "Pembacaan Odometer (KM)"
+							}), /* @__PURE__ */ jsxs("span", {
+								className: "font-bold text-slate-900",
+								children: [
+									tx.current_km,
+									" KM (Δ +",
+									tx.km_delta,
+									")"
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-slate-400 block text-[10px] uppercase font-bold",
+								children: "Flowmeter Start → End"
+							}), /* @__PURE__ */ jsxs("span", {
+								className: "font-semibold text-slate-800",
+								children: [
+									tx.flowmeter_start || "-",
+									" → ",
+									tx.flowmeter_end || "-"
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+								className: "text-slate-400 block text-[10px] uppercase font-bold",
+								children: "Referensi Tiket Produksi"
+							}), /* @__PURE__ */ jsx("span", {
+								className: "font-semibold text-indigo-700",
+								children: tx.dumping_ticket?.ticket_number || tx.reference_ticket_number || "-"
+							})] })
+						]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-2 gap-4 pt-5 text-center text-xs",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "border border-slate-200 rounded-xl p-3",
+							children: [
+								/* @__PURE__ */ jsx("div", {
+									className: "text-slate-500 text-[11px]",
+									children: "Diserahkan Oleh (Fuelman)"
+								}),
+								/* @__PURE__ */ jsx("div", {
+									className: "h-10 flex items-center justify-center text-[10px] font-bold text-emerald-700",
+									children: "VERIFIED DISPENSER"
+								}),
+								/* @__PURE__ */ jsx("div", {
+									className: "font-bold border-t border-slate-200 pt-1",
+									children: tx.fuelman?.name || "Fuelman"
+								})
+							]
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "border border-slate-200 rounded-xl p-3",
+							children: [
+								/* @__PURE__ */ jsx("div", {
+									className: "text-slate-500 text-[11px]",
+									children: "Diterima Oleh (Driver Unit)"
+								}),
+								/* @__PURE__ */ jsx("div", {
+									className: "h-10 flex items-center justify-center text-[10px] font-bold text-indigo-700",
+									children: "CONFIRMED BY DRIVER"
+								}),
+								/* @__PURE__ */ jsx("div", {
+									className: "font-bold border-t border-slate-200 pt-1",
+									children: tx.driver?.employee?.name || tx.unit?.unit_code
+								})
+							]
+						})]
+					})
+				]
+			})
+		]
+	});
+}
+// resources/js/Pages/Fuel/Inventory/Index.jsx
+var Index_exports$46 = /* @__PURE__ */ __exportAll({ default: () => FuelInventoryIndex });
+function FuelInventoryIndex({ tanks, suppliers, receipts, transfers, metrics, filters, master }) {
+	const [activeModal, setActiveModal] = useState(null);
+	const [selectedTankChart, setSelectedTankChart] = useState(null);
+	const receiptForm = useForm({
+		site_id: master?.sites?.[0]?.id || "",
+		receipt_type: "fuel_receiving",
+		receipt_date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10),
+		fuel_supplier_id: suppliers?.[0]?.id || "",
+		po_number: "",
+		do_number: "",
+		invoice_number: "",
+		invoice_date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10),
+		transport_vehicle_no: "",
+		driver_name: "",
+		received_by: "",
+		remarks: "",
+		items: [{
+			fuel_tank_id: tanks?.[0]?.id || "",
+			do_volume_liters: 8e3,
+			received_volume_liters: 8e3,
+			unit_price: 14850
+		}]
+	});
+	const transferForm = useForm({
+		site_id: master?.sites?.[0]?.id || "",
+		source_tank_id: tanks?.[0]?.id || "",
+		destination_tank_id: tanks?.[1]?.id || "",
+		transaction_date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10),
+		transaction_time: "08:00:00",
+		fuelman_id: "",
+		liters: 2e3,
+		remarks: "Transfer stok solar ke Mobile Bowser operasional"
+	});
+	useForm({
+		tank_number: "",
+		tank_name: "",
+		site_id: master?.sites?.[0]?.id || "",
+		tank_type: "stationary_tank",
+		shape_type: "calibrated_chart",
+		capacity_liters: 3e4,
+		minimum_alert_liters: 5e3,
+		max_height_cm: 250,
+		diameter_cm: 250,
+		length_cm: 615,
+		average_cost_per_liter: 14850
+	});
+	useForm({
+		supplier_code: "",
+		name: "",
+		contact_person: "",
+		phone: "",
+		fuel_type: "Biosolar B35 Industri",
+		contract_number: "",
+		contract_price_per_liter: 14850,
+		payment_terms: "TOP 30 Days"
+	});
+	const formatNumber = (val, digits = 0) => Number(val || 0).toLocaleString("id-ID", {
+		minimumFractionDigits: digits,
+		maximumFractionDigits: digits
+	});
+	const formatIDR = (val) => new Intl.NumberFormat("id-ID", {
+		style: "currency",
+		currency: "IDR",
+		maximumFractionDigits: 0
+	}).format(Number(val || 0));
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Fuel Inventory, Multi-Tank, Receiving & Transfer",
+		children: [
+			/* @__PURE__ */ jsx(Head, { title: "Fuel Inventory - TAP Fuel Management" }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "space-y-6",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex flex-wrap items-center gap-2 text-xs font-bold",
+							children: [
+								/* @__PURE__ */ jsx(Link, {
+									href: "/fuel/dashboard",
+									className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "Dashboard BBM"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/fuel/inventory",
+									className: "px-3.5 py-2 rounded-xl bg-amber-600 text-white",
+									children: "1. Fuel Inventory & Tangki"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/fuel/soundings",
+									className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "2. Daily Sounding & Rekonsiliasi"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/fuel/dispensing",
+									className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "3. Fuel Dispensing & Digital Ticket"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/fuel/analytics",
+									className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "4. Analisis Konsumsi & Rasio BBM"
+								})
+							]
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "flex flex-wrap gap-2",
+							children: [
+								/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setActiveModal("receipt"),
+									className: "px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black",
+									children: "+ Fuel Receiving / Opening Stock"
+								}),
+								/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setActiveModal("transfer"),
+									className: "px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black",
+									children: "⇄ Transfer Antar-Tangki"
+								}),
+								/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setActiveModal("tank"),
+									className: "px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold",
+									children: "+ Tangki Baru"
+								}),
+								/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setActiveModal("supplier"),
+									className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold",
+									children: "+ Supplier BBM"
+								})
+							]
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-2 lg:grid-cols-5 gap-4",
+						children: [
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[10px] font-black uppercase text-slate-400",
+									children: "Total Tangki Aktif"
+								}), /* @__PURE__ */ jsx("div", {
+									className: "text-2xl font-black text-slate-900 dark:text-white mt-1",
+									children: metrics?.total_tanks || 0
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[10px] font-black uppercase text-slate-400",
+									children: "Opening Stock"
+								}), /* @__PURE__ */ jsxs("div", {
+									className: "text-xl font-black text-slate-900 dark:text-white mt-1",
+									children: [formatNumber(metrics?.opening_stock_liters), " L"]
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[10px] font-black uppercase text-emerald-500",
+									children: "Total Fuel Received"
+								}), /* @__PURE__ */ jsxs("div", {
+									className: "text-xl font-black text-emerald-600 mt-1",
+									children: [formatNumber(metrics?.total_received_liters), " L"]
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[10px] font-black uppercase text-amber-500",
+									children: "Closing Stock Saat Ini"
+								}), /* @__PURE__ */ jsxs("div", {
+									className: "text-xl font-black text-amber-600 mt-1",
+									children: [formatNumber(metrics?.closing_stock_liters), " L"]
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsx("div", {
+									className: "text-[10px] font-black uppercase text-indigo-500",
+									children: "Kapasitas Penyimpanan"
+								}), /* @__PURE__ */ jsxs("div", {
+									className: "text-xl font-black text-indigo-600 mt-1",
+									children: [formatNumber(metrics?.total_capacity_liters), " L"]
+								})]
+							})
+						]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm",
+						children: [/* @__PURE__ */ jsx("h3", {
+							className: "text-sm font-black text-slate-900 dark:text-white mb-3",
+							children: "Daftar Tangki Penyimpanan BBM & Mobile Bowser per Site"
+						}), /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500 uppercase text-[10px]",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3 text-left",
+											children: "Nomor & Nama Tangki"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3 text-left",
+											children: "Site & Tipe"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3 text-right",
+											children: "Kapasitas / Tinggi Maks"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3 text-right",
+											children: "Opening Stock"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3 text-right",
+											children: "Closing Stock (Saat Ini)"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3 text-right",
+											children: "Harga Rata-Rata/L"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2.5 px-3 text-center",
+											children: "Tabel Kalibrasi"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-200 dark:divide-slate-800",
+									children: (tanks || []).map((t) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3 px-3",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-black text-slate-900 dark:text-white",
+												children: t.tank_number
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-[11px] text-slate-500",
+												children: t.tank_name
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3 px-3",
+											children: [/* @__PURE__ */ jsxs("div", {
+												className: "font-bold text-slate-800 dark:text-slate-200",
+												children: [
+													t.site?.name,
+													" (",
+													t.site?.code,
+													")"
+												]
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-[10px] uppercase text-slate-500",
+												children: t.tank_type.replace("_", " ")
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3 px-3 text-right",
+											children: [/* @__PURE__ */ jsxs("div", {
+												className: "font-bold",
+												children: [formatNumber(t.capacity_liters), " L"]
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-[10px] text-slate-500",
+												children: [
+													"Max Height: ",
+													t.max_height_cm,
+													" cm"
+												]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3 px-3 text-right font-semibold",
+											children: [formatNumber(t.opening_stock_liters), " L"]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-3 px-3 text-right font-black text-emerald-600",
+											children: [formatNumber(t.current_stock_liters), " L"]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-3 px-3 text-right",
+											children: formatIDR(t.average_cost_per_liter)
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-3 px-3 text-center",
+											children: /* @__PURE__ */ jsxs("button", {
+												type: "button",
+												onClick: () => setSelectedTankChart(t),
+												className: "px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-[11px] font-bold",
+												children: [
+													"Lihat Chart (",
+													t.calibrations?.length || 0,
+													" Titik)"
+												]
+											})
+										})
+									] }, t.id))
+								})]
+							})
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-1 lg:grid-cols-12 gap-6",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm",
+							children: [/* @__PURE__ */ jsx("h3", {
+								className: "text-sm font-black text-slate-900 dark:text-white mb-3",
+								children: "Histori Fuel Purchase, Receiving, Invoice & Opening Stock"
+							}), /* @__PURE__ */ jsx("div", {
+								className: "overflow-x-auto",
+								children: /* @__PURE__ */ jsxs("table", {
+									className: "w-full text-xs",
+									children: [/* @__PURE__ */ jsx("thead", {
+										className: "bg-slate-50 dark:bg-slate-800 text-[10px] uppercase text-slate-500",
+										children: /* @__PURE__ */ jsxs("tr", { children: [
+											/* @__PURE__ */ jsx("th", {
+												className: "p-2.5 text-left",
+												children: "No. Receipt & Tgl"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "p-2.5 text-left",
+												children: "Supplier / PO / Invoice"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "p-2.5 text-right",
+												children: "Volume Diterima"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "p-2.5 text-right",
+												children: "Nilai Pembelian"
+											})
+										] })
+									}), /* @__PURE__ */ jsx("tbody", {
+										className: "divide-y divide-slate-200 dark:divide-slate-800",
+										children: (receipts?.data || []).map((rec) => /* @__PURE__ */ jsxs("tr", { children: [
+											/* @__PURE__ */ jsxs("td", {
+												className: "p-2.5",
+												children: [/* @__PURE__ */ jsx("div", {
+													className: "font-black text-slate-900 dark:text-white",
+													children: rec.receipt_number
+												}), /* @__PURE__ */ jsxs("div", {
+													className: "text-[10px] text-slate-500",
+													children: [
+														rec.receipt_date?.slice(0, 10),
+														" • ",
+														rec.receipt_type
+													]
+												})]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "p-2.5",
+												children: [/* @__PURE__ */ jsx("div", {
+													className: "font-semibold",
+													children: rec.supplier?.name || "Internal Opening Stock"
+												}), /* @__PURE__ */ jsxs("div", {
+													className: "text-[10px] text-slate-500",
+													children: [
+														"PO: ",
+														rec.po_number || "-",
+														" • DO: ",
+														rec.do_number || "-",
+														" • Inv: ",
+														rec.invoice_number || "-",
+														" (",
+														rec.invoice_status,
+														")"
+													]
+												})]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "p-2.5 text-right font-black text-emerald-600",
+												children: [
+													"+",
+													formatNumber(rec.total_received_liters),
+													" L"
+												]
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "p-2.5 text-right font-bold",
+												children: formatIDR(rec.total_amount)
+											})
+										] }, rec.id))
+									})]
+								})
+							})]
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "lg:col-span-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm",
+							children: [
+								/* @__PURE__ */ jsx("h3", {
+									className: "text-sm font-black text-slate-900 dark:text-white mb-3",
+									children: "Histori Transfer Solar Antar-Tangki & Supplier Master"
+								}),
+								/* @__PURE__ */ jsx("div", {
+									className: "space-y-2 mb-4",
+									children: (transfers || []).map((trf) => /* @__PURE__ */ jsxs("div", {
+										className: "p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 text-xs flex justify-between items-center",
+										children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("div", {
+											className: "font-black text-slate-900 dark:text-white",
+											children: trf.transaction_number
+										}), /* @__PURE__ */ jsxs("div", {
+											className: "text-[11px] text-slate-500",
+											children: [
+												trf.source_tank?.tank_number,
+												" → ",
+												trf.destination_tank?.tank_number
+											]
+										})] }), /* @__PURE__ */ jsxs("div", {
+											className: "text-right font-black text-indigo-600",
+											children: [formatNumber(trf.liters), " L"]
+										})]
+									}, trf.id))
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "border-t border-slate-200 dark:border-slate-800 pt-3",
+									children: [/* @__PURE__ */ jsx("div", {
+										className: "text-[11px] font-black uppercase text-slate-400 mb-2",
+										children: "Kontrak Supplier Solar Aktif"
+									}), (suppliers || []).map((s) => /* @__PURE__ */ jsxs("div", {
+										className: "text-xs py-1.5 flex justify-between border-b border-slate-100 dark:border-slate-800",
+										children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+											className: "font-bold",
+											children: s.name
+										}), /* @__PURE__ */ jsxs("span", {
+											className: "text-[10px] text-slate-400 ml-1",
+											children: [
+												"(",
+												s.contract_number || s.supplier_code,
+												")"
+											]
+										})] }), /* @__PURE__ */ jsxs("span", {
+											className: "font-bold text-emerald-600",
+											children: [formatIDR(s.contract_price_per_liter), "/L"]
+										})]
+									}, s.id))]
+								})
+							]
+						})]
+					})
+				]
+			}),
+			selectedTankChart && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-2xl w-full p-6 space-y-4 shadow-xl text-xs max-h-[85vh] overflow-y-auto",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3",
+						children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsxs("h3", {
+							className: "text-sm font-black text-slate-900 dark:text-white",
+							children: ["Tabel Kalibrasi Tangki Tervalidasi — ", selectedTankChart.tank_number]
+						}), /* @__PURE__ */ jsx("p", {
+							className: "text-[11px] text-slate-500",
+							children: "Tinggi Sounding (cm) dikonversi menggunakan interpolasi non-linear (Bukan 1 cm = 1 Liter)"
+						})] }), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setSelectedTankChart(null),
+							className: "font-bold text-slate-400",
+							children: "✕"
+						})]
+					}), /* @__PURE__ */ jsxs("table", {
+						className: "w-full text-xs",
+						children: [/* @__PURE__ */ jsx("thead", {
+							className: "bg-slate-100 dark:bg-slate-800 text-[10px] uppercase",
+							children: /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsx("th", {
+									className: "p-2 text-left",
+									children: "Tinggi Sounding (cm)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "p-2 text-right",
+									children: "Volume Terkalibrasi (Liter)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "p-2 text-right",
+									children: "Faktor Inkremental (L / mm)"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "p-2 text-left",
+									children: "No. Sertifikat"
+								})
+							] })
+						}), /* @__PURE__ */ jsx("tbody", {
+							className: "divide-y divide-slate-200 dark:divide-slate-800",
+							children: (selectedTankChart.calibrations || []).map((c) => /* @__PURE__ */ jsxs("tr", { children: [
+								/* @__PURE__ */ jsxs("td", {
+									className: "p-2 font-bold",
+									children: [c.height_cm, " cm"]
+								}),
+								/* @__PURE__ */ jsxs("td", {
+									className: "p-2 text-right font-black text-indigo-600",
+									children: [formatNumber(c.volume_liters, 2), " L"]
+								}),
+								/* @__PURE__ */ jsxs("td", {
+									className: "p-2 text-right",
+									children: [c.mm_increment_factor, " L/mm"]
+								}),
+								/* @__PURE__ */ jsx("td", {
+									className: "p-2 text-slate-500",
+									children: c.calibration_certificate_no
+								})
+							] }, c.id))
+						})]
+					})]
+				})
+			}),
+			activeModal === "receipt" && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4",
+				children: /* @__PURE__ */ jsxs("form", {
+					onSubmit: (e) => {
+						e.preventDefault();
+						receiptForm.post("/fuel/receipts", { onSuccess: () => setActiveModal(null) });
+					},
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-xl w-full p-6 space-y-4 shadow-xl text-xs",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3",
+							children: [/* @__PURE__ */ jsx("h3", {
+								className: "text-sm font-black",
+								children: "Catat Fuel Receiving / Invoice / Opening Stock"
+							}), /* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setActiveModal(null),
+								children: "✕"
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "grid grid-cols-2 gap-3",
+							children: [
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Site"
+								}), /* @__PURE__ */ jsx("select", {
+									value: receiptForm.data.site_id,
+									onChange: (e) => receiptForm.setData("site_id", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs",
+									children: (master?.sites || []).map((s) => /* @__PURE__ */ jsx("option", {
+										value: s.id,
+										children: s.name
+									}, s.id))
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Tipe Penerimaan"
+								}), /* @__PURE__ */ jsxs("select", {
+									value: receiptForm.data.receipt_type,
+									onChange: (e) => receiptForm.setData("receipt_type", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs",
+									children: [/* @__PURE__ */ jsx("option", {
+										value: "fuel_receiving",
+										children: "Fuel Purchase Receiving"
+									}), /* @__PURE__ */ jsx("option", {
+										value: "opening_stock",
+										children: "Opening Stock"
+									})]
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Tangki Tujuan"
+								}), /* @__PURE__ */ jsx("select", {
+									value: receiptForm.data.items[0].fuel_tank_id,
+									onChange: (e) => receiptForm.setData("items", [{
+										...receiptForm.data.items[0],
+										fuel_tank_id: e.target.value
+									}]),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs",
+									children: (tanks || []).map((t) => /* @__PURE__ */ jsxs("option", {
+										value: t.id,
+										children: [
+											t.tank_number,
+											" - ",
+											t.tank_name
+										]
+									}, t.id))
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Volume Diterima (Liter)"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									step: "0.01",
+									required: true,
+									value: receiptForm.data.items[0].received_volume_liters,
+									onChange: (e) => receiptForm.setData("items", [{
+										...receiptForm.data.items[0],
+										do_volume_liters: e.target.value,
+										received_volume_liters: e.target.value
+									}]),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs font-black text-emerald-600"
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Nomor PO / DO"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "text",
+									placeholder: "DO-PTM-2026-009",
+									value: receiptForm.data.do_number,
+									onChange: (e) => receiptForm.setData("do_number", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs"
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Nomor Invoice Supplier"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "text",
+									placeholder: "INV-FUEL-2026-009",
+									value: receiptForm.data.invoice_number,
+									onChange: (e) => receiptForm.setData("invoice_number", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs"
+								})] })
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setActiveModal(null),
+								className: "px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold",
+								children: "Batal"
+							}), /* @__PURE__ */ jsx("button", {
+								type: "submit",
+								className: "px-4 py-2 rounded-xl bg-emerald-600 text-white font-black",
+								children: "Simpan Penerimaan Solar"
+							})]
+						})
+					]
+				})
+			}),
+			activeModal === "transfer" && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4",
+				children: /* @__PURE__ */ jsxs("form", {
+					onSubmit: (e) => {
+						e.preventDefault();
+						transferForm.post("/fuel/transfers", { onSuccess: () => setActiveModal(null) });
+					},
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-lg w-full p-6 space-y-4 shadow-xl text-xs",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3",
+							children: [/* @__PURE__ */ jsx("h3", {
+								className: "text-sm font-black",
+								children: "Transfer Solar Antar-Tangki (Main Tank → Bowser)"
+							}), /* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setActiveModal(null),
+								children: "✕"
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "grid grid-cols-2 gap-3",
+							children: [
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Tangki Asal"
+								}), /* @__PURE__ */ jsx("select", {
+									value: transferForm.data.source_tank_id,
+									onChange: (e) => transferForm.setData("source_tank_id", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs",
+									children: (tanks || []).map((t) => /* @__PURE__ */ jsxs("option", {
+										value: t.id,
+										children: [
+											t.tank_number,
+											" (",
+											formatNumber(t.current_stock_liters),
+											" L)"
+										]
+									}, t.id))
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Tangki Tujuan"
+								}), /* @__PURE__ */ jsx("select", {
+									value: transferForm.data.destination_tank_id,
+									onChange: (e) => transferForm.setData("destination_tank_id", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs",
+									children: (tanks || []).map((t) => /* @__PURE__ */ jsxs("option", {
+										value: t.id,
+										children: [
+											t.tank_number,
+											" (",
+											formatNumber(t.current_stock_liters),
+											" L)"
+										]
+									}, t.id))
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Volume Transfer (Liter)"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									step: "0.01",
+									required: true,
+									value: transferForm.data.liters,
+									onChange: (e) => transferForm.setData("liters", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs font-black text-indigo-600"
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Tanggal Transfer"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "date",
+									required: true,
+									value: transferForm.data.transaction_date,
+									onChange: (e) => transferForm.setData("transaction_date", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs"
+								})] })
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setActiveModal(null),
+								className: "px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold",
+								children: "Batal"
+							}), /* @__PURE__ */ jsx("button", {
+								type: "submit",
+								className: "px-4 py-2 rounded-xl bg-indigo-600 text-white font-black",
+								children: "Proses Transfer Solar"
+							})]
+						})
+					]
+				})
+			})
+		]
+	});
+}
+// resources/js/Pages/Fuel/Soundings/Index.jsx
+var Index_exports$45 = /* @__PURE__ */ __exportAll({ default: () => FuelSoundingsIndex });
+function FuelSoundingsIndex({ tanks, soundings, reconciliations, adjustments, filters, master }) {
+	const [activeModal, setActiveModal] = useState(null);
+	const soundingForm = useForm({
+		site_id: tanks?.[0]?.site_id || master?.sites?.[0]?.id || "",
+		fuel_tank_id: tanks?.[0]?.id || "",
+		sounding_date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10),
+		sounding_time: "18:00:00",
+		measurement_cm: 150,
+		water_level_cm: 0,
+		temperature_celsius: 30,
+		remarks: "Sounding fisik harian tongkat ukur terkalibrasi"
+	});
+	const reconForm = useForm({
+		site_id: tanks?.[0]?.site_id || master?.sites?.[0]?.id || "",
+		fuel_tank_id: tanks?.[0]?.id || "",
+		reconciliation_date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10),
+		investigation_findings: "Pemeriksaan meteran dispenser dan pipa tangki selesai.",
+		corrective_action: "Kalibrasi rutin sesuai toleransi."
+	});
+	const adjustForm = useForm({
+		site_id: tanks?.[0]?.site_id || master?.sites?.[0]?.id || "",
+		fuel_tank_id: tanks?.[0]?.id || "",
+		adjustment_date: (/* @__PURE__ */ new Date()).toISOString().slice(0, 10),
+		adjustment_type: "sounding_correction",
+		adjustment_liters: 0,
+		reason: "Penyesuaian resmi hasil rekonsiliasi sounding fisik tangki.",
+		investigation_notes: "Disetujui Kepala Teknik / Fuel Supervisor"
+	});
+	const formatNumber = (val, digits = 2) => Number(val || 0).toLocaleString("id-ID", {
+		minimumFractionDigits: digits,
+		maximumFractionDigits: digits
+	});
+	const selectedTank = (tanks || []).find((t) => String(t.id) === String(soundingForm.data.fuel_tank_id));
+	const previewCalibratedVolume = () => {
+		if (!selectedTank || !selectedTank.calibrations?.length) return 0;
+		const h = Number(soundingForm.data.measurement_cm || 0);
+		const cals = selectedTank.calibrations;
+		const lower = [...cals].filter((c) => Number(c.height_cm) <= h).pop() || cals[0];
+		const upper = cals.find((c) => Number(c.height_cm) >= h) || cals[cals.length - 1];
+		const h1 = Number(lower.height_cm);
+		const v1 = Number(lower.volume_liters);
+		const h2 = Number(upper.height_cm);
+		const v2 = Number(upper.volume_liters);
+		if (Math.abs(h2 - h1) < .001) return v1;
+		return v1 + (h - h1) / (h2 - h1) * (v2 - v1);
+	};
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Daily Tank Sounding, Calibration & Fuel Reconciliation",
+		children: [
+			/* @__PURE__ */ jsx(Head, { title: "Daily Tank Sounding & Reconciliation - TAP Fuel" }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "space-y-6",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex flex-wrap items-center gap-2 text-xs font-bold",
+							children: [
+								/* @__PURE__ */ jsx(Link, {
+									href: "/fuel/dashboard",
+									className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "Dashboard BBM"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/fuel/inventory",
+									className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "1. Fuel Inventory & Tangki"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/fuel/soundings",
+									className: "px-3.5 py-2 rounded-xl bg-amber-600 text-white",
+									children: "2. Daily Sounding & Rekonsiliasi"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/fuel/dispensing",
+									className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "3. Fuel Dispensing & Digital Ticket"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/fuel/analytics",
+									className: "px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300",
+									children: "4. Analisis Konsumsi & Rasio BBM"
+								})
+							]
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "flex flex-wrap gap-2",
+							children: [
+								/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setActiveModal("sounding"),
+									className: "px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black",
+									children: "+ Input Daily Tank Sounding"
+								}),
+								/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setActiveModal("reconciliation"),
+									className: "px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black",
+									children: "✓ Jalankan Rekonsiliasi BBM"
+								}),
+								/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setActiveModal("adjustment"),
+									className: "px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-black",
+									children: "⚙ Prosedur Adjustment Resmi"
+								})
+							]
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "mb-3",
+							children: [/* @__PURE__ */ jsx("h3", {
+								className: "text-sm font-black text-slate-900 dark:text-white",
+								children: "Pencatatan Daily Tank Sounding (Konversi Tabel Kalibrasi Tervalidasi)"
+							}), /* @__PURE__ */ jsx("p", {
+								className: "text-xs text-slate-500",
+								children: "Tinggi sounding (cm) dikonversi menggunakan Strapping Table tangki ke Volume Estimasi (Liter) dan dibandingkan terhadap Stok Sistem."
+							})]
+						}), /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800 text-[10px] uppercase text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-left",
+											children: "No. Sounding & Waktu"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-left",
+											children: "Tangki & Site"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-right",
+											children: "Tinggi Ukur (cm)"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-left",
+											children: "Metode & Tabel Konversi"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-right",
+											children: "Volume Fisik (Liter)"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-right",
+											children: "Stok Sistem (Liter)"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-right",
+											children: "Selisih (Variance)"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-center",
+											children: "Status"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-200 dark:divide-slate-800",
+									children: (soundings?.data || []).map((snd) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "p-2.5",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-black text-slate-900 dark:text-white",
+												children: snd.sounding_number
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-[10px] text-slate-500",
+												children: [
+													snd.sounding_date?.slice(0, 10),
+													" • ",
+													snd.sounding_time
+												]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "p-2.5",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-bold",
+												children: snd.tank?.tank_number
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-[10px] text-slate-500",
+												children: snd.site?.name
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "p-2.5 text-right font-black text-indigo-600",
+											children: [snd.measurement_cm, " cm"]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "p-2.5 text-[11px] text-slate-600 dark:text-slate-400",
+											children: [/* @__PURE__ */ jsx("span", {
+												className: "font-semibold uppercase",
+												children: snd.calibration_method?.replace("_", " ")
+											}), snd.conversion_snapshot && /* @__PURE__ */ jsxs("div", {
+												className: "text-[10px] text-slate-400",
+												children: [
+													"Range: ",
+													snd.conversion_snapshot.lower_point_cm,
+													"cm (",
+													snd.conversion_snapshot.lower_point_liters,
+													"L) – ",
+													snd.conversion_snapshot.upper_point_cm,
+													"cm (",
+													snd.conversion_snapshot.upper_point_liters,
+													"L)"
+												]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "p-2.5 text-right font-black text-emerald-600",
+											children: [formatNumber(snd.estimated_volume_liters), " L"]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "p-2.5 text-right font-semibold",
+											children: [formatNumber(snd.system_stock_liters), " L"]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "p-2.5 text-right font-bold",
+											children: /* @__PURE__ */ jsxs("span", {
+												className: Number(snd.variance_liters) < 0 ? "text-rose-600" : "text-emerald-600",
+												children: [
+													Number(snd.variance_liters) > 0 ? "+" : "",
+													formatNumber(snd.variance_liters),
+													" L (",
+													snd.variance_percent,
+													"%)"
+												]
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "p-2.5 text-center",
+											children: /* @__PURE__ */ jsx("span", {
+												className: "px-2 py-0.5 rounded text-[10px] font-black uppercase bg-slate-100 dark:bg-slate-800",
+												children: snd.reconciliation_status
+											})
+										})
+									] }, snd.id))
+								})]
+							})
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm",
+						children: [/* @__PURE__ */ jsx("h3", {
+							className: "text-sm font-black text-slate-900 dark:text-white mb-3",
+							children: "Rekonsiliasi BBM (Opening + Received - Issued ± Transfer ± Adjustment vs Physical Sounding)"
+						}), /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800 text-[10px] uppercase text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-left",
+											children: "No. Rekon & Tgl"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-left",
+											children: "Tangki"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-right",
+											children: "Opening"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-right",
+											children: "Received"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-right",
+											children: "Issued"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-right",
+											children: "Transfer Net"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-right",
+											children: "Adjustment"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-right",
+											children: "System Closing"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-right",
+											children: "Physical Sounding"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-right",
+											children: "Selisih"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "p-2.5 text-left",
+											children: "Investigasi"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-200 dark:divide-slate-800",
+									children: (reconciliations || []).map((rec) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "p-2.5",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-black",
+												children: rec.reconciliation_number
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-[10px] text-slate-500",
+												children: rec.reconciliation_date?.slice(0, 10)
+											})]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "p-2.5 font-bold",
+											children: rec.tank?.tank_number
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "p-2.5 text-right",
+											children: [formatNumber(rec.opening_stock_liters, 0), " L"]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "p-2.5 text-right text-emerald-600",
+											children: [
+												"+",
+												formatNumber(rec.fuel_received_liters, 0),
+												" L"
+											]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "p-2.5 text-right text-amber-600",
+											children: [
+												"-",
+												formatNumber(rec.fuel_issued_liters, 0),
+												" L"
+											]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "p-2.5 text-right",
+											children: [formatNumber(Number(rec.transfer_in_liters) - Number(rec.transfer_out_liters), 0), " L"]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "p-2.5 text-right",
+											children: [formatNumber(rec.adjustment_liters, 0), " L"]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "p-2.5 text-right font-black",
+											children: [formatNumber(rec.system_closing_stock_liters), " L"]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "p-2.5 text-right font-black text-indigo-600",
+											children: [formatNumber(rec.physical_sounding_liters), " L"]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "p-2.5 text-right font-bold text-rose-600",
+											children: [formatNumber(rec.variance_liters), " L"]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "p-2.5 text-[11px] text-slate-500 max-w-xs truncate",
+											children: rec.investigation_findings
+										})
+									] }, rec.id))
+								})]
+							})
+						})]
+					})
+				]
+			}),
+			activeModal === "sounding" && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4",
+				children: /* @__PURE__ */ jsxs("form", {
+					onSubmit: (e) => {
+						e.preventDefault();
+						soundingForm.post("/fuel/soundings", { onSuccess: () => setActiveModal(null) });
+					},
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-lg w-full p-6 space-y-4 shadow-xl text-xs",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3",
+							children: [/* @__PURE__ */ jsx("h3", {
+								className: "text-sm font-black",
+								children: "Input Daily Tank Sounding (Tinggi Tongkat Ukur cm)"
+							}), /* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setActiveModal(null),
+								children: "✕"
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "grid grid-cols-2 gap-3",
+							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "col-span-2",
+									children: [/* @__PURE__ */ jsx("label", {
+										className: "font-bold",
+										children: "Pilih Tangki Penyimpanan"
+									}), /* @__PURE__ */ jsx("select", {
+										value: soundingForm.data.fuel_tank_id,
+										onChange: (e) => {
+											const t = (tanks || []).find((x) => String(x.id) === String(e.target.value));
+											soundingForm.setData({
+												...soundingForm.data,
+												fuel_tank_id: e.target.value,
+												site_id: t?.site_id || soundingForm.data.site_id
+											});
+										},
+										className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs",
+										children: (tanks || []).map((t) => /* @__PURE__ */ jsxs("option", {
+											value: t.id,
+											children: [
+												t.tank_number,
+												" - ",
+												t.tank_name,
+												" (Max ",
+												t.max_height_cm,
+												" cm)"
+											]
+										}, t.id))
+									})]
+								}),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Tinggi Sounding (cm)"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									step: "0.1",
+									required: true,
+									value: soundingForm.data.measurement_cm,
+									onChange: (e) => soundingForm.setData("measurement_cm", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs font-black text-indigo-600"
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Estimasi Volume Kalibrasi (L)"
+								}), /* @__PURE__ */ jsxs("div", {
+									className: "mt-1 px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 font-black text-emerald-700",
+									children: [formatNumber(previewCalibratedVolume()), " Liter"]
+								})] })
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setActiveModal(null),
+								className: "px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold",
+								children: "Batal"
+							}), /* @__PURE__ */ jsx("button", {
+								type: "submit",
+								className: "px-4 py-2 rounded-xl bg-indigo-600 text-white font-black",
+								children: "Simpan Sounding & Konversi"
+							})]
+						})
+					]
+				})
+			}),
+			activeModal === "reconciliation" && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4",
+				children: /* @__PURE__ */ jsxs("form", {
+					onSubmit: (e) => {
+						e.preventDefault();
+						reconForm.post("/fuel/reconciliations", { onSuccess: () => setActiveModal(null) });
+					},
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-lg w-full p-6 space-y-4 shadow-xl text-xs",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3",
+							children: [/* @__PURE__ */ jsx("h3", {
+								className: "text-sm font-black",
+								children: "Jalankan Rekonsiliasi BBM Harian"
+							}), /* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setActiveModal(null),
+								children: "✕"
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "space-y-3",
+							children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "font-bold",
+								children: "Pilih Tangki"
+							}), /* @__PURE__ */ jsx("select", {
+								value: reconForm.data.fuel_tank_id,
+								onChange: (e) => reconForm.setData("fuel_tank_id", e.target.value),
+								className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs",
+								children: (tanks || []).map((t) => /* @__PURE__ */ jsxs("option", {
+									value: t.id,
+									children: [
+										t.tank_number,
+										" - ",
+										t.tank_name
+									]
+								}, t.id))
+							})] }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "font-bold",
+								children: "Temuan Investigasi"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: reconForm.data.investigation_findings,
+								onChange: (e) => reconForm.setData("investigation_findings", e.target.value),
+								className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs"
+							})] })]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setActiveModal(null),
+								className: "px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold",
+								children: "Batal"
+							}), /* @__PURE__ */ jsx("button", {
+								type: "submit",
+								className: "px-4 py-2 rounded-xl bg-emerald-600 text-white font-black",
+								children: "Simpan Rekonsiliasi"
+							})]
+						})
+					]
+				})
+			}),
+			activeModal === "adjustment" && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4",
+				children: /* @__PURE__ */ jsxs("form", {
+					onSubmit: (e) => {
+						e.preventDefault();
+						adjustForm.post("/fuel/adjustments", { onSuccess: () => setActiveModal(null) });
+					},
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-lg w-full p-6 space-y-4 shadow-xl text-xs",
+					children: [
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3",
+							children: [/* @__PURE__ */ jsx("h3", {
+								className: "text-sm font-black",
+								children: "Prosedur Adjustment Stok Solar Resmi"
+							}), /* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setActiveModal(null),
+								children: "✕"
+							})]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "grid grid-cols-2 gap-3",
+							children: [
+								/* @__PURE__ */ jsxs("div", {
+									className: "col-span-2",
+									children: [/* @__PURE__ */ jsx("label", {
+										className: "font-bold",
+										children: "Tangki"
+									}), /* @__PURE__ */ jsx("select", {
+										value: adjustForm.data.fuel_tank_id,
+										onChange: (e) => adjustForm.setData("fuel_tank_id", e.target.value),
+										className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs",
+										children: (tanks || []).map((t) => /* @__PURE__ */ jsxs("option", {
+											value: t.id,
+											children: [
+												t.tank_number,
+												" (Stok: ",
+												formatNumber(t.current_stock_liters),
+												" L)"
+											]
+										}, t.id))
+									})]
+								}),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Tipe Adjustment"
+								}), /* @__PURE__ */ jsxs("select", {
+									value: adjustForm.data.adjustment_type,
+									onChange: (e) => adjustForm.setData("adjustment_type", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs",
+									children: [
+										/* @__PURE__ */ jsx("option", {
+											value: "sounding_correction",
+											children: "Sounding Correction"
+										}),
+										/* @__PURE__ */ jsx("option", {
+											value: "gain",
+											children: "Stock Gain (+)"
+										}),
+										/* @__PURE__ */ jsx("option", {
+											value: "loss",
+											children: "Stock Loss / Shrinkage (-)"
+										}),
+										/* @__PURE__ */ jsx("option", {
+											value: "evaporation",
+											children: "Evaporation"
+										})
+									]
+								})] }),
+								/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "font-bold",
+									children: "Volume Adjustment (+/- Liter)"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									step: "0.01",
+									required: true,
+									value: adjustForm.data.adjustment_liters,
+									onChange: (e) => adjustForm.setData("adjustment_liters", e.target.value),
+									className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs font-black"
+								})] }),
+								/* @__PURE__ */ jsxs("div", {
+									className: "col-span-2",
+									children: [/* @__PURE__ */ jsx("label", {
+										className: "font-bold",
+										children: "Alasan Resmi & Berita Acara"
+									}), /* @__PURE__ */ jsx("input", {
+										type: "text",
+										required: true,
+										value: adjustForm.data.reason,
+										onChange: (e) => adjustForm.setData("reason", e.target.value),
+										className: "w-full mt-1 rounded-xl border-slate-300 dark:bg-slate-800 text-xs"
+									})]
+								})
+							]
+						}),
+						/* @__PURE__ */ jsxs("div", {
+							className: "flex justify-end gap-2 pt-3 border-t border-slate-200 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setActiveModal(null),
+								className: "px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold",
+								children: "Batal"
+							}), /* @__PURE__ */ jsx("button", {
+								type: "submit",
+								className: "px-4 py-2 rounded-xl bg-amber-600 text-white font-black",
+								children: "Setujui & Posting Adjustment"
+							})]
+						})
+					]
+				})
+			})
+		]
+	});
+}
+// resources/js/Pages/Hr/Attendance/Index.jsx
+var Index_exports$44 = /* @__PURE__ */ __exportAll({ default: () => HrAttendanceIndex });
+function HrAttendanceIndex({ attendances = [], shiftAssignments = [], corrections = [], leaveRequests = [], employees = [], shifts = [], units = [], sites = [], filters = {} }) {
+	const [activeTab, setActiveTab] = useState("attendances");
+	const [siteId, setSiteId] = useState(filters.site_id || "");
+	const [showMobileModal, setShowMobileModal] = useState(false);
+	const [showRosterModal, setShowRosterModal] = useState(false);
+	const [showLeaveModal, setShowLeaveModal] = useState(false);
+	const [correctionTarget, setCorrectionTarget] = useState(null);
+	const todayStr = (/* @__PURE__ */ new Date()).toISOString().substring(0, 10);
+	const attForm = useForm({
+		site_id: employees[0]?.site_id || sites[0]?.id || "",
+		employee_id: employees[0]?.id || "",
+		shift_id: shifts[0]?.id || "",
+		attendance_date: todayStr,
+		status: "present",
+		check_in_at: `${todayStr} 06:50:00`,
+		check_out_at: `${todayStr} 19:00:00`,
+		overtime_hours: 0,
+		overtime_reason: "",
+		input_source: "mobile_hp",
+		device_info: "TAP Mobile Check-In PWA (Android)",
+		gps_latitude: -3.45721,
+		gps_longitude: 115.63218,
+		enforce_shift_window: true,
+		remarks: "Check-In/Out Mobile HP sesuai konfigurasi waktu site"
+	});
+	const rosterForm = useForm({
+		site_id: employees[0]?.site_id || sites[0]?.id || "",
+		employee_id: employees[0]?.id || "",
+		shift_id: shifts[0]?.id || "",
+		roster_date: todayStr,
+		work_status: "scheduled",
+		assigned_unit_id: "",
+		notes: "Jadwal Shift Operasional Hauling"
+	});
+	const leaveForm = useForm({
+		site_id: employees[0]?.site_id || sites[0]?.id || "",
+		employee_id: employees[0]?.id || "",
+		leave_type: "annual_leave",
+		start_date: todayStr,
+		end_date: todayStr,
+		reason: ""
+	});
+	const corForm = useForm({
+		requested_check_in_at: "",
+		requested_check_out_at: "",
+		requested_overtime_hours: 0,
+		reason: ""
+	});
+	const applyFilter = (newSite) => {
+		router.get("/hr/attendance", { site_id: newSite || void 0 }, { preserveState: true });
+	};
+	const submitAttendance = (e) => {
+		e.preventDefault();
+		attForm.post("/hr/attendance", { onSuccess: () => setShowMobileModal(false) });
+	};
+	const submitRoster = (e) => {
+		e.preventDefault();
+		rosterForm.post("/hr/shift-assignments", { onSuccess: () => setShowRosterModal(false) });
+	};
+	const submitLeave = (e) => {
+		e.preventDefault();
+		leaveForm.post("/hr/leaves", { onSuccess: () => setShowLeaveModal(false) });
+	};
+	const submitCorrection = (e) => {
+		e.preventDefault();
+		if (!correctionTarget) return;
+		corForm.post(`/hr/attendance/${correctionTarget.id}/corrections`, { onSuccess: () => setCorrectionTarget(null) });
+	};
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Attendance, Shift Roster, Overtime & Leave Management",
+		children: [
+			/* @__PURE__ */ jsx(Head, { title: "Presensi HP, Shift, Lembur & Cuti - Phase 8" }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "space-y-6",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsxs("div", { children: [
+							/* @__PURE__ */ jsx("span", {
+								className: "px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-md bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300",
+								children: "Mobile HP Support & Site Time Validation"
+							}),
+							/* @__PURE__ */ jsx("h1", {
+								className: "text-xl font-extrabold text-slate-900 dark:text-white mt-1",
+								children: "Presensi Check-In/Out, Jadwal Shift, Lembur, Cuti & Koreksi Kehadiran"
+							}),
+							/* @__PURE__ */ jsx("p", {
+								className: "text-xs text-slate-500",
+								children: "Dilengkapi validasi jam shift & batas lembur harian berdasarkan konfigurasi site serta input langsung via HP."
+							})
+						] }), /* @__PURE__ */ jsxs("div", {
+							className: "flex flex-wrap items-center gap-2",
+							children: [
+								/* @__PURE__ */ jsxs("button", {
+									type: "button",
+									onClick: () => setShowMobileModal(true),
+									className: "px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5",
+									children: [/* @__PURE__ */ jsx(Smartphone, { className: "w-4 h-4" }), " Check-In / Out (HP & Web)"]
+								}),
+								/* @__PURE__ */ jsxs("button", {
+									type: "button",
+									onClick: () => setShowRosterModal(true),
+									className: "px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1.5",
+									children: [/* @__PURE__ */ jsx(Plus, { className: "w-4 h-4" }), " Shift Assignment"]
+								}),
+								/* @__PURE__ */ jsxs("button", {
+									type: "button",
+									onClick: () => setShowLeaveModal(true),
+									className: "px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-1.5",
+									children: [/* @__PURE__ */ jsx(FileSpreadsheet, { className: "w-4 h-4" }), " Ajukan Cuti / Izin"]
+								})
+							]
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsx("div", {
+							className: "flex flex-wrap gap-1.5",
+							children: [
+								{
+									id: "attendances",
+									label: `Presensi & Lembur (${attendances.length})`
+								},
+								{
+									id: "roster",
+									label: `Shift Assignment (${shiftAssignments.length})`
+								},
+								{
+									id: "leaves",
+									label: `Pengajuan Cuti & Approval (${leaveRequests.length})`
+								},
+								{
+									id: "corrections",
+									label: `Koreksi Presensi (${corrections.length})`
+								}
+							].map((t) => /* @__PURE__ */ jsx("button", {
+								type: "button",
+								onClick: () => setActiveTab(t.id),
+								className: `px-3.5 py-2 rounded-xl text-xs font-bold transition ${activeTab === t.id ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`,
+								children: t.label
+							}, t.id))
+						}), /* @__PURE__ */ jsxs("select", {
+							value: siteId,
+							onChange: (e) => {
+								setSiteId(e.target.value);
+								applyFilter(e.target.value);
+							},
+							className: "px-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+							children: [/* @__PURE__ */ jsx("option", {
+								value: "",
+								children: "Semua Site"
+							}), sites.map((s) => /* @__PURE__ */ jsxs("option", {
+								value: s.id,
+								children: [
+									s.code,
+									" — ",
+									s.name
+								]
+							}, s.id))]
+						})]
+					}),
+					activeTab === "attendances" && /* @__PURE__ */ jsx("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden",
+						children: /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "No. Presensi & Tanggal"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Karyawan & Site"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Shift & Jam Kerja"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Status & Keterlambatan"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Lembur (SPL)"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Sumber Input"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3 text-right",
+											children: "Koreksi"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: attendances.map((a) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-bold",
+												children: a.attendance_number
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-[11px] text-slate-400",
+												children: a.attendance_date?.substring(0, 10)
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-semibold",
+												children: a.employee?.name
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-[11px] text-indigo-600",
+												children: [
+													a.site?.code,
+													" • ",
+													a.employee?.department?.name
+												]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-semibold",
+												children: a.shift?.name || "Regular Shift"
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-[11px] text-slate-500",
+												children: [
+													"In: ",
+													a.check_in_at ? a.check_in_at.substring(11, 16) : "-",
+													" | Out: ",
+													a.check_out_at ? a.check_out_at.substring(11, 16) : "-",
+													" (",
+													a.work_duration_hours,
+													" jam)"
+												]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsx("span", {
+												className: `px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${a.status === "present" ? "bg-emerald-100 text-emerald-800" : a.status === "late" ? "bg-amber-100 text-amber-800" : "bg-blue-100 text-blue-800"}`,
+												children: a.status
+											}), a.late_minutes > 0 && /* @__PURE__ */ jsxs("div", {
+												className: "text-[10px] text-amber-600 font-semibold mt-0.5",
+												children: [
+													"Terlambat ",
+													a.late_minutes,
+													" menit"
+												]
+											})]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3",
+											children: Number(a.overtime_hours) > 0 ? /* @__PURE__ */ jsxs("span", {
+												className: "font-bold text-indigo-600",
+												children: [
+													"+",
+													a.overtime_hours,
+													" Jam (",
+													a.overtime_status,
+													")"
+												]
+											}) : /* @__PURE__ */ jsx("span", {
+												className: "text-slate-400",
+												children: "-"
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3",
+											children: /* @__PURE__ */ jsx("span", {
+												className: "px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[10px] font-semibold",
+												children: a.input_source === "mobile_hp" ? "📱 Mobile HP" : "💻 Web Portal"
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 text-right",
+											children: /* @__PURE__ */ jsx("button", {
+												type: "button",
+												onClick: () => {
+													setCorrectionTarget(a);
+													corForm.setData({
+														requested_check_in_at: a.check_in_at ? a.check_in_at.substring(0, 19) : `${a.attendance_date?.substring(0, 10)} 06:55:00`,
+														requested_check_out_at: a.check_out_at ? a.check_out_at.substring(0, 19) : `${a.attendance_date?.substring(0, 10)} 19:00:00`,
+														requested_overtime_hours: a.overtime_hours || 0,
+														reason: ""
+													});
+												},
+												className: "px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-semibold",
+												children: "Ajukan Koreksi"
+											})
+										})
+									] }, a.id))
+								})]
+							})
+						})
+					}),
+					activeTab === "roster" && /* @__PURE__ */ jsx("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden",
+						children: /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Kode Roster & Tanggal"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Karyawan & Site"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Shift Kerja"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Unit Assignment"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Status Roster"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: shiftAssignments.map((r) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-bold",
+												children: r.assignment_code
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-[11px] text-slate-400",
+												children: r.roster_date?.substring(0, 10)
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3 font-semibold",
+											children: [
+												r.employee?.name,
+												" (",
+												r.site?.code,
+												")"
+											]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [
+												r.shift?.name,
+												" (",
+												r.shift?.start_time?.substring(0, 5),
+												" - ",
+												r.shift?.end_time?.substring(0, 5),
+												")"
+											]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3",
+											children: r.assigned_unit?.unit_code || "-"
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3",
+											children: /* @__PURE__ */ jsx("span", {
+												className: "px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase",
+												children: r.work_status
+											})
+										})
+									] }, r.id))
+								})]
+							})
+						})
+					}),
+					activeTab === "leaves" && /* @__PURE__ */ jsx("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden",
+						children: /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "No. Cuti & Tipe"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Karyawan & Site"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Periode & Durasi"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Alasan"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Status Approval"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3 text-right",
+											children: "Aksi"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: leaveRequests.map((lv) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-bold",
+												children: lv.leave_number
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-[11px] uppercase text-indigo-600 font-semibold",
+												children: lv.leave_type?.replace("_", " ")
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3 font-semibold",
+											children: [
+												lv.employee?.name,
+												" (",
+												lv.site?.code,
+												")"
+											]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [
+												lv.start_date?.substring(0, 10),
+												" s/d ",
+												lv.end_date?.substring(0, 10),
+												" (",
+												lv.total_days,
+												" hari)"
+											]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 text-slate-500",
+											children: lv.reason
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3",
+											children: /* @__PURE__ */ jsx("span", {
+												className: `px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${lv.status === "approved" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`,
+												children: lv.status
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 text-right",
+											children: lv.status === "pending_approval" && /* @__PURE__ */ jsxs("button", {
+												type: "button",
+												onClick: () => router.post(`/hr/leaves/${lv.id}/approve`),
+												className: "px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-[11px] font-bold inline-flex items-center gap-1",
+												children: [/* @__PURE__ */ jsx(CheckCircle2, { className: "w-3 h-3" }), " Setujui Cuti"]
+											})
+										})
+									] }, lv.id))
+								})]
+							})
+						})
+					}),
+					activeTab === "corrections" && /* @__PURE__ */ jsx("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden",
+						children: /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "No. Koreksi"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Karyawan"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Usulan Check-In / Out"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Alasan Koreksi"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Status"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3 text-right",
+											children: "Approval"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: corrections.map((c) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 font-bold",
+											children: c.correction_number
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 font-semibold",
+											children: c.employee?.name
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [
+												"In: ",
+												c.requested_check_in_at?.substring(0, 16),
+												" | Out: ",
+												c.requested_check_out_at?.substring(0, 16)
+											]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 text-slate-500",
+											children: c.reason
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3",
+											children: /* @__PURE__ */ jsx("span", {
+												className: `px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${c.status === "approved" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`,
+												children: c.status
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 text-right",
+											children: c.status === "pending" && /* @__PURE__ */ jsx("button", {
+												type: "button",
+												onClick: () => router.post(`/hr/attendance-corrections/${c.id}/approve`),
+												className: "px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-[11px] font-bold",
+												children: "Approve Koreksi"
+											})
+										})
+									] }, c.id))
+								})]
+							})
+						})
+					})
+				]
+			}),
+			showMobileModal && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "flex items-center justify-between mb-4",
+						children: [/* @__PURE__ */ jsxs("h3", {
+							className: "text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5",
+							children: [/* @__PURE__ */ jsx(Smartphone, { className: "w-4 h-4 text-emerald-600" }), " Input Presensi (Mobile HP & Site Validated)"]
+						}), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setShowMobileModal(false),
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4 text-slate-400" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitAttendance,
+						className: "space-y-3 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Karyawan *"
+							}), /* @__PURE__ */ jsx("select", {
+								value: attForm.data.employee_id,
+								onChange: (e) => {
+									const emp = employees.find((x) => Number(x.id) === Number(e.target.value));
+									attForm.setData({
+										...attForm.data,
+										employee_id: e.target.value,
+										site_id: emp ? emp.site_id : attForm.data.site_id
+									});
+								},
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true,
+								children: employees.map((e) => /* @__PURE__ */ jsxs("option", {
+									value: e.id,
+									children: [
+										e.employee_code,
+										" — ",
+										e.name
+									]
+								}, e.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-2 gap-3",
+								children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Tanggal Presensi *"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "date",
+									value: attForm.data.attendance_date,
+									onChange: (e) => attForm.setData("attendance_date", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+									required: true
+								})] }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Sumber Input *"
+								}), /* @__PURE__ */ jsxs("select", {
+									value: attForm.data.input_source,
+									onChange: (e) => attForm.setData("input_source", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+									children: [/* @__PURE__ */ jsx("option", {
+										value: "mobile_hp",
+										children: "Mobile HP (PWA)"
+									}), /* @__PURE__ */ jsx("option", {
+										value: "web_portal",
+										children: "Web Portal HR"
+									})]
+								})] })]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-2 gap-3",
+								children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Waktu Check-In"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "text",
+									value: attForm.data.check_in_at,
+									onChange: (e) => attForm.setData("check_in_at", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+								})] }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Waktu Check-Out"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "text",
+									value: attForm.data.check_out_at,
+									onChange: (e) => attForm.setData("check_out_at", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+								})] })]
+							}),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Jam Lembur (Overtime Hours)"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "number",
+								step: "0.5",
+								value: attForm.data.overtime_hours,
+								onChange: (e) => attForm.setData("overtime_hours", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-end gap-2 pt-3",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setShowMobileModal(false),
+									className: "px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									disabled: attForm.processing,
+									className: "px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold",
+									children: "Simpan Presensi"
+								})]
+							})
+						]
+					})]
+				})
+			}),
+			showRosterModal && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "flex items-center justify-between mb-4",
+						children: [/* @__PURE__ */ jsx("h3", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: "Buat Jadwal Shift (Shift Assignment)"
+						}), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setShowRosterModal(false),
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4 text-slate-400" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitRoster,
+						className: "space-y-3 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Karyawan *"
+							}), /* @__PURE__ */ jsx("select", {
+								value: rosterForm.data.employee_id,
+								onChange: (e) => {
+									const emp = employees.find((x) => Number(x.id) === Number(e.target.value));
+									rosterForm.setData({
+										...rosterForm.data,
+										employee_id: e.target.value,
+										site_id: emp ? emp.site_id : rosterForm.data.site_id
+									});
+								},
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true,
+								children: employees.map((e) => /* @__PURE__ */ jsxs("option", {
+									value: e.id,
+									children: [
+										e.employee_code,
+										" — ",
+										e.name
+									]
+								}, e.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Shift Kerja *"
+							}), /* @__PURE__ */ jsx("select", {
+								value: rosterForm.data.shift_id,
+								onChange: (e) => rosterForm.setData("shift_id", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true,
+								children: shifts.map((s) => /* @__PURE__ */ jsxs("option", {
+									value: s.id,
+									children: [
+										s.name,
+										" (",
+										s.start_time?.substring(0, 5),
+										" - ",
+										s.end_time?.substring(0, 5),
+										")"
+									]
+								}, s.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Tanggal Roster *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "date",
+								value: rosterForm.data.roster_date,
+								onChange: (e) => rosterForm.setData("roster_date", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-end gap-2 pt-3",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setShowRosterModal(false),
+									className: "px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									disabled: rosterForm.processing,
+									className: "px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold",
+									children: "Simpan Shift"
+								})]
+							})
+						]
+					})]
+				})
+			}),
+			showLeaveModal && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "flex items-center justify-between mb-4",
+						children: [/* @__PURE__ */ jsx("h3", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: "Pengajuan Cuti / Izin Karyawan"
+						}), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setShowLeaveModal(false),
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4 text-slate-400" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitLeave,
+						className: "space-y-3 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Karyawan *"
+							}), /* @__PURE__ */ jsx("select", {
+								value: leaveForm.data.employee_id,
+								onChange: (e) => {
+									const emp = employees.find((x) => Number(x.id) === Number(e.target.value));
+									leaveForm.setData({
+										...leaveForm.data,
+										employee_id: e.target.value,
+										site_id: emp ? emp.site_id : leaveForm.data.site_id
+									});
+								},
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true,
+								children: employees.map((e) => /* @__PURE__ */ jsxs("option", {
+									value: e.id,
+									children: [
+										e.employee_code,
+										" — ",
+										e.name
+									]
+								}, e.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Jenis Cuti *"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: leaveForm.data.leave_type,
+								onChange: (e) => leaveForm.setData("leave_type", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								children: [
+									/* @__PURE__ */ jsx("option", {
+										value: "annual_leave",
+										children: "Cuti Tahunan (Annual Leave)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "roster_break",
+										children: "Cuti Roster Lapangan (Field Break)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "sick_leave",
+										children: "Izin Sakit (Sick Leave)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "emergency_permit",
+										children: "Izin Darurat Keluarga"
+									})
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-2 gap-3",
+								children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Mulai *"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "date",
+									value: leaveForm.data.start_date,
+									onChange: (e) => leaveForm.setData("start_date", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+									required: true
+								})] }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Sampai *"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "date",
+									value: leaveForm.data.end_date,
+									onChange: (e) => leaveForm.setData("end_date", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+									required: true
+								})] })]
+							}),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Alasan Cuti *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: leaveForm.data.reason,
+								onChange: (e) => leaveForm.setData("reason", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-end gap-2 pt-3",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setShowLeaveModal(false),
+									className: "px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									disabled: leaveForm.processing,
+									className: "px-4 py-2 rounded-xl bg-amber-600 text-white font-bold",
+									children: "Kirim Pengajuan"
+								})]
+							})
+						]
+					})]
+				})
+			}),
+			correctionTarget && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "flex items-center justify-between mb-4",
+						children: [/* @__PURE__ */ jsxs("h3", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: ["Pengajuan Koreksi Presensi: ", correctionTarget.attendance_number]
+						}), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setCorrectionTarget(null),
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4 text-slate-400" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitCorrection,
+						className: "space-y-3 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Usulan Waktu Check-In *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: corForm.data.requested_check_in_at,
+								onChange: (e) => corForm.setData("requested_check_in_at", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Usulan Waktu Check-Out *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: corForm.data.requested_check_out_at,
+								onChange: (e) => corForm.setData("requested_check_out_at", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Alasan Koreksi *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: corForm.data.reason,
+								onChange: (e) => corForm.setData("reason", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-end gap-2 pt-3",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setCorrectionTarget(null),
+									className: "px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									disabled: corForm.processing,
+									className: "px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold",
+									children: "Kirim Koreksi"
+								})]
+							})
+						]
+					})]
+				})
+			})
+		]
+	});
+}
+// resources/js/Pages/Hr/Dashboard/Index.jsx
+var Index_exports$43 = /* @__PURE__ */ __exportAll({ default: () => HrDashboardIndex });
+function HrDashboardIndex({ metrics = {}, employeeBySite = [], employeeByDepartment = [], expiringContracts = [], simperExpiring = [], mcuExpiring = [], siteSettings = [], sites = [], filters = {} }) {
+	const [siteId, setSiteId] = useState(filters.site_id || "");
+	const [selectedSetting, setSelectedSetting] = useState(null);
+	const settingForm = useForm({
+		check_in_grace_minutes: 15,
+		earliest_check_in_minutes_before: 90,
+		max_overtime_hours_per_day: 4,
+		contract_reminder_days: 30,
+		document_reminder_days: 30,
+		require_gps_on_mobile: true
+	});
+	const handleFilterSite = (val) => {
+		setSiteId(val);
+		router.get("/hr/dashboard", { site_id: val || void 0 }, { preserveState: true });
+	};
+	const openEditSetting = (setting) => {
+		setSelectedSetting(setting);
+		settingForm.setData({
+			check_in_grace_minutes: setting.check_in_grace_minutes,
+			earliest_check_in_minutes_before: setting.earliest_check_in_minutes_before,
+			max_overtime_hours_per_day: setting.max_overtime_hours_per_day,
+			contract_reminder_days: setting.contract_reminder_days,
+			document_reminder_days: setting.document_reminder_days,
+			require_gps_on_mobile: Boolean(setting.require_gps_on_mobile)
+		});
+	};
+	const submitSetting = (e) => {
+		e.preventDefault();
+		if (!selectedSetting) return;
+		settingForm.put(`/hr/site-settings/${selectedSetting.id}`, { onSuccess: () => setSelectedSetting(null) });
+	};
+	const attSummary = metrics.attendance_summary || {};
+	const otSummary = metrics.overtime_summary || {};
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "HR & Employee Management Dashboard",
+		children: [
+			/* @__PURE__ */ jsx(Head, { title: "HR & SDM Dashboard - Phase 8" }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "space-y-6",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs",
+						children: [/* @__PURE__ */ jsxs("div", { children: [
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex items-center gap-2",
+								children: [/* @__PURE__ */ jsx("span", {
+									className: "px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-md bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300",
+									children: "Phase 8 — HR & Employee Management"
+								}), /* @__PURE__ */ jsx("span", {
+									className: "px-2.5 py-0.5 text-[11px] font-semibold rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
+									children: "Multi-Site Integrated"
+								})]
+							}),
+							/* @__PURE__ */ jsx("h1", {
+								className: "text-xl font-extrabold text-slate-900 dark:text-white mt-1",
+								children: "Executive HR, Contract, Driver & Attendance Control Center"
+							}),
+							/* @__PURE__ */ jsx("p", {
+								className: "text-xs text-slate-500 dark:text-slate-400",
+								children: "Monitoring kekuatan SDM tambang, masa berlaku PKWT/SIMPER/MCU, rekap presensi HP & lembur operasional TAP."
+							})
+						] }), /* @__PURE__ */ jsxs("div", {
+							className: "flex flex-wrap items-center gap-2.5",
+							children: [
+								/* @__PURE__ */ jsxs("select", {
+									value: siteId,
+									onChange: (e) => handleFilterSite(e.target.value),
+									className: "px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 font-medium",
+									children: [/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "Semua Site Operasional TAP"
+									}), sites.map((s) => /* @__PURE__ */ jsxs("option", {
+										value: s.id,
+										children: [
+											s.code,
+											" — ",
+											s.name
+										]
+									}, s.id))]
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/hr/employees",
+									className: "px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-xs transition",
+									children: "Kelola Karyawan & Kontrak"
+								}),
+								/* @__PURE__ */ jsx(Link, {
+									href: "/hr/attendance",
+									className: "px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition",
+									children: "Presensi & Cuti"
+								})
+							]
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4",
+						children: [
+							/* @__PURE__ */ jsxs("div", {
+								className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+								children: [
+									/* @__PURE__ */ jsxs("div", {
+										className: "flex items-center justify-between",
+										children: [/* @__PURE__ */ jsx("span", {
+											className: "text-xs font-semibold text-slate-500",
+											children: "Total Employee"
+										}), /* @__PURE__ */ jsx(Users, { className: "w-4 h-4 text-indigo-500" })]
+									}),
+									/* @__PURE__ */ jsx("p", {
+										className: "text-2xl font-extrabold text-slate-900 dark:text-white mt-2",
+										children: metrics.total_employees || 0
+									}),
+									/* @__PURE__ */ jsxs("p", {
+										className: "text-[11px] text-slate-400 mt-1",
+										children: ["Nonaktif / Resign: ", metrics.inactive_employees || 0]
+									})
+								]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+								children: [
+									/* @__PURE__ */ jsxs("div", {
+										className: "flex items-center justify-between",
+										children: [/* @__PURE__ */ jsx("span", {
+											className: "text-xs font-semibold text-slate-500",
+											children: "Active Employee"
+										}), /* @__PURE__ */ jsx(UserCheck, { className: "w-4 h-4 text-emerald-500" })]
+									}),
+									/* @__PURE__ */ jsx("p", {
+										className: "text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-2",
+										children: metrics.active_employees || 0
+									}),
+									/* @__PURE__ */ jsxs("p", {
+										className: "text-[11px] text-slate-400 mt-1",
+										children: [
+											"Hadir Hari Ini: ",
+											attSummary.today_present || 0,
+											" personel"
+										]
+									})
+								]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+								children: [
+									/* @__PURE__ */ jsxs("div", {
+										className: "flex items-center justify-between",
+										children: [/* @__PURE__ */ jsx("span", {
+											className: "text-xs font-semibold text-slate-500",
+											children: "Contract Expiring"
+										}), /* @__PURE__ */ jsx(Briefcase, { className: "w-4 h-4 text-amber-500" })]
+									}),
+									/* @__PURE__ */ jsx("p", {
+										className: "text-2xl font-extrabold text-amber-600 dark:text-amber-400 mt-2",
+										children: metrics.expiring_contracts_count || 0
+									}),
+									/* @__PURE__ */ jsx("p", {
+										className: "text-[11px] text-slate-400 mt-1",
+										children: "Reminder PKWT ≤ 30 hari"
+									})
+								]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+								children: [
+									/* @__PURE__ */ jsxs("div", {
+										className: "flex items-center justify-between",
+										children: [/* @__PURE__ */ jsx("span", {
+											className: "text-xs font-semibold text-slate-500",
+											children: "SIMPER Expiring"
+										}), /* @__PURE__ */ jsx(AlertOctagon, { className: "w-4 h-4 text-rose-500" })]
+									}),
+									/* @__PURE__ */ jsx("p", {
+										className: "text-2xl font-extrabold text-rose-600 dark:text-rose-400 mt-2",
+										children: metrics.simper_expiring_count || 0
+									}),
+									/* @__PURE__ */ jsx("p", {
+										className: "text-[11px] text-slate-400 mt-1",
+										children: "Wajib perpanjangan K3LH"
+									})
+								]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800",
+								children: [
+									/* @__PURE__ */ jsxs("div", {
+										className: "flex items-center justify-between",
+										children: [/* @__PURE__ */ jsx("span", {
+											className: "text-xs font-semibold text-slate-500",
+											children: "MCU Expiring"
+										}), /* @__PURE__ */ jsx(ShieldCheck, { className: "w-4 h-4 text-purple-500" })]
+									}),
+									/* @__PURE__ */ jsx("p", {
+										className: "text-2xl font-extrabold text-purple-600 dark:text-purple-400 mt-2",
+										children: metrics.mcu_expiring_count || 0
+									}),
+									/* @__PURE__ */ jsx("p", {
+										className: "text-[11px] text-slate-400 mt-1",
+										children: "Medical Check Up Driver"
+									})
+								]
+							})
+						]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-1 lg:grid-cols-2 gap-6",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsxs("div", {
+								className: "flex items-center justify-between mb-4",
+								children: [/* @__PURE__ */ jsxs("div", {
+									className: "flex items-center gap-2",
+									children: [/* @__PURE__ */ jsx(CalendarCheck, { className: "w-4 h-4 text-indigo-600" }), /* @__PURE__ */ jsx("h2", {
+										className: "text-sm font-bold text-slate-900 dark:text-white",
+										children: "Attendance Summary (Bulan Berjalan)"
+									})]
+								}), /* @__PURE__ */ jsxs("span", {
+									className: "text-[11px] font-semibold px-2 py-0.5 rounded-md bg-cyan-50 text-cyan-700 dark:bg-cyan-950 dark:text-cyan-300 flex items-center gap-1",
+									children: [
+										/* @__PURE__ */ jsx(Smartphone, { className: "w-3 h-3" }),
+										" Mobile HP: ",
+										attSummary.mobile_hp_count || 0
+									]
+								})]
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-2 sm:grid-cols-4 gap-3",
+								children: [
+									/* @__PURE__ */ jsxs("div", {
+										className: "p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200/60 dark:border-emerald-900/40",
+										children: [/* @__PURE__ */ jsx("span", {
+											className: "text-[11px] text-emerald-700 dark:text-emerald-300 font-medium",
+											children: "Hadir Tepat Waktu"
+										}), /* @__PURE__ */ jsx("p", {
+											className: "text-xl font-extrabold text-emerald-700 dark:text-emerald-300 mt-1",
+											children: attSummary.present_count || 0
+										})]
+									}),
+									/* @__PURE__ */ jsxs("div", {
+										className: "p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/40",
+										children: [/* @__PURE__ */ jsx("span", {
+											className: "text-[11px] text-amber-700 dark:text-amber-300 font-medium",
+											children: "Terlambat (Late)"
+										}), /* @__PURE__ */ jsx("p", {
+											className: "text-xl font-extrabold text-amber-700 dark:text-amber-300 mt-1",
+											children: attSummary.late_count || 0
+										})]
+									}),
+									/* @__PURE__ */ jsxs("div", {
+										className: "p-3 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-900/40",
+										children: [/* @__PURE__ */ jsx("span", {
+											className: "text-[11px] text-blue-700 dark:text-blue-300 font-medium",
+											children: "Cuti / Sakit / Izin"
+										}), /* @__PURE__ */ jsx("p", {
+											className: "text-xl font-extrabold text-blue-700 dark:text-blue-300 mt-1",
+											children: attSummary.on_leave_count || 0
+										})]
+									}),
+									/* @__PURE__ */ jsxs("div", {
+										className: "p-3 rounded-xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200/60 dark:border-rose-900/40",
+										children: [/* @__PURE__ */ jsx("span", {
+											className: "text-[11px] text-rose-700 dark:text-rose-300 font-medium",
+											children: "Alpha / Mangkir"
+										}), /* @__PURE__ */ jsx("p", {
+											className: "text-xl font-extrabold text-rose-700 dark:text-rose-300 mt-1",
+											children: attSummary.absent_count || 0
+										})]
+									})
+								]
+							})]
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsxs("div", {
+								className: "flex items-center justify-between mb-4",
+								children: [/* @__PURE__ */ jsxs("div", {
+									className: "flex items-center gap-2",
+									children: [/* @__PURE__ */ jsx(Clock, { className: "w-4 h-4 text-amber-600" }), /* @__PURE__ */ jsx("h2", {
+										className: "text-sm font-bold text-slate-900 dark:text-white",
+										children: "Overtime & Leave Approval Summary"
+									})]
+								}), /* @__PURE__ */ jsx(Link, {
+									href: "/hr/attendance",
+									className: "text-xs font-bold text-indigo-600 hover:underline",
+									children: "Detail Lembur →"
+								})]
+							}), /* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-2 sm:grid-cols-4 gap-3",
+								children: [
+									/* @__PURE__ */ jsxs("div", {
+										className: "p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60",
+										children: [/* @__PURE__ */ jsx("span", {
+											className: "text-[11px] text-slate-500",
+											children: "Total Jam Lembur"
+										}), /* @__PURE__ */ jsxs("p", {
+											className: "text-xl font-extrabold text-slate-900 dark:text-white mt-1",
+											children: [
+												otSummary.total_overtime_hours || 0,
+												" ",
+												/* @__PURE__ */ jsx("span", {
+													className: "text-xs font-normal",
+													children: "Jam"
+												})
+											]
+										})]
+									}),
+									/* @__PURE__ */ jsxs("div", {
+										className: "p-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/30",
+										children: [/* @__PURE__ */ jsx("span", {
+											className: "text-[11px] text-emerald-700 dark:text-emerald-300",
+											children: "Lembur Disetujui"
+										}), /* @__PURE__ */ jsxs("p", {
+											className: "text-xl font-extrabold text-emerald-700 dark:text-emerald-300 mt-1",
+											children: [
+												otSummary.approved_overtime_hours || 0,
+												" ",
+												/* @__PURE__ */ jsx("span", {
+													className: "text-xs font-normal",
+													children: "Jam"
+												})
+											]
+										})]
+									}),
+									/* @__PURE__ */ jsxs("div", {
+										className: "p-3 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/30",
+										children: [/* @__PURE__ */ jsx("span", {
+											className: "text-[11px] text-indigo-700 dark:text-indigo-300",
+											children: "Frekuensi SPL"
+										}), /* @__PURE__ */ jsxs("p", {
+											className: "text-xl font-extrabold text-indigo-700 dark:text-indigo-300 mt-1",
+											children: [
+												otSummary.overtime_events_count || 0,
+												" ",
+												/* @__PURE__ */ jsx("span", {
+													className: "text-xs font-normal",
+													children: "Sesi"
+												})
+											]
+										})]
+									}),
+									/* @__PURE__ */ jsxs("div", {
+										className: "p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30",
+										children: [/* @__PURE__ */ jsx("span", {
+											className: "text-[11px] text-amber-700 dark:text-amber-300",
+											children: "Cuti Pending"
+										}), /* @__PURE__ */ jsx("p", {
+											className: "text-xl font-extrabold text-amber-700 dark:text-amber-300 mt-1",
+											children: otSummary.pending_leaves_count || 0
+										})]
+									})
+								]
+							})]
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-1 lg:grid-cols-2 gap-6",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsxs("div", {
+								className: "flex items-center gap-2 mb-4",
+								children: [/* @__PURE__ */ jsx(Building2, { className: "w-4 h-4 text-indigo-600" }), /* @__PURE__ */ jsx("h2", {
+									className: "text-sm font-bold text-slate-900 dark:text-white",
+									children: "Distribusi Karyawan per Site (Employee by Site)"
+								})]
+							}), /* @__PURE__ */ jsx("div", {
+								className: "overflow-x-auto",
+								children: /* @__PURE__ */ jsxs("table", {
+									className: "w-full text-left text-xs",
+									children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", {
+										className: "border-b border-slate-200 dark:border-slate-800 text-slate-500",
+										children: [
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2",
+												children: "Site"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2 text-center",
+												children: "Total SDM"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2 text-center",
+												children: "Aktif"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2 text-center",
+												children: "Driver Hauling"
+											})
+										]
+									}) }), /* @__PURE__ */ jsx("tbody", {
+										className: "divide-y divide-slate-100 dark:divide-slate-800",
+										children: employeeBySite.map((s) => /* @__PURE__ */ jsxs("tr", { children: [
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-2.5 font-semibold text-slate-800 dark:text-slate-200",
+												children: [
+													s.site_code,
+													" — ",
+													s.site_name
+												]
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-2.5 text-center font-bold",
+												children: s.total_employees
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-2.5 text-center text-emerald-600 font-bold",
+												children: s.active_employees
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-2.5 text-center text-amber-600 font-bold",
+												children: s.active_drivers
+											})
+										] }, s.site_id))
+									})]
+								})
+							})]
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+							children: [/* @__PURE__ */ jsxs("div", {
+								className: "flex items-center gap-2 mb-4",
+								children: [/* @__PURE__ */ jsx(Briefcase, { className: "w-4 h-4 text-emerald-600" }), /* @__PURE__ */ jsx("h2", {
+									className: "text-sm font-bold text-slate-900 dark:text-white",
+									children: "Distribusi Karyawan per Departemen (Employee by Department)"
+								})]
+							}), /* @__PURE__ */ jsx("div", {
+								className: "overflow-x-auto max-h-60",
+								children: /* @__PURE__ */ jsxs("table", {
+									className: "w-full text-left text-xs",
+									children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", {
+										className: "border-b border-slate-200 dark:border-slate-800 text-slate-500",
+										children: [
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2",
+												children: "Departemen"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2",
+												children: "Site"
+											}),
+											/* @__PURE__ */ jsx("th", {
+												className: "py-2 text-right",
+												children: "Personel Aktif"
+											})
+										]
+									}) }), /* @__PURE__ */ jsx("tbody", {
+										className: "divide-y divide-slate-100 dark:divide-slate-800",
+										children: employeeByDepartment.map((d) => /* @__PURE__ */ jsxs("tr", { children: [
+											/* @__PURE__ */ jsxs("td", {
+												className: "py-2 font-semibold text-slate-800 dark:text-slate-200",
+												children: [
+													d.department_code,
+													" — ",
+													d.department_name
+												]
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-2 text-slate-500",
+												children: d.site_name
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "py-2 text-right font-bold text-indigo-600",
+												children: d.active_count
+											})
+										] }, d.department_id))
+									})]
+								})
+							})]
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "grid grid-cols-1 lg:grid-cols-3 gap-6",
+						children: [
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsxs("div", {
+									className: "flex items-center justify-between mb-3",
+									children: [/* @__PURE__ */ jsxs("h3", {
+										className: "text-xs font-bold uppercase tracking-wider text-amber-600",
+										children: [
+											"Reminder Kontrak PKWT (",
+											expiringContracts.length,
+											")"
+										]
+									}), /* @__PURE__ */ jsx(Link, {
+										href: "/hr/employees",
+										className: "text-[11px] font-bold text-indigo-600 hover:underline",
+										children: "Perpanjang →"
+									})]
+								}), /* @__PURE__ */ jsx("div", {
+									className: "space-y-2.5",
+									children: expiringContracts.length === 0 ? /* @__PURE__ */ jsx("p", {
+										className: "text-xs text-slate-400",
+										children: "Tidak ada kontrak kerja yang berakhir dalam 30 hari."
+									}) : expiringContracts.map((c) => /* @__PURE__ */ jsxs("div", {
+										className: "p-3 rounded-xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 text-xs",
+										children: [/* @__PURE__ */ jsxs("div", {
+											className: "flex items-center justify-between font-bold text-slate-800 dark:text-slate-200",
+											children: [/* @__PURE__ */ jsx("span", { children: c.employee?.name }), /* @__PURE__ */ jsxs("span", {
+												className: "px-2 py-0.5 rounded-md bg-amber-200/80 text-amber-900 text-[10px]",
+												children: [c.days_remaining, " hari lagi"]
+											})]
+										}), /* @__PURE__ */ jsxs("p", {
+											className: "text-[11px] text-slate-500 mt-0.5",
+											children: [
+												c.contract_number,
+												" • Berakhir: ",
+												c.end_date?.substring(0, 10)
+											]
+										})]
+									}, c.id))
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsxs("div", {
+									className: "flex items-center justify-between mb-3",
+									children: [/* @__PURE__ */ jsxs("h3", {
+										className: "text-xs font-bold uppercase tracking-wider text-rose-600",
+										children: [
+											"SIMPER Expiring (",
+											simperExpiring.length,
+											")"
+										]
+									}), /* @__PURE__ */ jsx(Link, {
+										href: "/hr/drivers",
+										className: "text-[11px] font-bold text-indigo-600 hover:underline",
+										children: "Kelola SIMPER →"
+									})]
+								}), /* @__PURE__ */ jsx("div", {
+									className: "space-y-2.5",
+									children: simperExpiring.length === 0 ? /* @__PURE__ */ jsx("p", {
+										className: "text-xs text-slate-400",
+										children: "Seluruh SIMPER driver aktif dalam masa berlaku aman."
+									}) : simperExpiring.map((d) => /* @__PURE__ */ jsxs("div", {
+										className: "p-3 rounded-xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200/60 dark:border-rose-900/40 text-xs",
+										children: [/* @__PURE__ */ jsxs("div", {
+											className: "flex items-center justify-between font-bold text-slate-800 dark:text-slate-200",
+											children: [/* @__PURE__ */ jsxs("span", { children: [
+												d.employee?.name,
+												" (",
+												d.driver_code,
+												")"
+											] }), /* @__PURE__ */ jsxs("span", {
+												className: "px-2 py-0.5 rounded-md bg-rose-200/80 text-rose-900 text-[10px]",
+												children: [d.days_remaining, " hari"]
+											})]
+										}), /* @__PURE__ */ jsxs("p", {
+											className: "text-[11px] text-slate-500 mt-0.5",
+											children: [
+												"SIMPER: ",
+												d.simper_number,
+												" • Exp: ",
+												d.simper_expiry?.substring(0, 10)
+											]
+										})]
+									}, d.id))
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsxs("div", {
+									className: "flex items-center justify-between mb-3",
+									children: [/* @__PURE__ */ jsxs("h3", {
+										className: "text-xs font-bold uppercase tracking-wider text-purple-600",
+										children: [
+											"MCU Expiring (",
+											mcuExpiring.length,
+											")"
+										]
+									}), /* @__PURE__ */ jsx(Link, {
+										href: "/hr/drivers",
+										className: "text-[11px] font-bold text-indigo-600 hover:underline",
+										children: "Jadwalkan MCU →"
+									})]
+								}), /* @__PURE__ */ jsx("div", {
+									className: "space-y-2.5",
+									children: mcuExpiring.length === 0 ? /* @__PURE__ */ jsx("p", {
+										className: "text-xs text-slate-400",
+										children: "Seluruh Medical Check Up driver masih berlaku."
+									}) : mcuExpiring.map((d) => /* @__PURE__ */ jsxs("div", {
+										className: "p-3 rounded-xl bg-purple-50/60 dark:bg-purple-950/20 border border-purple-200/60 dark:border-purple-900/40 text-xs",
+										children: [/* @__PURE__ */ jsxs("div", {
+											className: "flex items-center justify-between font-bold text-slate-800 dark:text-slate-200",
+											children: [/* @__PURE__ */ jsxs("span", { children: [
+												d.employee?.name,
+												" (",
+												d.driver_code,
+												")"
+											] }), /* @__PURE__ */ jsxs("span", {
+												className: "px-2 py-0.5 rounded-md bg-purple-200/80 text-purple-900 text-[10px]",
+												children: [d.days_remaining, " hari"]
+											})]
+										}), /* @__PURE__ */ jsxs("p", {
+											className: "text-[11px] text-slate-500 mt-0.5",
+											children: [
+												"Status MCU: ",
+												d.mcu_status?.toUpperCase(),
+												" • Exp: ",
+												d.mcu_expiry?.substring(0, 10)
+											]
+										})]
+									}, d.id))
+								})]
+							})
+						]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsx("div", {
+							className: "flex items-center justify-between mb-4",
+							children: /* @__PURE__ */ jsxs("div", {
+								className: "flex items-center gap-2",
+								children: [/* @__PURE__ */ jsx(Settings, { className: "w-4 h-4 text-slate-600" }), /* @__PURE__ */ jsx("h2", {
+									className: "text-sm font-bold text-slate-900 dark:text-white",
+									children: "Konfigurasi Validasi Waktu Presensi HP, Lembur & Reminder per Site"
+								})]
+							})
+						}), /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", {
+									className: "border-b border-slate-200 dark:border-slate-800 text-slate-500",
+									children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "Site"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "Toleransi Keterlambatan"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "Batas Awal Check-In"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "Maks Lembur Harian"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "Reminder Kontrak/Dokumen"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2",
+											children: "GPS HP Wajib"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "py-2 text-right",
+											children: "Aksi"
+										})
+									]
+								}) }), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: siteSettings.map((st) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2.5 font-bold text-slate-800 dark:text-slate-200",
+											children: [
+												st.site?.code,
+												" — ",
+												st.site?.name
+											]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2.5",
+											children: [st.check_in_grace_minutes, " menit"]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2.5",
+											children: [st.earliest_check_in_minutes_before, " menit sebelum shift"]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2.5 font-semibold text-amber-600",
+											children: [st.max_overtime_hours_per_day, " jam/hari"]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "py-2.5",
+											children: [st.contract_reminder_days, " hari"]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2.5",
+											children: /* @__PURE__ */ jsx("span", {
+												className: `px-2 py-0.5 rounded-md text-[10px] font-bold ${st.require_gps_on_mobile ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-600"}`,
+												children: st.require_gps_on_mobile ? "WAJIB GPS" : "OPSIONAL"
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "py-2.5 text-right",
+											children: /* @__PURE__ */ jsx("button", {
+												type: "button",
+												onClick: () => openEditSetting(st),
+												className: "px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold",
+												children: "Konfigurasi"
+											})
+										})
+									] }, st.id))
+								})]
+							})
+						})]
+					})
+				]
+			}),
+			selectedSetting && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "flex items-center justify-between mb-4",
+						children: [/* @__PURE__ */ jsxs("h3", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: ["Konfigurasi HR Site: ", selectedSetting.site?.name]
+						}), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setSelectedSetting(null),
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4 text-slate-400" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitSetting,
+						className: "space-y-3 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Toleransi Terlambat Check-In (Menit)"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "number",
+								value: settingForm.data.check_in_grace_minutes,
+								onChange: (e) => settingForm.setData("check_in_grace_minutes", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Batas Paling Awal Check-In Sebelum Shift (Menit)"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "number",
+								value: settingForm.data.earliest_check_in_minutes_before,
+								onChange: (e) => settingForm.setData("earliest_check_in_minutes_before", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+								children: "Maksimum Jam Lembur Harian (Jam)"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "number",
+								step: "0.5",
+								value: settingForm.data.max_overtime_hours_per_day,
+								onChange: (e) => settingForm.setData("max_overtime_hours_per_day", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-2 gap-3",
+								children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+									children: "Reminder Kontrak (Hari)"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									value: settingForm.data.contract_reminder_days,
+									onChange: (e) => settingForm.setData("contract_reminder_days", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+									required: true
+								})] }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold text-slate-700 dark:text-slate-300 mb-1",
+									children: "Reminder SIMPER/MCU (Hari)"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									value: settingForm.data.document_reminder_days,
+									onChange: (e) => settingForm.setData("document_reminder_days", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+									required: true
+								})] })]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex items-center gap-2 pt-1",
+								children: [/* @__PURE__ */ jsx("input", {
+									type: "checkbox",
+									id: "gps_req",
+									checked: settingForm.data.require_gps_on_mobile,
+									onChange: (e) => settingForm.setData("require_gps_on_mobile", e.target.checked)
+								}), /* @__PURE__ */ jsx("label", {
+									htmlFor: "gps_req",
+									className: "font-semibold text-slate-700 dark:text-slate-300",
+									children: "Wajibkan Koordinat GPS saat Check-In via HP"
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-end gap-2 pt-3",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setSelectedSetting(null),
+									className: "px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									disabled: settingForm.processing,
+									className: "px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold",
+									children: "Simpan Parameter"
+								})]
+							})
+						]
+					})]
+				})
+			})
+		]
+	});
+}
+// resources/js/Pages/Hr/Documents/Index.jsx
+var Index_exports$42 = /* @__PURE__ */ __exportAll({ default: () => HrDocumentsIndex });
+function HrDocumentsIndex({ documents = [], employees = [], sites = [], filters = {} }) {
+	const [siteId, setSiteId] = useState(filters.site_id || "");
+	const [docType, setDocType] = useState(filters.document_type || "");
+	const [showUploadModal, setShowUploadModal] = useState(false);
+	const docForm = useForm({
+		site_id: employees[0]?.site_id || sites[0]?.id || "",
+		employee_id: employees[0]?.id || "",
+		document_type: "ktp",
+		document_title: "",
+		document_number: "",
+		issue_date: (/* @__PURE__ */ new Date()).toISOString().substring(0, 10),
+		expiry_date: "",
+		access_level: "confidential_personal",
+		is_sensitive: true,
+		notes: "Dokumen terverifikasi HRD TAP"
+	});
+	const applyFilter = (newSite, newType) => {
+		router.get("/hr/documents", {
+			site_id: newSite || void 0,
+			document_type: newType || void 0
+		}, { preserveState: true });
+	};
+	const submitDocument = (e) => {
+		e.preventDefault();
+		docForm.post("/hr/documents", { onSuccess: () => {
+			setShowUploadModal(false);
+			docForm.reset();
+		} });
+	};
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Employee Document Vault & Sensitive Access Control",
+		children: [
+			/* @__PURE__ */ jsx(Head, { title: "Dokumen Karyawan & Proteksi Akses - Phase 8" }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "space-y-6",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsxs("div", { children: [
+							/* @__PURE__ */ jsx("span", {
+								className: "px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-md bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300",
+								children: "RBAC & Sensitive Document Access Control"
+							}),
+							/* @__PURE__ */ jsx("h1", {
+								className: "text-xl font-extrabold text-slate-900 dark:text-white mt-1",
+								children: "Arsip Dokumen Karyawan (KTP, SIM, SIMPER, MCU, Kontrak Kerja & Sertifikat)"
+							}),
+							/* @__PURE__ */ jsx("p", {
+								className: "text-xs text-slate-500",
+								children: "Dokumen pribadi & sensitif (KTP, Rekam Medis MCU, Kontrak Gaji) diproteksi ketat sesuai hak akses HRD & pemilik dokumen."
+							})
+						] }), /* @__PURE__ */ jsxs("button", {
+							type: "button",
+							onClick: () => setShowUploadModal(true),
+							className: "px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1.5",
+							children: [/* @__PURE__ */ jsx(Plus, { className: "w-4 h-4" }), " Unggah Dokumen HR"]
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex flex-wrap items-center gap-2",
+							children: [/* @__PURE__ */ jsxs("select", {
+								value: docType,
+								onChange: (e) => {
+									setDocType(e.target.value);
+									applyFilter(siteId, e.target.value);
+								},
+								className: "px-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								children: [
+									/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "Semua Kategori Dokumen"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "ktp",
+										children: "KTP (Confidential)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "sim",
+										children: "SIM Polisi"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "simper",
+										children: "SIMPER Tambang"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "mcu",
+										children: "Medical Check Up / MCU (Confidential)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "employment_contract",
+										children: "Kontrak Kerja PKWT/PKWTT (Confidential)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "training_certificate",
+										children: "Sertifikat Training"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "supporting_document",
+										children: "Dokumen Pendukung"
+									})
+								]
+							}), /* @__PURE__ */ jsxs("select", {
+								value: siteId,
+								onChange: (e) => {
+									setSiteId(e.target.value);
+									applyFilter(e.target.value, docType);
+								},
+								className: "px-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								children: [/* @__PURE__ */ jsx("option", {
+									value: "",
+									children: "Semua Site"
+								}), sites.map((s) => /* @__PURE__ */ jsxs("option", {
+									value: s.id,
+									children: [
+										s.code,
+										" — ",
+										s.name
+									]
+								}, s.id))]
+							})]
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "text-xs text-slate-500",
+							children: ["Total Dokumen Tersimpan: ", /* @__PURE__ */ jsx("strong", { children: documents.length })]
+						})]
+					}),
+					/* @__PURE__ */ jsx("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden",
+						children: /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Kode & Judul Dokumen"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Karyawan & Site"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Kategori"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Nomor & Masa Berlaku"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Klasifikasi Keamanan"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3 text-right",
+											children: "Status Akses"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: documents.map((doc) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsxs("div", {
+												className: "font-bold text-slate-900 dark:text-white flex items-center gap-1.5",
+												children: [
+													/* @__PURE__ */ jsx(FileText, { className: "w-3.5 h-3.5 text-indigo-500" }),
+													" ",
+													doc.document_title
+												]
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-[11px] text-slate-400",
+												children: doc.document_code
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-semibold",
+												children: doc.employee?.name
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-[11px] text-indigo-600",
+												children: [
+													doc.site?.code,
+													" • ",
+													doc.employee?.employee_code
+												]
+											})]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 uppercase text-[11px] font-bold",
+											children: doc.document_type?.replace("_", " ")
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-mono",
+												children: doc.document_number || "-"
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-[11px] text-slate-400",
+												children: ["Exp: ", doc.expiry_date ? doc.expiry_date.substring(0, 10) : "Seumur Hidup / Permanen"]
+											})]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3",
+											children: /* @__PURE__ */ jsxs("span", {
+												className: `px-2 py-0.5 rounded-md text-[10px] font-bold uppercase inline-flex items-center gap-1 ${doc.is_sensitive ? "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300" : "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"}`,
+												children: [doc.is_sensitive ? /* @__PURE__ */ jsx(Lock, { className: "w-3 h-3" }) : /* @__PURE__ */ jsx(Unlock, { className: "w-3 h-3" }), doc.access_level?.replace("_", " ")]
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 text-right",
+											children: doc.can_access ? /* @__PURE__ */ jsxs("a", {
+												href: `/hr/documents/${doc.id}/access`,
+												target: "_blank",
+												rel: "noreferrer",
+												className: "px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[11px] font-bold inline-flex items-center gap-1",
+												children: [/* @__PURE__ */ jsx(ShieldCheck, { className: "w-3 h-3" }), " Buka Dokumen"]
+											}) : /* @__PURE__ */ jsxs("span", {
+												className: "px-2.5 py-1 rounded-lg bg-slate-100 text-slate-400 text-[11px] font-semibold inline-flex items-center gap-1",
+												children: [/* @__PURE__ */ jsx(Lock, { className: "w-3 h-3" }), " Terkunci (Restricted)"]
+											})
+										})
+									] }, doc.id))
+								})]
+							})
+						})
+					})
+				]
+			}),
+			showUploadModal && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "flex items-center justify-between mb-4",
+						children: [/* @__PURE__ */ jsx("h3", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: "Simpan Dokumen Karyawan & Set Klasifikasi Akses"
+						}), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setShowUploadModal(false),
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4 text-slate-400" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitDocument,
+						className: "space-y-3 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Karyawan *"
+							}), /* @__PURE__ */ jsx("select", {
+								value: docForm.data.employee_id,
+								onChange: (e) => {
+									const emp = employees.find((x) => Number(x.id) === Number(e.target.value));
+									docForm.setData({
+										...docForm.data,
+										employee_id: e.target.value,
+										site_id: emp ? emp.site_id : docForm.data.site_id
+									});
+								},
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true,
+								children: employees.map((e) => /* @__PURE__ */ jsxs("option", {
+									value: e.id,
+									children: [
+										e.employee_code,
+										" — ",
+										e.name
+									]
+								}, e.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Tipe Dokumen *"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: docForm.data.document_type,
+								onChange: (e) => {
+									const t = e.target.value;
+									const isSens = [
+										"ktp",
+										"mcu",
+										"employment_contract",
+										"npwp_bpjs"
+									].includes(t);
+									docForm.setData({
+										...docForm.data,
+										document_type: t,
+										access_level: isSens ? "confidential_personal" : "public_operational",
+										is_sensitive: isSens
+									});
+								},
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								children: [
+									/* @__PURE__ */ jsx("option", {
+										value: "ktp",
+										children: "KTP"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "sim",
+										children: "SIM Polisi"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "simper",
+										children: "SIMPER Tambang"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "mcu",
+										children: "Hasil MCU"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "employment_contract",
+										children: "Kontrak Kerja PKWT/PKWTT"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "training_certificate",
+										children: "Sertifikat Training"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "supporting_document",
+										children: "Dokumen Pendukung"
+									})
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Judul Dokumen *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: docForm.data.document_title,
+								onChange: (e) => docForm.setData("document_title", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-2 gap-3",
+								children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Nomor Dokumen"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "text",
+									value: docForm.data.document_number,
+									onChange: (e) => docForm.setData("document_number", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+								})] }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Tanggal Berakhir"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "date",
+									value: docForm.data.expiry_date,
+									onChange: (e) => docForm.setData("expiry_date", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+								})] })]
+							}),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Level Proteksi Akses *"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: docForm.data.access_level,
+								onChange: (e) => docForm.setData("access_level", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								children: [
+									/* @__PURE__ */ jsx("option", {
+										value: "confidential_personal",
+										children: "Confidential Personal (Hanya HRD & Karyawan Ybs)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "restricted_hr",
+										children: "Restricted HR & Management"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "public_operational",
+										children: "Public Operational (Dapat Diakses Dispatch/HSE)"
+									})
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-end gap-2 pt-3",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setShowUploadModal(false),
+									className: "px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									disabled: docForm.processing,
+									className: "px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold",
+									children: "Simpan Dokumen"
+								})]
+							})
+						]
+					})]
+				})
+			})
+		]
+	});
+}
+// resources/js/Pages/Hr/Drivers/Index.jsx
+var Index_exports$41 = /* @__PURE__ */ __exportAll({ default: () => HrDriversIndex });
+function HrDriversIndex({ drivers = [], trainings = [], driverSiteHistories = [], units = [], sites = [], filters = {} }) {
+	const [activeTab, setActiveTab] = useState("drivers");
+	const [siteId, setSiteId] = useState(filters.site_id || "");
+	const [eligibility, setEligibility] = useState(filters.eligibility || "");
+	const [editDriver, setEditDriver] = useState(null);
+	const [trainingDriver, setTrainingDriver] = useState(null);
+	const credForm = useForm({
+		sim_number: "",
+		sim_type: "B II Umum",
+		sim_expiry: "",
+		simper_number: "",
+		simper_expiry: "",
+		mcu_status: "fit",
+		mcu_date: "",
+		mcu_expiry: "",
+		assigned_unit_id: "",
+		notes: ""
+	});
+	const trainingForm = useForm({
+		training_name: "Defensive Driving & Hauling Safety Refresher",
+		training_category: "defensive_driving",
+		provider: "TAP HSE & Safety Academy",
+		training_date: (/* @__PURE__ */ new Date()).toISOString().substring(0, 10),
+		expiry_date: "",
+		score: 92,
+		certificate_number: "",
+		status: "passed",
+		notes: ""
+	});
+	const applyFilter = (newSite, newElig) => {
+		router.get("/hr/drivers", {
+			site_id: newSite || void 0,
+			eligibility: newElig || void 0
+		}, { preserveState: true });
+	};
+	const openEditDriver = (drv) => {
+		setEditDriver(drv);
+		credForm.setData({
+			sim_number: drv.sim_number || "",
+			sim_type: drv.sim_type || "B II Umum",
+			sim_expiry: drv.sim_expiry ? drv.sim_expiry.substring(0, 10) : "",
+			simper_number: drv.simper_number || "",
+			simper_expiry: drv.simper_expiry ? drv.simper_expiry.substring(0, 10) : "",
+			mcu_status: drv.mcu_status || "fit",
+			mcu_date: drv.mcu_date ? drv.mcu_date.substring(0, 10) : "",
+			mcu_expiry: drv.mcu_expiry ? drv.mcu_expiry.substring(0, 10) : "",
+			assigned_unit_id: drv.assigned_unit_id || "",
+			notes: drv.notes || ""
+		});
+	};
+	const submitCredentials = (e) => {
+		e.preventDefault();
+		if (!editDriver) return;
+		credForm.put(`/hr/drivers/${editDriver.id}/credentials`, { onSuccess: () => setEditDriver(null) });
+	};
+	const submitTraining = (e) => {
+		e.preventDefault();
+		if (!trainingDriver) return;
+		trainingForm.post(`/hr/drivers/${trainingDriver.id}/trainings`, { onSuccess: () => setTrainingDriver(null) });
+	};
+	const badgeEligibility = (status) => {
+		if (status === "eligible") return "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300";
+		if (status === "warning_expiring") return "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300";
+		return "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300";
+	};
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "HR Driver Management & K3LH Eligibility",
+		children: [
+			/* @__PURE__ */ jsx(Head, { title: "Driver SIM, SIMPER, MCU & Training - Phase 8" }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "space-y-6",
+				children: [
+					/* @__PURE__ */ jsx("div", {
+						className: "flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: /* @__PURE__ */ jsxs("div", { children: [
+							/* @__PURE__ */ jsx("span", {
+								className: "px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-md bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300",
+								children: "Integrated with Driver Master"
+							}),
+							/* @__PURE__ */ jsx("h1", {
+								className: "text-xl font-extrabold text-slate-900 dark:text-white mt-1",
+								children: "Kelayakan Administrasi Driver, SIM, SIMPER, MCU, Training & Unit Assignment"
+							}),
+							/* @__PURE__ */ jsx("p", {
+								className: "text-xs text-slate-500",
+								children: "Terintegrasi langsung dengan Master Driver tanpa duplikasi tabel — pantau lisensi, sertifikasi K3LH, dan riwayat site driver."
+							})
+						] })
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsx("div", {
+							className: "flex flex-wrap gap-1.5",
+							children: [
+								{
+									id: "drivers",
+									label: `Kelayakan & Lisensi Driver (${drivers.length})`,
+									icon: UserCheck
+								},
+								{
+									id: "trainings",
+									label: `Riwayat Training & Sertifikasi (${trainings.length})`,
+									icon: Award
+								},
+								{
+									id: "site_history",
+									label: `Riwayat Site Driver (${driverSiteHistories.length})`,
+									icon: MapPin
+								}
+							].map((t) => {
+								const Icon = t.icon;
+								return /* @__PURE__ */ jsxs("button", {
+									type: "button",
+									onClick: () => setActiveTab(t.id),
+									className: `px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition ${activeTab === t.id ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`,
+									children: [
+										/* @__PURE__ */ jsx(Icon, { className: "w-3.5 h-3.5" }),
+										" ",
+										t.label
+									]
+								}, t.id);
+							})
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "flex items-center gap-2",
+							children: [/* @__PURE__ */ jsxs("select", {
+								value: eligibility,
+								onChange: (e) => {
+									setEligibility(e.target.value);
+									applyFilter(siteId, e.target.value);
+								},
+								className: "px-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								children: [
+									/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "Semua Status Kelayakan"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "eligible",
+										children: "Eligible (Layak Operasi)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "warning_expiring",
+										children: "Warning Expiring (≤ 30 Hari)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "ineligible_expired",
+										children: "Ineligible (Expired)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "ineligible_mcu",
+										children: "Ineligible (MCU Unfit)"
+									})
+								]
+							}), /* @__PURE__ */ jsxs("select", {
+								value: siteId,
+								onChange: (e) => {
+									setSiteId(e.target.value);
+									applyFilter(e.target.value, eligibility);
+								},
+								className: "px-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								children: [/* @__PURE__ */ jsx("option", {
+									value: "",
+									children: "Semua Site"
+								}), sites.map((s) => /* @__PURE__ */ jsx("option", {
+									value: s.id,
+									children: s.code
+								}, s.id))]
+							})]
+						})]
+					}),
+					activeTab === "drivers" && /* @__PURE__ */ jsx("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden",
+						children: /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Driver & Site"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "SIM Polisi"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "SIMPER Tambang"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Status MCU"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Driver Assignment (Unit DT)"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Status Kelayakan Administrasi"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3 text-right",
+											children: "Aksi"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: drivers.map((drv) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-bold text-slate-900 dark:text-white",
+												children: drv.employee?.name
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-[11px] text-indigo-600 font-semibold",
+												children: [
+													drv.driver_code,
+													" • ",
+													drv.employee?.site?.code
+												]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsxs("div", {
+												className: "font-semibold",
+												children: [
+													drv.sim_type,
+													" — ",
+													drv.sim_number
+												]
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-[11px] text-slate-400",
+												children: ["Exp: ", drv.sim_expiry ? drv.sim_expiry.substring(0, 10) : "-"]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-semibold",
+												children: drv.simper_number
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-[11px] text-amber-600 font-semibold",
+												children: ["Exp: ", drv.simper_expiry ? drv.simper_expiry.substring(0, 10) : "-"]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsx("span", {
+												className: `px-2 py-0.5 rounded-md text-[10px] font-bold uppercase ${drv.mcu_status === "fit" ? "bg-emerald-100 text-emerald-800" : "bg-rose-100 text-rose-800"}`,
+												children: drv.mcu_status
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-[11px] text-slate-400 mt-0.5",
+												children: ["Exp: ", drv.mcu_expiry ? drv.mcu_expiry.substring(0, 10) : "-"]
+											})]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3",
+											children: drv.assigned_unit ? /* @__PURE__ */ jsxs("span", {
+												className: "px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-bold text-slate-800 dark:text-slate-200 inline-flex items-center gap-1",
+												children: [
+													/* @__PURE__ */ jsx(Truck, { className: "w-3 h-3 text-emerald-500" }),
+													" ",
+													drv.assigned_unit.unit_code
+												]
+											}) : /* @__PURE__ */ jsx("span", {
+												className: "text-slate-400",
+												children: "Pool / Standby"
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3",
+											children: /* @__PURE__ */ jsx("span", {
+												className: `px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase ${badgeEligibility(drv.administrative_eligibility_status)}`,
+												children: drv.administrative_eligibility_status?.replace("_", " ")
+											})
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3 text-right space-x-1.5",
+											children: [/* @__PURE__ */ jsx("button", {
+												type: "button",
+												onClick: () => openEditDriver(drv),
+												className: "px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[11px] font-bold",
+												children: "Update Lisensi/Unit"
+											}), /* @__PURE__ */ jsx("button", {
+												type: "button",
+												onClick: () => setTrainingDriver(drv),
+												className: "px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[11px] font-bold",
+												children: "+ Training"
+											})]
+										})
+									] }, drv.id))
+								})]
+							})
+						})
+					}),
+					activeTab === "trainings" && /* @__PURE__ */ jsx("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden",
+						children: /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Kode & Nama Training"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Driver & Site"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Kategori"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Tgl Training & Berlaku s/d"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Nilai & Sertifikat"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: trainings.map((t) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-bold",
+												children: t.training_name
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-[11px] text-slate-400",
+												children: [
+													t.training_code,
+													" • ",
+													t.provider
+												]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3 font-semibold",
+											children: [
+												t.employee?.name,
+												" (",
+												t.driver?.driver_code,
+												") • ",
+												t.site?.code
+											]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 uppercase text-[11px] font-bold text-indigo-600",
+											children: t.training_category?.replace("_", " ")
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsxs("div", { children: ["Pelaksanaan: ", t.training_date?.substring(0, 10)] }), /* @__PURE__ */ jsxs("div", {
+												className: "text-[11px] text-emerald-600",
+												children: ["Exp: ", t.expiry_date?.substring(0, 10)]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsxs("div", {
+												className: "font-bold text-emerald-600",
+												children: [
+													"Skor: ",
+													t.score,
+													" (",
+													t.status?.toUpperCase(),
+													")"
+												]
+											}), /* @__PURE__ */ jsx("div", {
+												className: "text-[11px] text-slate-400",
+												children: t.certificate_number
+											})]
+										})
+									] }, t.id))
+								})]
+							})
+						})
+					}),
+					activeTab === "site_history" && /* @__PURE__ */ jsx("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden",
+						children: /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "No. Dokumen Mutasi"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Nama Driver"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Site Asal"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Site Tujuan"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Tanggal Efektif & Keterangan"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: driverSiteHistories.map((h) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 font-bold",
+											children: h.transfer_number
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 font-semibold",
+											children: h.employee?.name
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [
+												h.from_site?.code,
+												" — ",
+												h.from_site?.name
+											]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3 font-bold text-indigo-600",
+											children: [
+												h.to_site?.code,
+												" — ",
+												h.to_site?.name
+											]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3 text-slate-500",
+											children: [
+												h.effective_date?.substring(0, 10),
+												" • ",
+												h.reason
+											]
+										})
+									] }, h.id))
+								})]
+							})
+						})
+					})
+				]
+			}),
+			editDriver && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-lg p-6 shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "flex items-center justify-between mb-4",
+						children: [/* @__PURE__ */ jsxs("h3", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: [
+								"Update Lisensi & Unit Driver: ",
+								editDriver.employee?.name,
+								" (",
+								editDriver.driver_code,
+								")"
+							]
+						}), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setEditDriver(null),
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4 text-slate-400" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitCredentials,
+						className: "grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Nomor SIM Polisi *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: credForm.data.sim_number,
+								onChange: (e) => credForm.setData("sim_number", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Masa Berlaku SIM *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "date",
+								value: credForm.data.sim_expiry,
+								onChange: (e) => credForm.setData("sim_expiry", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Nomor SIMPER Tambang *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: credForm.data.simper_number,
+								onChange: (e) => credForm.setData("simper_number", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Masa Berlaku SIMPER *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "date",
+								value: credForm.data.simper_expiry,
+								onChange: (e) => credForm.setData("simper_expiry", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Status MCU *"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: credForm.data.mcu_status,
+								onChange: (e) => credForm.setData("mcu_status", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								children: [
+									/* @__PURE__ */ jsx("option", {
+										value: "fit",
+										children: "FIT (Layak Kerja)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "fit_with_note",
+										children: "FIT WITH NOTE"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "unfit",
+										children: "UNFIT (Tidak Layak)"
+									})
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Masa Berlaku MCU *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "date",
+								value: credForm.data.mcu_expiry,
+								onChange: (e) => credForm.setData("mcu_expiry", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "sm:col-span-2",
+								children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Driver Unit Assignment (Dump Truck)"
+								}), /* @__PURE__ */ jsxs("select", {
+									value: credForm.data.assigned_unit_id,
+									onChange: (e) => credForm.setData("assigned_unit_id", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+									children: [/* @__PURE__ */ jsx("option", {
+										value: "",
+										children: "-- Pool / Tidak Terikat Unit Tertentu --"
+									}), units.filter((u) => !editDriver.employee?.site_id || Number(u.site_id) === Number(editDriver.employee.site_id)).map((u) => /* @__PURE__ */ jsxs("option", {
+										value: u.id,
+										children: [
+											u.unit_code,
+											" — ",
+											u.brand,
+											" ",
+											u.model,
+											" (",
+											u.status,
+											")"
+										]
+									}, u.id))]
+								})]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "sm:col-span-2 flex justify-end gap-2 pt-3",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setEditDriver(null),
+									className: "px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									disabled: credForm.processing,
+									className: "px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold",
+									children: "Simpan & Evaluasi Kelayakan"
+								})]
+							})
+						]
+					})]
+				})
+			}),
+			trainingDriver && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "flex items-center justify-between mb-4",
+						children: [/* @__PURE__ */ jsxs("h3", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: ["Catat Sertifikasi Training: ", trainingDriver.employee?.name]
+						}), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setTrainingDriver(null),
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4 text-slate-400" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitTraining,
+						className: "space-y-3 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Nama Program Training *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: trainingForm.data.training_name,
+								onChange: (e) => trainingForm.setData("training_name", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Kategori *"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: trainingForm.data.training_category,
+								onChange: (e) => trainingForm.setData("training_category", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								children: [
+									/* @__PURE__ */ jsx("option", {
+										value: "defensive_driving",
+										children: "Defensive Driving Training (DDT)"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "safety_k3lh",
+										children: "Safety & K3LH Pertambangan"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "unit_familiarization",
+										children: "Unit Heavy Duty Familiarization"
+									}),
+									/* @__PURE__ */ jsx("option", {
+										value: "fatigue_management",
+										children: "Fatigue & Alertness Management"
+									})
+								]
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-2 gap-3",
+								children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Tgl Pelaksanaan *"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "date",
+									value: trainingForm.data.training_date,
+									onChange: (e) => trainingForm.setData("training_date", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+									required: true
+								})] }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Nilai Evaluasi (0-100)"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "number",
+									value: trainingForm.data.score,
+									onChange: (e) => trainingForm.setData("score", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+								})] })]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-end gap-2 pt-3",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setTrainingDriver(null),
+									className: "px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									disabled: trainingForm.processing,
+									className: "px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold",
+									children: "Simpan Training"
+								})]
+							})
+						]
+					})]
+				})
+			})
+		]
+	});
+}
+// resources/js/Pages/Hr/Employees/Index.jsx
+var Index_exports$40 = /* @__PURE__ */ __exportAll({ default: () => HrEmployeesIndex });
+function HrEmployeesIndex({ employees = [], contracts = [], expiringContracts = [], transfers = [], statusHistories = [], sites = [], departments = [], positions = [], filters = {} }) {
+	const [activeTab, setActiveTab] = useState("employees");
+	const [siteId, setSiteId] = useState(filters.site_id || "");
+	const [search, setSearch] = useState(filters.search || "");
+	const [showEmpModal, setShowEmpModal] = useState(false);
+	const [showContractModal, setShowContractModal] = useState(false);
+	const [extendTarget, setExtendTarget] = useState(null);
+	const [separationTarget, setSeparationTarget] = useState(null);
+	const [showTransferModal, setShowTransferModal] = useState(false);
+	const empForm = useForm({
+		employee_code: "",
+		nik: "",
+		name: "",
+		birth_place: "Banjarmasin",
+		birth_date: "1992-05-14",
+		gender: "L",
+		marital_status: "K/1",
+		site_id: sites[0]?.id || "",
+		department_id: departments[0]?.id || "",
+		position_id: positions[0]?.id || "",
+		join_date: (/* @__PURE__ */ new Date()).toISOString().substring(0, 10),
+		employment_status: "PKWT",
+		phone: "",
+		address: "",
+		bank_name: "Bank Mandiri",
+		bank_account_number: "",
+		bank_account_holder: "",
+		npwp_number: "",
+		bpjs_kesehatan_number: "",
+		bpjs_ketenagakerjaan_number: "",
+		create_initial_contract: true,
+		contract_end_date: "",
+		basic_salary: 55e5
+	});
+	const contractForm = useForm({
+		employee_id: employees[0]?.id || "",
+		contract_type: "PKWT",
+		start_date: (/* @__PURE__ */ new Date()).toISOString().substring(0, 10),
+		end_date: "",
+		basic_salary: 55e5,
+		notes: ""
+	});
+	const extendForm = useForm({
+		start_date: "",
+		end_date: "",
+		basic_salary: 575e4,
+		notes: "Perpanjangan kontrak kerja operasional hauling"
+	});
+	const separationForm = useForm({
+		separation_type: "resignation",
+		separation_date: (/* @__PURE__ */ new Date()).toISOString().substring(0, 10),
+		reason: ""
+	});
+	const transferForm = useForm({
+		employee_id: employees[0]?.id || "",
+		transfer_type: "site_mutation",
+		effective_date: (/* @__PURE__ */ new Date()).toISOString().substring(0, 10),
+		to_site_id: sites[0]?.id || "",
+		to_department_id: departments[0]?.id || "",
+		to_position_id: positions[0]?.id || "",
+		reason: "Mutasi operasional antar-site PT Teknindo Adhya Pane"
+	});
+	const applyFilter = (newSite, newSearch) => {
+		router.get("/hr/employees", {
+			site_id: newSite || void 0,
+			search: newSearch || void 0
+		}, { preserveState: true });
+	};
+	const submitEmployee = (e) => {
+		e.preventDefault();
+		empForm.post("/hr/employees", { onSuccess: () => {
+			setShowEmpModal(false);
+			empForm.reset();
+		} });
+	};
+	const submitContract = (e) => {
+		e.preventDefault();
+		contractForm.post("/hr/contracts", { onSuccess: () => setShowContractModal(false) });
+	};
+	const submitExtend = (e) => {
+		e.preventDefault();
+		if (!extendTarget) return;
+		extendForm.post(`/hr/contracts/${extendTarget.id}/extend`, { onSuccess: () => setExtendTarget(null) });
+	};
+	const submitSeparation = (e) => {
+		e.preventDefault();
+		if (!separationTarget) return;
+		separationForm.post(`/hr/employees/${separationTarget.id}/separation`, { onSuccess: () => setSeparationTarget(null) });
+	};
+	const submitTransfer = (e) => {
+		e.preventDefault();
+		transferForm.post("/hr/transfers", { onSuccess: () => setShowTransferModal(false) });
+	};
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Employee Master & Employment Management",
+		children: [
+			/* @__PURE__ */ jsx(Head, { title: "Karyawan, PKWT/PKWTT & Mutasi - Phase 8" }),
+			/* @__PURE__ */ jsxs("div", {
+				className: "space-y-6",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsxs("div", { children: [
+							/* @__PURE__ */ jsx("span", {
+								className: "px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider rounded-md bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
+								children: "Employee Master & Employment Lifecycle"
+							}),
+							/* @__PURE__ */ jsx("h1", {
+								className: "text-xl font-extrabold text-slate-900 dark:text-white mt-1",
+								children: "Data Karyawan, Kontrak PKWT/PKWTT, Perpanjangan & Mutasi Site"
+							}),
+							/* @__PURE__ */ jsx("p", {
+								className: "text-xs text-slate-500",
+								children: "Kelola profil lengkap karyawan, rekening bank, kontrak kerja, resign/PHK, mutasi site & histori kepegawaian."
+							})
+						] }), /* @__PURE__ */ jsxs("div", {
+							className: "flex flex-wrap items-center gap-2",
+							children: [
+								/* @__PURE__ */ jsxs("button", {
+									type: "button",
+									onClick: () => setShowEmpModal(true),
+									className: "px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1.5",
+									children: [/* @__PURE__ */ jsx(Plus, { className: "w-4 h-4" }), " Karyawan Baru"]
+								}),
+								/* @__PURE__ */ jsxs("button", {
+									type: "button",
+									onClick: () => setShowContractModal(true),
+									className: "px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5",
+									children: [/* @__PURE__ */ jsx(Briefcase, { className: "w-4 h-4" }), " Buat Kontrak PKWT/PKWTT"]
+								}),
+								/* @__PURE__ */ jsxs("button", {
+									type: "button",
+									onClick: () => setShowTransferModal(true),
+									className: "px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold flex items-center gap-1.5",
+									children: [/* @__PURE__ */ jsx(ArrowLeftRight, { className: "w-4 h-4" }), " Mutasi Karyawan"]
+								})
+							]
+						})]
+					}),
+					expiringContracts.length > 0 && /* @__PURE__ */ jsxs("div", {
+						className: "p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3",
+						children: [/* @__PURE__ */ jsxs("div", {
+							className: "flex items-center gap-3",
+							children: [/* @__PURE__ */ jsx(AlertOctagon, { className: "w-5 h-5 text-amber-600 shrink-0" }), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsxs("h3", {
+								className: "text-xs font-bold text-amber-900 dark:text-amber-300",
+								children: [
+									"Reminder Masa Berlaku Kontrak Kerja (",
+									expiringContracts.length,
+									" Kontrak Segera Berakhir)"
+								]
+							}), /* @__PURE__ */ jsx("p", {
+								className: "text-[11px] text-amber-700 dark:text-amber-400",
+								children: "Segera lakukan perpanjangan PKWT atau pengangkatan PKWTT sebelum masa kontrak habis."
+							})] })]
+						}), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setActiveTab("contracts"),
+							className: "px-3 py-1.5 rounded-xl bg-amber-600 text-white text-xs font-bold shrink-0",
+							children: "Lihat Kontrak Expiring"
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800",
+						children: [/* @__PURE__ */ jsx("div", {
+							className: "flex flex-wrap gap-1.5",
+							children: [
+								{
+									id: "employees",
+									label: `Master Karyawan (${employees.length})`,
+									icon: Users
+								},
+								{
+									id: "contracts",
+									label: `Kontrak PKWT/PKWTT (${contracts.length})`,
+									icon: Briefcase
+								},
+								{
+									id: "transfers",
+									label: `Mutasi & Transfer (${transfers.length})`,
+									icon: ArrowLeftRight
+								},
+								{
+									id: "history",
+									label: `Histori Status (${statusHistories.length})`,
+									icon: History
+								}
+							].map((t) => {
+								const Icon = t.icon;
+								return /* @__PURE__ */ jsxs("button", {
+									type: "button",
+									onClick: () => setActiveTab(t.id),
+									className: `px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition ${activeTab === t.id ? "bg-indigo-600 text-white" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"}`,
+									children: [
+										/* @__PURE__ */ jsx(Icon, { className: "w-3.5 h-3.5" }),
+										" ",
+										t.label
+									]
+								}, t.id);
+							})
+						}), /* @__PURE__ */ jsxs("div", {
+							className: "flex items-center gap-2",
+							children: [/* @__PURE__ */ jsx("input", {
+								type: "text",
+								placeholder: "Cari NIK / Nama / ID...",
+								value: search,
+								onChange: (e) => {
+									setSearch(e.target.value);
+									applyFilter(siteId, e.target.value);
+								},
+								className: "px-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: siteId,
+								onChange: (e) => {
+									setSiteId(e.target.value);
+									applyFilter(e.target.value, search);
+								},
+								className: "px-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								children: [/* @__PURE__ */ jsx("option", {
+									value: "",
+									children: "Semua Site"
+								}), sites.map((s) => /* @__PURE__ */ jsx("option", {
+									value: s.id,
+									children: s.code
+								}, s.id))]
+							})]
+						})]
+					}),
+					activeTab === "employees" && /* @__PURE__ */ jsx("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden",
+						children: /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Employee ID & Nama"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "NIK & TTL"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Site / Dept / Jabatan"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Tgl Masuk & Status"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Rekening & BPJS"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3 text-right",
+											children: "Tindakan HR"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: employees.map((emp) => /* @__PURE__ */ jsxs("tr", {
+										className: "hover:bg-slate-50/60 dark:hover:bg-slate-800/30",
+										children: [
+											/* @__PURE__ */ jsxs("td", {
+												className: "px-4 py-3",
+												children: [/* @__PURE__ */ jsx("div", {
+													className: "font-bold text-slate-900 dark:text-white",
+													children: emp.name
+												}), /* @__PURE__ */ jsxs("div", {
+													className: "text-[11px] text-indigo-600 font-semibold",
+													children: [
+														emp.employee_code,
+														" • ",
+														emp.phone || "-"
+													]
+												})]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "px-4 py-3",
+												children: [/* @__PURE__ */ jsx("div", {
+													className: "font-mono text-slate-700 dark:text-slate-300",
+													children: emp.nik
+												}), /* @__PURE__ */ jsxs("div", {
+													className: "text-[11px] text-slate-400",
+													children: [
+														emp.birth_place || "-",
+														", ",
+														emp.birth_date ? emp.birth_date.substring(0, 10) : "-"
+													]
+												})]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "px-4 py-3",
+												children: [/* @__PURE__ */ jsxs("div", {
+													className: "font-semibold text-slate-800 dark:text-slate-200",
+													children: [
+														emp.site?.code,
+														" — ",
+														emp.department?.name
+													]
+												}), /* @__PURE__ */ jsx("div", {
+													className: "text-[11px] text-slate-500",
+													children: emp.position?.title || emp.position?.name
+												})]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "px-4 py-3",
+												children: [/* @__PURE__ */ jsxs("div", {
+													className: "flex items-center gap-1.5",
+													children: [/* @__PURE__ */ jsx("span", {
+														className: `px-2 py-0.5 rounded-md text-[10px] font-bold ${emp.employment_status === "PKWTT" ? "bg-emerald-100 text-emerald-800" : emp.employment_status === "PKWT" ? "bg-blue-100 text-blue-800" : "bg-rose-100 text-rose-800"}`,
+														children: emp.employment_status
+													}), /* @__PURE__ */ jsx("span", {
+														className: `px-2 py-0.5 rounded-md text-[10px] font-bold ${emp.is_active ? "bg-emerald-50 text-emerald-700" : "bg-slate-200 text-slate-600"}`,
+														children: emp.is_active ? "AKTIF" : "NONAKTIF"
+													})]
+												}), /* @__PURE__ */ jsxs("div", {
+													className: "text-[11px] text-slate-400 mt-0.5",
+													children: ["Join: ", emp.join_date ? emp.join_date.substring(0, 10) : "-"]
+												})]
+											}),
+											/* @__PURE__ */ jsxs("td", {
+												className: "px-4 py-3",
+												children: [/* @__PURE__ */ jsxs("div", {
+													className: "font-medium text-slate-700 dark:text-slate-300",
+													children: [
+														emp.bank_name || "-",
+														": ",
+														emp.bank_account_number || "-"
+													]
+												}), /* @__PURE__ */ jsxs("div", {
+													className: "text-[10px] text-slate-400",
+													children: ["NPWP: ", emp.npwp_number || "-"]
+												})]
+											}),
+											/* @__PURE__ */ jsx("td", {
+												className: "px-4 py-3 text-right",
+												children: emp.is_active && /* @__PURE__ */ jsxs("button", {
+													type: "button",
+													onClick: () => setSeparationTarget(emp),
+													className: "px-2.5 py-1 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-bold inline-flex items-center gap-1",
+													children: [/* @__PURE__ */ jsx(UserMinus, { className: "w-3 h-3" }), " Resign / PHK"]
+												})
+											})
+										]
+									}, emp.id))
+								})]
+							})
+						})
+					}),
+					activeTab === "contracts" && /* @__PURE__ */ jsx("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden",
+						children: /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "No. Kontrak & Urutan"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Karyawan & Site"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Tipe"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Periode Berlaku"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Status"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3 text-right",
+											children: "Aksi"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: contracts.map((c) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-bold text-slate-900 dark:text-white",
+												children: c.contract_number
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-[11px] text-slate-400",
+												children: [
+													"Kontrak ke-",
+													c.sequence_number,
+													" ",
+													c.parent_contract ? `(Ext dari ${c.parent_contract.contract_number})` : ""
+												]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-semibold",
+												children: c.employee?.name
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-[11px] text-slate-400",
+												children: [
+													c.site?.code,
+													" — ",
+													c.department?.name
+												]
+											})]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3",
+											children: /* @__PURE__ */ jsx("span", {
+												className: `px-2 py-0.5 rounded-md text-[10px] font-bold ${c.contract_type === "PKWTT" ? "bg-emerald-100 text-emerald-800" : "bg-blue-100 text-blue-800"}`,
+												children: c.contract_type
+											})
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsxs("div", { children: ["Mulai: ", c.start_date?.substring(0, 10)] }), /* @__PURE__ */ jsxs("div", {
+												className: "text-[11px] text-amber-600 font-semibold",
+												children: ["Akhir: ", c.end_date ? c.end_date.substring(0, 10) : "Permanen (PKWTT)"]
+											})]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3",
+											children: /* @__PURE__ */ jsx("span", {
+												className: "px-2 py-0.5 rounded-md text-[10px] font-bold uppercase bg-slate-100 dark:bg-slate-800",
+												children: c.status
+											})
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 text-right",
+											children: c.status === "active" && c.contract_type === "PKWT" && /* @__PURE__ */ jsxs("button", {
+												type: "button",
+												onClick: () => {
+													setExtendTarget(c);
+													extendForm.setData({
+														start_date: c.end_date ? c.end_date.substring(0, 10) : "",
+														end_date: "",
+														basic_salary: c.basic_salary || 575e4,
+														notes: `Perpanjangan dari kontrak ${c.contract_number}`
+													});
+												},
+												className: "px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-[11px] font-bold inline-flex items-center gap-1",
+												children: [/* @__PURE__ */ jsx(RefreshCw, { className: "w-3 h-3" }), " Perpanjang PKWT"]
+											})
+										})
+									] }, c.id))
+								})]
+							})
+						})
+					}),
+					activeTab === "transfers" && /* @__PURE__ */ jsx("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden",
+						children: /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "No. Mutasi & Tanggal"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Karyawan"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Dari Site / Dept"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Ke Site / Dept"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Alasan Mutasi"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: transfers.map((tr) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [/* @__PURE__ */ jsx("div", {
+												className: "font-bold",
+												children: tr.transfer_number
+											}), /* @__PURE__ */ jsxs("div", {
+												className: "text-[11px] text-slate-400",
+												children: ["Efektif: ", tr.effective_date?.substring(0, 10)]
+											})]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3 font-semibold",
+											children: [
+												tr.employee?.name,
+												" (",
+												tr.employee?.employee_code,
+												")"
+											]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [
+												tr.from_site?.code,
+												" — ",
+												tr.from_department?.name
+											]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3 font-bold text-indigo-600",
+											children: [
+												tr.to_site?.code,
+												" — ",
+												tr.to_department?.name
+											]
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 text-slate-500",
+											children: tr.reason
+										})
+									] }, tr.id))
+								})]
+							})
+						})
+					}),
+					activeTab === "history" && /* @__PURE__ */ jsx("div", {
+						className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden",
+						children: /* @__PURE__ */ jsx("div", {
+							className: "overflow-x-auto",
+							children: /* @__PURE__ */ jsxs("table", {
+								className: "w-full text-left text-xs",
+								children: [/* @__PURE__ */ jsx("thead", {
+									className: "bg-slate-50 dark:bg-slate-800/60 text-slate-500",
+									children: /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Tanggal Efektif"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Karyawan"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Event Kepegawaian"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Perubahan Status"
+										}),
+										/* @__PURE__ */ jsx("th", {
+											className: "px-4 py-3",
+											children: "Referensi & Keterangan"
+										})
+									] })
+								}), /* @__PURE__ */ jsx("tbody", {
+									className: "divide-y divide-slate-100 dark:divide-slate-800",
+									children: statusHistories.map((h) => /* @__PURE__ */ jsxs("tr", { children: [
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 font-mono",
+											children: h.effective_date?.substring(0, 10)
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3 font-semibold",
+											children: h.employee?.name
+										}),
+										/* @__PURE__ */ jsx("td", {
+											className: "px-4 py-3",
+											children: /* @__PURE__ */ jsx("span", {
+												className: "px-2 py-0.5 rounded-md text-[10px] font-bold uppercase bg-indigo-50 text-indigo-700",
+												children: h.event_type
+											})
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3",
+											children: [
+												h.old_employment_status || "NEW",
+												" → ",
+												/* @__PURE__ */ jsx("strong", { children: h.new_employment_status })
+											]
+										}),
+										/* @__PURE__ */ jsxs("td", {
+											className: "px-4 py-3 text-slate-500",
+											children: [h.reference_number ? `[${h.reference_number}] ` : "", h.remarks]
+										})
+									] }, h.id))
+								})]
+							})
+						})
+					})
+				]
+			}),
+			showEmpModal && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 overflow-y-auto",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-2xl p-6 shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "flex items-center justify-between mb-4",
+						children: [/* @__PURE__ */ jsx("h3", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: "Registrasi Karyawan Baru (Employee Master)"
+						}), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setShowEmpModal(false),
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4 text-slate-400" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitEmployee,
+						className: "grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Nama Lengkap *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: empForm.data.name,
+								onChange: (e) => empForm.setData("name", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "NIK KTP (16 Digit) *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: empForm.data.nik,
+								onChange: (e) => empForm.setData("nik", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Tempat Lahir"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: empForm.data.birth_place,
+								onChange: (e) => empForm.setData("birth_place", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Tanggal Lahir"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "date",
+								value: empForm.data.birth_date,
+								onChange: (e) => empForm.setData("birth_date", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Site Penempatan *"
+							}), /* @__PURE__ */ jsx("select", {
+								value: empForm.data.site_id,
+								onChange: (e) => empForm.setData("site_id", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true,
+								children: sites.map((s) => /* @__PURE__ */ jsxs("option", {
+									value: s.id,
+									children: [
+										s.code,
+										" — ",
+										s.name
+									]
+								}, s.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Departemen *"
+							}), /* @__PURE__ */ jsx("select", {
+								value: empForm.data.department_id,
+								onChange: (e) => empForm.setData("department_id", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true,
+								children: departments.map((d) => /* @__PURE__ */ jsxs("option", {
+									value: d.id,
+									children: [
+										d.code,
+										" — ",
+										d.name
+									]
+								}, d.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Jabatan / Position *"
+							}), /* @__PURE__ */ jsx("select", {
+								value: empForm.data.position_id,
+								onChange: (e) => empForm.setData("position_id", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true,
+								children: positions.map((p) => /* @__PURE__ */ jsxs("option", {
+									value: p.id,
+									children: [
+										p.code,
+										" — ",
+										p.title
+									]
+								}, p.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Status Kontrak Kerja *"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: empForm.data.employment_status,
+								onChange: (e) => empForm.setData("employment_status", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								children: [/* @__PURE__ */ jsx("option", {
+									value: "PKWT",
+									children: "PKWT (Kontrak Waktu Tertentu)"
+								}), /* @__PURE__ */ jsx("option", {
+									value: "PKWTT",
+									children: "PKWTT (Karyawan Tetap)"
+								})]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Tanggal Masuk (Join Date) *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "date",
+								value: empForm.data.join_date,
+								onChange: (e) => empForm.setData("join_date", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Nomor Telepon / WA"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: empForm.data.phone,
+								onChange: (e) => empForm.setData("phone", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Bank & Nomor Rekening"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								placeholder: "No. Rekening Payroll",
+								value: empForm.data.bank_account_number,
+								onChange: (e) => empForm.setData("bank_account_number", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Alamat Domisili"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: empForm.data.address,
+								onChange: (e) => empForm.setData("address", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "sm:col-span-2 flex justify-end gap-2 pt-3",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setShowEmpModal(false),
+									className: "px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									disabled: empForm.processing,
+									className: "px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold",
+									children: "Simpan Karyawan"
+								})]
+							})
+						]
+					})]
+				})
+			}),
+			showContractModal && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "flex items-center justify-between mb-4",
+						children: [/* @__PURE__ */ jsx("h3", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: "Buat Kontrak Kerja (PKWT / PKWTT)"
+						}), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setShowContractModal(false),
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4 text-slate-400" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitContract,
+						className: "space-y-3 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Karyawan *"
+							}), /* @__PURE__ */ jsx("select", {
+								value: contractForm.data.employee_id,
+								onChange: (e) => contractForm.setData("employee_id", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true,
+								children: employees.map((e) => /* @__PURE__ */ jsxs("option", {
+									value: e.id,
+									children: [
+										e.employee_code,
+										" — ",
+										e.name
+									]
+								}, e.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Jenis Kontrak *"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: contractForm.data.contract_type,
+								onChange: (e) => contractForm.setData("contract_type", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								children: [/* @__PURE__ */ jsx("option", {
+									value: "PKWT",
+									children: "PKWT (Waktu Tertentu)"
+								}), /* @__PURE__ */ jsx("option", {
+									value: "PKWTT",
+									children: "PKWTT (Karyawan Tetap)"
+								})]
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "grid grid-cols-2 gap-3",
+								children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Contract Start *"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "date",
+									value: contractForm.data.start_date,
+									onChange: (e) => contractForm.setData("start_date", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+									required: true
+								})] }), contractForm.data.contract_type === "PKWT" && /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+									className: "block font-semibold mb-1",
+									children: "Contract End *"
+								}), /* @__PURE__ */ jsx("input", {
+									type: "date",
+									value: contractForm.data.end_date,
+									onChange: (e) => contractForm.setData("end_date", e.target.value),
+									className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+									required: true
+								})] })]
+							}),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-end gap-2 pt-3",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setShowContractModal(false),
+									className: "px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									disabled: contractForm.processing,
+									className: "px-4 py-2 rounded-xl bg-emerald-600 text-white font-bold",
+									children: "Terbitkan Kontrak"
+								})]
+							})
+						]
+					})]
+				})
+			}),
+			extendTarget && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "flex items-center justify-between mb-4",
+						children: [/* @__PURE__ */ jsxs("h3", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: ["Perpanjangan Kontrak PKWT: ", extendTarget.contract_number]
+						}), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setExtendTarget(null),
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4 text-slate-400" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitExtend,
+						className: "space-y-3 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Tanggal Berakhir Baru (New Contract End) *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "date",
+								value: extendForm.data.end_date,
+								onChange: (e) => extendForm.setData("end_date", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Catatan Perpanjangan"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: extendForm.data.notes,
+								onChange: (e) => extendForm.setData("notes", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800"
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-end gap-2 pt-3",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setExtendTarget(null),
+									className: "px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									disabled: extendForm.processing,
+									className: "px-4 py-2 rounded-xl bg-indigo-600 text-white font-bold",
+									children: "Simpan Perpanjangan"
+								})]
+							})
+						]
+					})]
+				})
+			}),
+			separationTarget && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "flex items-center justify-between mb-4",
+						children: [/* @__PURE__ */ jsxs("h3", {
+							className: "text-sm font-bold text-rose-600",
+							children: ["Pengakhiran Hubungan Kerja: ", separationTarget.name]
+						}), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setSeparationTarget(null),
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4 text-slate-400" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitSeparation,
+						className: "space-y-3 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Tipe Pengakhiran *"
+							}), /* @__PURE__ */ jsxs("select", {
+								value: separationForm.data.separation_type,
+								onChange: (e) => separationForm.setData("separation_type", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								children: [/* @__PURE__ */ jsx("option", {
+									value: "resignation",
+									children: "Resignation (Pengunduran Diri)"
+								}), /* @__PURE__ */ jsx("option", {
+									value: "termination",
+									children: "Termination (PHK / Habis Kontrak)"
+								})]
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Tanggal Efektif *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "date",
+								value: separationForm.data.separation_date,
+								onChange: (e) => separationForm.setData("separation_date", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Alasan *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: separationForm.data.reason,
+								onChange: (e) => separationForm.setData("reason", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-end gap-2 pt-3",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setSeparationTarget(null),
+									className: "px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									disabled: separationForm.processing,
+									className: "px-4 py-2 rounded-xl bg-rose-600 text-white font-bold",
+									children: "Konfirmasi Nonaktif"
+								})]
+							})
+						]
+					})]
+				})
+			}),
+			showTransferModal && /* @__PURE__ */ jsx("div", {
+				className: "fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4",
+				children: /* @__PURE__ */ jsxs("div", {
+					className: "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 shadow-xl",
+					children: [/* @__PURE__ */ jsxs("div", {
+						className: "flex items-center justify-between mb-4",
+						children: [/* @__PURE__ */ jsx("h3", {
+							className: "text-sm font-bold text-slate-900 dark:text-white",
+							children: "Mutasi & Transfer Karyawan Antar-Site / Departemen"
+						}), /* @__PURE__ */ jsx("button", {
+							type: "button",
+							onClick: () => setShowTransferModal(false),
+							children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4 text-slate-400" })
+						})]
+					}), /* @__PURE__ */ jsxs("form", {
+						onSubmit: submitTransfer,
+						className: "space-y-3 text-xs",
+						children: [
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Karyawan *"
+							}), /* @__PURE__ */ jsx("select", {
+								value: transferForm.data.employee_id,
+								onChange: (e) => transferForm.setData("employee_id", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true,
+								children: employees.map((e) => /* @__PURE__ */ jsxs("option", {
+									value: e.id,
+									children: [
+										e.employee_code,
+										" — ",
+										e.name,
+										" (",
+										e.site?.code,
+										")"
+									]
+								}, e.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Site Tujuan Baru *"
+							}), /* @__PURE__ */ jsx("select", {
+								value: transferForm.data.to_site_id,
+								onChange: (e) => transferForm.setData("to_site_id", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true,
+								children: sites.map((s) => /* @__PURE__ */ jsxs("option", {
+									value: s.id,
+									children: [
+										s.code,
+										" — ",
+										s.name
+									]
+								}, s.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Departemen Tujuan *"
+							}), /* @__PURE__ */ jsx("select", {
+								value: transferForm.data.to_department_id,
+								onChange: (e) => transferForm.setData("to_department_id", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true,
+								children: departments.map((d) => /* @__PURE__ */ jsxs("option", {
+									value: d.id,
+									children: [
+										d.code,
+										" — ",
+										d.name
+									]
+								}, d.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Jabatan Tujuan *"
+							}), /* @__PURE__ */ jsx("select", {
+								value: transferForm.data.to_position_id,
+								onChange: (e) => transferForm.setData("to_position_id", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true,
+								children: positions.map((p) => /* @__PURE__ */ jsxs("option", {
+									value: p.id,
+									children: [
+										p.code,
+										" — ",
+										p.title
+									]
+								}, p.id))
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Tanggal Efektif Mutasi *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "date",
+								value: transferForm.data.effective_date,
+								onChange: (e) => transferForm.setData("effective_date", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("label", {
+								className: "block font-semibold mb-1",
+								children: "Alasan Mutasi *"
+							}), /* @__PURE__ */ jsx("input", {
+								type: "text",
+								value: transferForm.data.reason,
+								onChange: (e) => transferForm.setData("reason", e.target.value),
+								className: "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800",
+								required: true
+							})] }),
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex justify-end gap-2 pt-3",
+								children: [/* @__PURE__ */ jsx("button", {
+									type: "button",
+									onClick: () => setShowTransferModal(false),
+									className: "px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-semibold",
+									children: "Batal"
+								}), /* @__PURE__ */ jsx("button", {
+									type: "submit",
+									disabled: transferForm.processing,
+									className: "px-4 py-2 rounded-xl bg-amber-600 text-white font-bold",
+									children: "Proses Mutasi"
+								})]
+							})
+						]
+					})]
+				})
+			})
+		]
+	});
 }
 // resources/js/Pages/Locations/Index.jsx
 var Index_exports$39 = /* @__PURE__ */ __exportAll({ default: () => LocationsIndex });
@@ -27484,6 +38566,274 @@ function ActivityLogsIndex({ logs, filters = {}, modules = [] }) {
 		})]
 	});
 }
+// resources/js/Pages/Security/LoginLogs.jsx
+var LoginLogs_exports = /* @__PURE__ */ __exportAll({ default: () => LoginLogs });
+function LoginLogs({ logs, filters = {}, statistics = {} }) {
+	const [search, setSearch] = useState(filters.search || "");
+	const [status, setStatus] = useState(filters.status || "all");
+	const applyFilters = (overrides = {}) => {
+		const queryParams = {
+			search: overrides.search !== void 0 ? overrides.search : search,
+			status: overrides.status !== void 0 ? overrides.status : status
+		};
+		if (!queryParams.search) delete queryParams.search;
+		if (queryParams.status === "all") delete queryParams.status;
+		router.get("/security/login-logs", queryParams, {
+			preserveState: true,
+			replace: true
+		});
+	};
+	const getStatusBadge = (statusVal) => {
+		switch (statusVal) {
+			case "success": return /* @__PURE__ */ jsxs("span", {
+				className: "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20",
+				children: [/* @__PURE__ */ jsx(CheckCircle2, { className: "w-3.5 h-3.5" }), /* @__PURE__ */ jsx("span", { children: "SUCCESS" })]
+			});
+			case "failed": return /* @__PURE__ */ jsxs("span", {
+				className: "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-500 border border-rose-500/20",
+				children: [/* @__PURE__ */ jsx(AlertCircle, { className: "w-3.5 h-3.5" }), /* @__PURE__ */ jsx("span", { children: "FAILED" })]
+			});
+			case "locked":
+			case "inactive_blocked": return /* @__PURE__ */ jsxs("span", {
+				className: "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-500 border border-amber-500/20",
+				children: [/* @__PURE__ */ jsx(Lock, { className: "w-3.5 h-3.5" }), /* @__PURE__ */ jsx("span", { children: statusVal === "locked" ? "LOCKED (THROTTLED)" : "BLOCKED (INACTIVE)" })]
+			});
+			default: return /* @__PURE__ */ jsx(Badge, {
+				variant: "default",
+				children: statusVal
+			});
+		}
+	};
+	return /* @__PURE__ */ jsxs(DashboardLayout, {
+		title: "Audit Log Aktivitas Login & Keamanan (RBAC)",
+		breadcrumbs: ["Keamanan", "Log Login"],
+		children: [
+			/* @__PURE__ */ jsxs("div", {
+				className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6",
+				children: [
+					/* @__PURE__ */ jsxs("div", {
+						className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between",
+						children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("p", {
+							className: "text-xs text-slate-500 dark:text-slate-400 font-medium",
+							children: "Total Sesi Login"
+						}), /* @__PURE__ */ jsx("p", {
+							className: "text-2xl font-bold text-slate-900 dark:text-white mt-1",
+							children: statistics.total || 0
+						})] }), /* @__PURE__ */ jsx("div", {
+							className: "p-3 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400",
+							children: /* @__PURE__ */ jsx(ShieldCheck, { className: "w-5 h-5" })
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between",
+						children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("p", {
+							className: "text-xs text-slate-500 dark:text-slate-400 font-medium",
+							children: "Login Berhasil"
+						}), /* @__PURE__ */ jsx("p", {
+							className: "text-2xl font-bold text-emerald-600 dark:text-emerald-400 mt-1",
+							children: statistics.success || 0
+						})] }), /* @__PURE__ */ jsx("div", {
+							className: "p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400",
+							children: /* @__PURE__ */ jsx(CheckCircle2, { className: "w-5 h-5" })
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between",
+						children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("p", {
+							className: "text-xs text-slate-500 dark:text-slate-400 font-medium",
+							children: "Percobaan Gagal"
+						}), /* @__PURE__ */ jsx("p", {
+							className: "text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1",
+							children: statistics.failed || 0
+						})] }), /* @__PURE__ */ jsx("div", {
+							className: "p-3 rounded-xl bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400",
+							children: /* @__PURE__ */ jsx(AlertCircle, { className: "w-5 h-5" })
+						})]
+					}),
+					/* @__PURE__ */ jsxs("div", {
+						className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex items-center justify-between",
+						children: [/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("p", {
+							className: "text-xs text-slate-500 dark:text-slate-400 font-medium",
+							children: "Terkunci / Diblokir"
+						}), /* @__PURE__ */ jsx("p", {
+							className: "text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1",
+							children: statistics.locked || 0
+						})] }), /* @__PURE__ */ jsx("div", {
+							className: "p-3 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400",
+							children: /* @__PURE__ */ jsx(Lock, { className: "w-5 h-5" })
+						})]
+					})
+				]
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 mb-6",
+				children: [/* @__PURE__ */ jsx("div", {
+					className: "w-full sm:max-w-xs",
+					children: /* @__PURE__ */ jsx(SearchBar, {
+						value: search,
+						onChange: (val) => {
+							setSearch(val);
+							applyFilters({ search: val });
+						},
+						onClear: () => {
+							setSearch("");
+							applyFilters({ search: "" });
+						},
+						placeholder: "Cari user, input login, atau IP..."
+					})
+				}), /* @__PURE__ */ jsx("div", {
+					className: "w-full sm:w-56",
+					children: /* @__PURE__ */ jsx(Select, {
+						value: status,
+						onChange: (e) => {
+							setStatus(e.target.value);
+							applyFilters({ status: e.target.value });
+						},
+						options: [
+							{
+								value: "all",
+								label: "Semua Status Login"
+							},
+							{
+								value: "success",
+								label: "Success (Berhasil)"
+							},
+							{
+								value: "failed",
+								label: "Failed (Gagal)"
+							},
+							{
+								value: "locked",
+								label: "Locked / Blocked"
+							}
+						]
+					})
+				})]
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden",
+				children: [/* @__PURE__ */ jsx("div", {
+					className: "overflow-x-auto",
+					children: /* @__PURE__ */ jsxs("table", {
+						className: "w-full text-left text-xs border-collapse",
+						children: [/* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", {
+							className: "border-b border-slate-200/80 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/40 text-slate-500 dark:text-slate-400 font-semibold",
+							children: [
+								/* @__PURE__ */ jsx("th", {
+									className: "p-4",
+									children: "WAKTU LOGIN"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "p-4",
+									children: "PENGGUNA"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "p-4",
+									children: "INPUT LOGIN"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "p-4",
+									children: "STATUS"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "p-4",
+									children: "ALAMAT IP"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "p-4",
+									children: "PERANGKAT & BROWSER"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "p-4",
+									children: "SITE AKTIF"
+								}),
+								/* @__PURE__ */ jsx("th", {
+									className: "p-4",
+									children: "WAKTU LOGOUT"
+								})
+							]
+						}) }), /* @__PURE__ */ jsx("tbody", {
+							className: "divide-y divide-slate-100 dark:divide-slate-800/60",
+							children: logs.data?.length > 0 ? logs.data.map((log) => /* @__PURE__ */ jsxs("tr", {
+								className: "hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors",
+								children: [
+									/* @__PURE__ */ jsx("td", {
+										className: "p-4 font-mono text-[11px] text-slate-500 whitespace-nowrap",
+										children: log.login_at ? new Date(log.login_at).toLocaleString("id-ID") : "-"
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "p-4",
+										children: log.user ? /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", {
+											className: "font-semibold text-slate-800 dark:text-slate-200 block",
+											children: log.user.name
+										}), /* @__PURE__ */ jsx("span", {
+											className: "text-[11px] text-slate-400 block",
+											children: log.user.email
+										})] }) : /* @__PURE__ */ jsx("span", {
+											className: "italic text-slate-400 text-xs",
+											children: "Pengguna Tidak Ditemukan"
+										})
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "p-4 font-mono text-[11px] text-slate-700 dark:text-slate-300",
+										children: log.login_input
+									}),
+									/* @__PURE__ */ jsxs("td", {
+										className: "p-4 whitespace-nowrap",
+										children: [getStatusBadge(log.status), log.failure_reason && /* @__PURE__ */ jsx("span", {
+											className: "block text-[10px] text-rose-400 mt-1 max-w-xs truncate",
+											title: log.failure_reason,
+											children: log.failure_reason
+										})]
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "p-4 font-mono text-xs text-slate-600 dark:text-slate-300",
+										children: log.ip_address || "-"
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "p-4 max-w-xs truncate text-slate-500 dark:text-slate-400 text-[11px]",
+										title: log.user_agent,
+										children: /* @__PURE__ */ jsxs("div", {
+											className: "flex items-center gap-1.5",
+											children: [/* @__PURE__ */ jsx(Laptop, { className: "w-3.5 h-3.5 shrink-0 text-slate-400" }), /* @__PURE__ */ jsx("span", {
+												className: "truncate",
+												children: log.user_agent || "-"
+											})]
+										})
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "p-4 text-slate-600 dark:text-slate-400",
+										children: log.active_site ? /* @__PURE__ */ jsxs("div", {
+											className: "flex items-center gap-1",
+											children: [/* @__PURE__ */ jsx(MapPin, { className: "w-3 h-3 text-amber-500" }), /* @__PURE__ */ jsx("span", {
+												className: "font-medium text-xs",
+												children: log.active_site.name
+											})]
+										}) : /* @__PURE__ */ jsx("span", {
+											className: "text-slate-400 text-xs",
+											children: "-"
+										})
+									}),
+									/* @__PURE__ */ jsx("td", {
+										className: "p-4 font-mono text-[11px] text-slate-500 whitespace-nowrap",
+										children: log.logout_at ? new Date(log.logout_at).toLocaleString("id-ID") : "-"
+									})
+								]
+							}, log.id)) : /* @__PURE__ */ jsx("tr", { children: /* @__PURE__ */ jsx("td", {
+								colSpan: "8",
+								className: "p-8 text-center text-slate-400",
+								children: "Belum ada riwayat aktivitas login yang tercatat."
+							}) })
+						})]
+					})
+				}), logs.links && /* @__PURE__ */ jsx("div", {
+					className: "p-4 border-t border-slate-100 dark:border-slate-800",
+					children: /* @__PURE__ */ jsx(PaginationControls, { pagination: logs })
+				})]
+			})
+		]
+	});
+}
 // resources/js/Pages/Security/Roles.jsx
 var Roles_exports = /* @__PURE__ */ __exportAll({ default: () => RolesIndex });
 function RolesIndex({ roles = [], permissionsGrouped = {} }) {
@@ -29124,6 +40474,7 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [formData, setFormData] = useState({
 		name: "",
+		username: "",
 		email: "",
 		role: "user",
 		status: "active",
@@ -29132,8 +40483,13 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 		site_id: "",
 		company_id: "",
 		role_ids: [],
+		site_ids: [],
 		password: ""
 	});
+	const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+	const [resetUser, setResetUser] = useState(null);
+	const [newResetPassword, setNewResetPassword] = useState("");
+	const [isSubmittingReset, setIsSubmittingReset] = useState(false);
 	const isFirstRender = useRef(true);
 	const applyFilters = (newOverrides = {}) => {
 		const queryParams = {
@@ -29176,6 +40532,7 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 		setEditingUser(null);
 		setFormData({
 			name: "",
+			username: "",
 			email: "",
 			role: "dispatcher",
 			status: "active",
@@ -29184,6 +40541,7 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 			site_id: sites[0]?.id || "",
 			company_id: companies[0]?.id || "",
 			role_ids: roles[0] ? [roles[0].id] : [],
+			site_ids: sites[0] ? [sites[0].id] : [],
 			password: ""
 		});
 		setFormErrors({});
@@ -29191,8 +40549,11 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 	};
 	const openEditModal = (user) => {
 		setEditingUser(user);
+		const assignedSiteIds = user.sites ? user.sites.map((s) => s.id) : [];
+		if (user.site_id && !assignedSiteIds.includes(user.site_id)) assignedSiteIds.push(user.site_id);
 		setFormData({
 			name: user.name,
+			username: user.username || "",
 			email: user.email,
 			role: user.role || "user",
 			status: user.status,
@@ -29201,6 +40562,7 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 			site_id: user.site_id || "",
 			company_id: user.company_id || "",
 			role_ids: user.roles ? user.roles.map((r) => r.id) : [],
+			site_ids: assignedSiteIds,
 			password: ""
 		});
 		setFormErrors({});
@@ -29221,21 +40583,50 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 			onFinish: () => setIsSubmitting(false)
 		});
 	};
+	const handleToggleSiteCheckbox = (sId) => {
+		const current = [...formData.site_ids];
+		const idx = current.indexOf(sId);
+		if (idx > -1) current.splice(idx, 1);
+		else current.push(sId);
+		setFormData({
+			...formData,
+			site_ids: current
+		});
+	};
+	const openResetPasswordModal = (user) => {
+		setResetUser(user);
+		setNewResetPassword("password123");
+		setIsResetModalOpen(true);
+	};
+	const handleResetPasswordSubmit = (e) => {
+		e.preventDefault();
+		if (!resetUser) return;
+		setIsSubmittingReset(true);
+		router.post(`/users/${resetUser.id}/reset-password`, { new_password: newResetPassword }, {
+			onSuccess: () => {
+				setIsResetModalOpen(false);
+				setIsSubmittingReset(false);
+			},
+			onError: () => setIsSubmittingReset(false)
+		});
+	};
+	const handleToggleStatus = (user, newStatus) => {
+		router.put(`/users/${user.id}/toggle-status`, { status: newStatus });
+	};
 	const handleDeleteUser = async (user) => {
 		if (await confirm({
 			title: `Hapus Pengguna: ${user.name}?`,
 			message: `Akun dengan email ${user.email} akan dipindahkan ke arsip soft delete.`,
 			confirmButtonText: "Ya, Hapus Akun",
-			cancelButtonText: "Batalkan",
-			type: "danger"
-		})) router.delete(`/users/${user.id}`, { preserveScroll: true });
+			cancelButtonText: "Batal",
+			variant: "danger"
+		})) router.delete(`/users/${user.id}`);
 	};
 	const getRoleBadge = (user) => {
 		if (user.roles && user.roles.length > 0) return /* @__PURE__ */ jsx("div", {
 			className: "flex flex-wrap gap-1",
-			children: user.roles.map((r) => /* @__PURE__ */ jsx(Badge, {
-				variant: "purple",
-				size: "sm",
+			children: user.roles.map((r) => /* @__PURE__ */ jsx("span", {
+				className: "px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/20",
 				children: r.label
 			}, r.id))
 		});
@@ -29245,8 +40636,8 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 			children: user.role || "User"
 		});
 	};
-	const getStatusBadge = (status) => {
-		switch (status) {
+	const getStatusBadge = (statusVal) => {
+		switch (statusVal) {
 			case "active": return /* @__PURE__ */ jsx(Badge, {
 				variant: "success",
 				dot: true,
@@ -29264,16 +40655,16 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 			});
 			default: return /* @__PURE__ */ jsx(Badge, {
 				variant: "default",
-				children: status
+				children: statusVal
 			});
 		}
 	};
 	return /* @__PURE__ */ jsxs(DashboardLayout, {
-		title: "Manajemen Pengguna & Akun Sistem (SSR)",
+		title: "Manajemen Pengguna & Hak Akses Multi-Site (RBAC)",
 		breadcrumbs: ["Keamanan", "Pengguna"],
 		children: [
 			/* @__PURE__ */ jsxs("div", {
-				className: "grid grid-cols-2 sm:grid-cols-4 gap-4",
+				className: "grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4",
 				children: [
 					/* @__PURE__ */ jsxs("div", {
 						className: "p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs",
@@ -29318,7 +40709,7 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 				]
 			}),
 			/* @__PURE__ */ jsx("div", {
-				className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3",
+				className: "p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3 mb-4",
 				children: /* @__PURE__ */ jsxs("div", {
 					className: "flex flex-col sm:flex-row sm:items-center justify-between gap-3",
 					children: [/* @__PURE__ */ jsx("div", {
@@ -29330,7 +40721,7 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 								setSearch("");
 								applyFilters({ search: "" });
 							},
-							placeholder: "Cari Nama, Email, Telepon..."
+							placeholder: "Cari Nama, Username, Email..."
 						})
 					}), /* @__PURE__ */ jsxs("div", {
 						className: "flex flex-wrap items-center gap-2.5",
@@ -29421,7 +40812,7 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 							children: /* @__PURE__ */ jsxs("tr", { children: [
 								/* @__PURE__ */ jsx("th", {
 									className: "py-3 px-4",
-									children: "Pengguna & Email"
+									children: "Pengguna, Username & Email"
 								}),
 								/* @__PURE__ */ jsx("th", {
 									className: "py-3 px-4",
@@ -29433,7 +40824,7 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 								}),
 								/* @__PURE__ */ jsx("th", {
 									className: "py-3 px-4",
-									children: "Site Penugasan"
+									children: "Site Utama & Akses Multi-Site"
 								}),
 								/* @__PURE__ */ jsx("th", {
 									className: "py-3 px-4",
@@ -29457,9 +40848,15 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 												src: user.avatar,
 												name: user.name,
 												size: "sm"
-											}), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("p", {
-												className: "font-bold text-slate-900 dark:text-white",
-												children: user.name
+											}), /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsxs("div", {
+												className: "flex items-center gap-1.5",
+												children: [/* @__PURE__ */ jsx("p", {
+													className: "font-bold text-slate-900 dark:text-white",
+													children: user.name
+												}), user.username && /* @__PURE__ */ jsxs("span", {
+													className: "text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500",
+													children: ["@", user.username]
+												})]
 											}), /* @__PURE__ */ jsx("p", {
 												className: "text-[11px] text-slate-400",
 												children: user.email
@@ -29485,25 +40882,70 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 									}),
 									/* @__PURE__ */ jsx("td", {
 										className: "py-3.5 px-4 text-slate-600 dark:text-slate-300",
-										children: user.site?.name || "Head Office"
+										children: /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsxs("div", {
+											className: "flex items-center gap-1",
+											children: [/* @__PURE__ */ jsx(MapPin, { className: "w-3 h-3 text-amber-500" }), /* @__PURE__ */ jsx("span", {
+												className: "font-semibold text-xs",
+												children: user.site?.name || "Head Office (Semua Site)"
+											})]
+										}), user.sites && user.sites.length > 0 && /* @__PURE__ */ jsx("div", {
+											className: "flex flex-wrap gap-1 mt-1",
+											children: user.sites.map((s) => /* @__PURE__ */ jsx("span", {
+												className: "text-[9px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500",
+												children: s.name
+											}, s.id))
+										})] })
 									}),
 									/* @__PURE__ */ jsx("td", {
 										className: "py-3.5 px-4",
-										children: getStatusBadge(user.status)
+										children: /* @__PURE__ */ jsxs("div", {
+											className: "flex items-center gap-2",
+											children: [getStatusBadge(user.status), /* @__PURE__ */ jsxs("select", {
+												value: user.status,
+												onChange: (e) => handleToggleStatus(user, e.target.value),
+												className: "text-[10px] bg-transparent border border-slate-200 dark:border-slate-700 rounded px-1 py-0.5 text-slate-500 cursor-pointer",
+												title: "Ubah Status Akun",
+												children: [
+													/* @__PURE__ */ jsx("option", {
+														value: "active",
+														children: "Aktif"
+													}),
+													/* @__PURE__ */ jsx("option", {
+														value: "inactive",
+														children: "Nonaktif"
+													}),
+													/* @__PURE__ */ jsx("option", {
+														value: "suspended",
+														children: "Ditangguhkan"
+													})
+												]
+											})]
+										})
 									}),
 									/* @__PURE__ */ jsx("td", {
 										className: "py-3.5 px-4 text-right",
 										children: /* @__PURE__ */ jsxs("div", {
 											className: "inline-flex items-center gap-1.5",
-											children: [/* @__PURE__ */ jsx("button", {
-												onClick: () => openEditModal(user),
-												className: "p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800",
-												children: /* @__PURE__ */ jsx(Edit3, { className: "w-3.5 h-3.5" })
-											}), /* @__PURE__ */ jsx("button", {
-												onClick: () => handleDeleteUser(user),
-												className: "p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-slate-100 dark:hover:bg-slate-800",
-												children: /* @__PURE__ */ jsx(Trash2, { className: "w-3.5 h-3.5" })
-											})]
+											children: [
+												/* @__PURE__ */ jsx("button", {
+													onClick: () => openResetPasswordModal(user),
+													className: "p-1.5 rounded-lg text-slate-500 hover:text-amber-600 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer",
+													title: "Reset Password",
+													children: /* @__PURE__ */ jsx(Key, { className: "w-3.5 h-3.5" })
+												}),
+												/* @__PURE__ */ jsx("button", {
+													onClick: () => openEditModal(user),
+													className: "p-1.5 rounded-lg text-slate-500 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer",
+													title: "Edit Profil & Akses",
+													children: /* @__PURE__ */ jsx(Edit3, { className: "w-3.5 h-3.5" })
+												}),
+												/* @__PURE__ */ jsx("button", {
+													onClick: () => handleDeleteUser(user),
+													className: "p-1.5 rounded-lg text-slate-500 hover:text-rose-600 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer",
+													title: "Hapus Akun",
+													children: /* @__PURE__ */ jsx(Trash2, { className: "w-3.5 h-3.5" })
+												})
+											]
 										})
 									})
 								]
@@ -29531,10 +40973,10 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 							className: "flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800",
 							children: [/* @__PURE__ */ jsx("h3", {
 								className: "font-bold text-sm text-slate-900 dark:text-white",
-								children: editingUser ? "Edit Pengguna" : "Tambah Pengguna Baru"
+								children: editingUser ? "Edit Pengguna & Akses Multi-Site" : "Tambah Pengguna Baru"
 							}), /* @__PURE__ */ jsx("button", {
 								onClick: () => setIsModalOpen(false),
-								className: "text-slate-400 hover:text-slate-600",
+								className: "text-slate-400 hover:text-slate-600 cursor-pointer",
 								children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4" })
 							})]
 						}), /* @__PURE__ */ jsxs("form", {
@@ -29554,24 +40996,38 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 										required: true
 									})
 								}),
-								/* @__PURE__ */ jsx(FormField, {
-									label: "Alamat Email (Login)",
-									error: formErrors.email,
-									required: true,
-									children: /* @__PURE__ */ jsx(Input, {
-										type: "email",
-										value: formData.email,
-										onChange: (e) => setFormData({
-											...formData,
-											email: e.target.value
-										}),
-										required: true
-									})
+								/* @__PURE__ */ jsxs("div", {
+									className: "grid grid-cols-2 gap-3",
+									children: [/* @__PURE__ */ jsx(FormField, {
+										label: "Username (Login)",
+										error: formErrors.username,
+										children: /* @__PURE__ */ jsx(Input, {
+											value: formData.username,
+											onChange: (e) => setFormData({
+												...formData,
+												username: e.target.value
+											}),
+											placeholder: "contoh: superadmin"
+										})
+									}), /* @__PURE__ */ jsx(FormField, {
+										label: "Alamat Email (Login)",
+										error: formErrors.email,
+										required: true,
+										children: /* @__PURE__ */ jsx(Input, {
+											type: "email",
+											value: formData.email,
+											onChange: (e) => setFormData({
+												...formData,
+												email: e.target.value
+											}),
+											required: true
+										})
+									})]
 								}),
 								/* @__PURE__ */ jsxs("div", {
 									className: "grid grid-cols-2 gap-3",
 									children: [/* @__PURE__ */ jsx(FormField, {
-										label: "Role Hak Akses (RBAC)",
+										label: "Role Hak Akses (15 Standard Roles)",
 										required: true,
 										children: /* @__PURE__ */ jsx(Select, {
 											value: formData.role_ids[0] || "",
@@ -29632,7 +41088,7 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 											placeholder: ""
 										})
 									}), /* @__PURE__ */ jsx(FormField, {
-										label: "Site Penugasan",
+										label: "Site Utama / Default",
 										children: /* @__PURE__ */ jsx(Select, {
 											value: formData.site_id,
 											onChange: (e) => setFormData({
@@ -29649,6 +41105,34 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 											placeholder: ""
 										})
 									})]
+								}),
+								/* @__PURE__ */ jsxs("div", {
+									className: "space-y-1.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60",
+									children: [
+										/* @__PURE__ */ jsx("label", {
+											className: "block text-[11px] font-semibold text-slate-700 dark:text-slate-300",
+											children: "Otorisasi Akses Multi-Site:"
+										}),
+										/* @__PURE__ */ jsx("p", {
+											className: "text-[10px] text-slate-400",
+											children: "Centang site yang diizinkan untuk diakses dan diswitch oleh user:"
+										}),
+										/* @__PURE__ */ jsx("div", {
+											className: "grid grid-cols-2 gap-2 pt-1",
+											children: sites.map((s) => /* @__PURE__ */ jsxs("label", {
+												className: "flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer",
+												children: [/* @__PURE__ */ jsx("input", {
+													type: "checkbox",
+													checked: formData.site_ids.includes(s.id),
+													onChange: () => handleToggleSiteCheckbox(s.id),
+													className: "w-4 h-4 rounded text-amber-500 focus:ring-amber-500"
+												}), /* @__PURE__ */ jsx("span", {
+													className: "truncate",
+													children: s.name
+												})]
+											}, s.id))
+										})
+									]
 								}),
 								/* @__PURE__ */ jsx(FormField, {
 									label: editingUser ? "Password (Kosongkan jika tidak diubah)" : "Password",
@@ -29679,6 +41163,68 @@ function UsersIndex({ users, filters = {}, roles = [], sites = [], companies = [
 								})
 							]
 						})]
+					})
+				})]
+			}),
+			isResetModalOpen && resetUser && /* @__PURE__ */ jsxs("div", {
+				className: "fixed inset-0 z-50 overflow-y-auto",
+				children: [/* @__PURE__ */ jsx("div", {
+					className: "fixed inset-0 bg-slate-900/60 backdrop-blur-xs",
+					onClick: () => setIsResetModalOpen(false)
+				}), /* @__PURE__ */ jsx("div", {
+					className: "flex min-h-full items-center justify-center p-4",
+					children: /* @__PURE__ */ jsxs("div", {
+						className: "relative w-full max-w-sm rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-2xl space-y-4",
+						children: [
+							/* @__PURE__ */ jsxs("div", {
+								className: "flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800",
+								children: [/* @__PURE__ */ jsxs("h3", {
+									className: "font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2",
+									children: [/* @__PURE__ */ jsx(Key, { className: "w-4 h-4 text-amber-500" }), /* @__PURE__ */ jsx("span", { children: "Reset Password User" })]
+								}), /* @__PURE__ */ jsx("button", {
+									onClick: () => setIsResetModalOpen(false),
+									className: "text-slate-400 hover:text-slate-600",
+									children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4" })
+								})]
+							}),
+							/* @__PURE__ */ jsxs("p", {
+								className: "text-xs text-slate-500",
+								children: [
+									"Mengatur password baru untuk ",
+									/* @__PURE__ */ jsx("strong", { children: resetUser.name }),
+									" (",
+									resetUser.email,
+									")."
+								]
+							}),
+							/* @__PURE__ */ jsxs("form", {
+								onSubmit: handleResetPasswordSubmit,
+								className: "space-y-3 text-xs",
+								children: [/* @__PURE__ */ jsx(FormField, {
+									label: "Password Baru",
+									required: true,
+									children: /* @__PURE__ */ jsx(Input, {
+										type: "text",
+										value: newResetPassword,
+										onChange: (e) => setNewResetPassword(e.target.value),
+										placeholder: "Minimal 6 karakter",
+										required: true
+									})
+								}), /* @__PURE__ */ jsxs("div", {
+									className: "flex justify-end gap-2 pt-2",
+									children: [/* @__PURE__ */ jsx(Button$1, {
+										variant: "secondary",
+										onClick: () => setIsResetModalOpen(false),
+										children: "Batal"
+									}), /* @__PURE__ */ jsx(Button$1, {
+										variant: "primary",
+										type: "submit",
+										isLoading: isSubmittingReset,
+										children: "Reset Password"
+									})]
+								})]
+							})
+						]
 					})
 				})]
 			})
@@ -34209,16 +45755,35 @@ createServer((page) => createInertiaApp({
 	title: (title) => title ? `${title} - ${appName}` : appName,
 	resolve: (name) => {
 		return (/* @__PURE__ */ Object.assign({
-			"./Pages/Analytics/Index.jsx": Index_exports$49,
-			"./Pages/Customers/Index.jsx": Index_exports$48,
-			"./Pages/Dashboard/Index.jsx": Index_exports$47,
-			"./Pages/Drivers/Index.jsx": Index_exports$46,
-			"./Pages/Employees/Index.jsx": Index_exports$45,
-			"./Pages/Fleet/HMKM/Index.jsx": Index_exports$44,
-			"./Pages/Fleet/KPI/Index.jsx": Index_exports$43,
-			"./Pages/Fleet/P2H/Index.jsx": Index_exports$42,
-			"./Pages/Fleet/Registry/Index.jsx": Index_exports$41,
-			"./Pages/Fleet/WorkOrders/Index.jsx": Index_exports$40,
+			"./Pages/Analytics/Dashboard/Index.jsx": Index_exports$64,
+			"./Pages/Analytics/Fleet/Index.jsx": Index_exports$63,
+			"./Pages/Analytics/Fuel/Index.jsx": Index_exports$62,
+			"./Pages/Analytics/Index.jsx": Index_exports$61,
+			"./Pages/Analytics/Maintenance/Index.jsx": Index_exports$60,
+			"./Pages/Analytics/Partials/AnalyticsFilterBar.jsx": AnalyticsFilterBar_exports,
+			"./Pages/Analytics/Print/Report.jsx": Report_exports,
+			"./Pages/Analytics/Production/Index.jsx": Index_exports$59,
+			"./Pages/Analytics/WarehouseProcurement/Index.jsx": Index_exports$58,
+			"./Pages/Auth/Login.jsx": Login_exports,
+			"./Pages/Customers/Index.jsx": Index_exports$57,
+			"./Pages/Dashboard/Index.jsx": Index_exports$56,
+			"./Pages/Drivers/Index.jsx": Index_exports$55,
+			"./Pages/Employees/Index.jsx": Index_exports$54,
+			"./Pages/Fleet/HMKM/Index.jsx": Index_exports$53,
+			"./Pages/Fleet/KPI/Index.jsx": Index_exports$52,
+			"./Pages/Fleet/P2H/Index.jsx": Index_exports$51,
+			"./Pages/Fleet/Registry/Index.jsx": Index_exports$50,
+			"./Pages/Fleet/WorkOrders/Index.jsx": Index_exports$49,
+			"./Pages/Fuel/Analytics/Index.jsx": Index_exports$48,
+			"./Pages/Fuel/Dispensing/Index.jsx": Index_exports$47,
+			"./Pages/Fuel/Dispensing/Ticket.jsx": Ticket_exports,
+			"./Pages/Fuel/Inventory/Index.jsx": Index_exports$46,
+			"./Pages/Fuel/Soundings/Index.jsx": Index_exports$45,
+			"./Pages/Hr/Attendance/Index.jsx": Index_exports$44,
+			"./Pages/Hr/Dashboard/Index.jsx": Index_exports$43,
+			"./Pages/Hr/Documents/Index.jsx": Index_exports$42,
+			"./Pages/Hr/Drivers/Index.jsx": Index_exports$41,
+			"./Pages/Hr/Employees/Index.jsx": Index_exports$40,
 			"./Pages/Locations/Index.jsx": Index_exports$39,
 			"./Pages/Maintenance/Breakdown/Index.jsx": Index_exports$38,
 			"./Pages/Maintenance/Corrective/Index.jsx": Index_exports$37,
@@ -34253,6 +45818,7 @@ createServer((page) => createInertiaApp({
 			"./Pages/Production/Tickets/Index.jsx": Index_exports$13,
 			"./Pages/Production/Tickets/Verification.jsx": Verification_exports,
 			"./Pages/Security/ActivityLogs.jsx": ActivityLogs_exports,
+			"./Pages/Security/LoginLogs.jsx": LoginLogs_exports,
 			"./Pages/Security/Roles.jsx": Roles_exports,
 			"./Pages/Settings/Configuration.jsx": Configuration_exports,
 			"./Pages/Settings/Index.jsx": Index_exports$12,

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Site;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -26,6 +27,17 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $user = $request->user();
+        $activeSiteId = null;
+        $activeSite = null;
+        $accessibleSites = collect();
+
+        if ($user) {
+            $activeSiteId = session('active_site_id') ?? $user->site_id;
+            if ($activeSiteId) {
+                $activeSite = Site::find($activeSiteId);
+            }
+            $accessibleSites = $user->getAccessibleSites();
+        }
 
         return [
             ...parent::share($request),
@@ -41,30 +53,29 @@ class HandleInertiaRequests extends Middleware
                 'user' => $user ? [
                     'id' => $user->id,
                     'name' => $user->name,
+                    'username' => $user->username,
                     'email' => $user->email,
                     'role' => $user->role,
                     'avatar' => $user->avatar,
                     'roles' => $user->roles()->pluck('name')->toArray(),
                     'permissions' => $user->getAllPermissions(),
-                    'site_id' => $user->site_id,
-                    'site_name' => $user->site?->name,
-                ] : [
-                    // Default fallback session for unauthenticated demo/development browsing
-                    'id' => 1,
-                    'name' => 'Mustapa Ahmad Kamal (Administrator)',
-                    'email' => 'admin@tap-mining.com',
-                    'role' => 'admin',
-                    'avatar' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-                    'roles' => ['super_admin'],
-                    'permissions' => [
-                        'view_dashboard', 'manage_companies', 'manage_sites', 'manage_departments',
-                        'manage_positions', 'manage_employees', 'manage_drivers', 'manage_units',
-                        'manage_locations', 'manage_shifts', 'manage_vendors', 'manage_customers',
-                        'manage_materials', 'manage_users', 'manage_roles', 'view_activity_logs', 'manage_settings'
-                    ],
-                    'site_id' => 1,
-                    'site_name' => 'Site Muara Teweh',
-                ],
+                    'is_super_admin' => $user->hasRole('super_admin') || $user->role === 'admin',
+                    'site_id' => $activeSiteId,
+                    'site_name' => $activeSite?->name,
+                    'default_site_id' => $user->site_id,
+                    'status' => $user->status,
+                ] : null,
+                'active_site' => $activeSite ? [
+                    'id' => $activeSite->id,
+                    'name' => $activeSite->name,
+                    'code' => $activeSite->code,
+                    'location' => $activeSite->location,
+                ] : null,
+                'accessible_sites' => $accessibleSites->map(fn ($s) => [
+                    'id' => $s->id,
+                    'name' => $s->name,
+                    'code' => $s->code,
+                ])->toArray(),
             ],
         ];
     }

@@ -141,7 +141,16 @@ class DumpingTicketController extends Controller
             'attachment' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
+        $this->authorizeSiteAccess((int) $validated['site_id']);
+
         return DB::transaction(function () use ($validated, $request) {
+            $unit = Unit::findOrFail($validated['unit_id']);
+            if ($unit->site_id && (int) $unit->site_id !== (int) $validated['site_id']) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'unit_id' => "Site isolation violation: Unit {$unit->unit_code} tidak terdaftar pada site tiket produksi ini.",
+                ]);
+            }
+
             $attachmentPath = null;
             if ($request->hasFile('attachment')) {
                 $attachmentPath = $request->file('attachment')->store('dumping_tickets', 'public');
@@ -313,11 +322,34 @@ class DumpingTicketController extends Controller
      */
     public function reject(Request $request, DumpingTicket $ticket)
     {
+        $this->authorizeSiteAccess((int) $ticket->site_id);
+
         $validated = $request->validate([
             'rejection_reason' => 'required|string|min:5|max:500',
         ]);
 
         return DB::transaction(function () use ($ticket, $validated) {
+            // If ticket was previously verified/corrected (final transaction), record a TicketCorrection audit snapshot before rejecting
+            if (in_array($ticket->status, ['verified', 'corrected'], true)) {
+                TicketCorrection::create([
+                    'dumping_ticket_id' => $ticket->id,
+                    'requested_by' => Auth::id(),
+                    'approved_by' => Auth::id(),
+                    'old_data' => [
+                        'status' => $ticket->status,
+                        'is_production' => $ticket->is_production,
+                        'tonnage' => $ticket->tonnage,
+                    ],
+                    'new_data' => [
+                        'status' => 'rejected',
+                        'is_production' => false,
+                        'rejection_reason' => $validated['rejection_reason'],
+                    ],
+                    'reason' => "Reversal / Penolakan Tiket Final: {$validated['rejection_reason']}",
+                    'status' => 'approved',
+                ]);
+            }
+
             $ticket->update([
                 'status' => 'rejected',
                 'is_production' => false, // CANNOT count in production
